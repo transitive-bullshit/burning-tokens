@@ -1,0 +1,30 @@
+[
+  {
+    "family": "Fraunces",
+    "path": "fraunces/Fraunces[SOFT,WONK,opsz,wght].ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/4024282d9b0cffcdb8e3024560862746178d741f/ofl/fraunces/Fraunces%5BSOFT%2CWONK%2Copsz%2Cwght%5D.ttf",
+    "commit": "4024282d9b0cffcdb8e3024560862746178d741f",
+    "sha256": "177ff6c0f14e5550a3c624247cd1189611d4eb65d000b14944c63d967958abbb"
+  },
+  {
+    "family": "Fraunces",
+    "path": "fraunces/OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/4024282d9b0cffcdb8e3024560862746178d741f/ofl/fraunces/OFL.txt",
+    "commit": "4024282d9b0cffcdb8e3024560862746178d741f",
+    "sha256": "bdf4c22802eaf804f998195871c6b8938aac2ac14b2d78a8bd66a6f1eced833b"
+  },
+  {
+    "family": "Space Grotesk",
+    "path": "spacegrotesk/SpaceGrotesk[wght].ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/00a38a53f92aef923b9353f40128e8f4552ddae4/ofl/spacegrotesk/SpaceGrotesk%5Bwght%5D.ttf",
+    "commit": "00a38a53f92aef923b9353f40128e8f4552ddae4",
+    "sha256": "acad6de1fc93436f5c0f1f4137751ef04f1aea3063e7036535970ffcfbd79f72"
+  },
+  {
+    "family": "Space Grotesk",
+    "path": "spacegrotesk/OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/00a38a53f92aef923b9353f40128e8f4552ddae4/ofl/spacegrotesk/OFL.txt",
+    "commit": "00a38a53f92aef923b9353f40128e8f4552ddae4",
+    "sha256": "564ce565c371c5e5bbf286006565a7c9aa55a9f56e7ca58d56e05d649dd61a72"
+  }
+]

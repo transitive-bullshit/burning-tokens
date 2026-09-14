@@ -47,4 +47,5 @@ yarn-error.log*
 .vercel
 
 # local experiments, source masters, and temporary artifacts
-/work/
+work
+.impeccable

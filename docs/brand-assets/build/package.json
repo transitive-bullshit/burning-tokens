@@ -1,0 +1,20 @@
+{
+  "name": "burning-tokens-brand-build",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build-brand.ts",
+    "fix:format": "cd ../../.. && docs/brand-assets/build/node_modules/.bin/oxfmt --config docs/brand-assets/build/oxfmt.json AGENTS.md docs/brand-identity.md docs/wip-mvp-spec.md docs/brand-assets/brand.json docs/brand-assets/tokens.css docs/brand-assets/build",
+    "fix:lint": "oxlint --fix --config oxlint.json build-brand.ts"
+  },
+  "dependencies": {
+    "sharp": "0.35.4"
+  },
+  "devDependencies": {
+    "oxfmt": "0.66.0",
+    "oxlint": "1.81.0"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

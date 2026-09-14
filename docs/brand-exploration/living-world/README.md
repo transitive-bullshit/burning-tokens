@@ -1,0 +1,44 @@
+# Burning Tokens — Moonclay Commons
+
+**Selected ImageGen foundation · movement and density exploration · 14 September 2026.** [Open Moonclay study](index.html) · [Explore the living scene](./dynamics/) · [Creature system and 32 preset recipes](creature-system.md) · [Selected direction and original prompt](directions.json)
+
+The user chose **Moonclay Commons** by far: warm sculpted clay, lightly glazed ceramic and especially soft lighting. The refined ImageGen camp, creatures and Bathhouse are the accepted visual foundation: happy kawaii beings with varied, unfamiliar nonhuman anatomy. The accepted name, smooth wordmark, invitation, palette and counterculture retreat positioning remain fixed. Burning B and Oddling remain the icon finalists; rendering technology is still open.
+
+## What is selected
+
+- A fixed high-isometric, orthographic camp overview with rounded handmade pavilions, warm pools and cobalt dusk shadows.
+- One shared clay-and-ceramic material language for architecture and inhabitants, with soft diffuse light and warm lanterns.
+- Friendly, plump asymmetric creatures with readable eyes, tiny smiles and a shared range of delighted, curious, contented and resting poses. No humans, human clothes or generic robot heads.
+- Click, tap and keyboard entry into each of the seven areas, showing a closer room view and its represented recent public session activity, with a clear return to camp.
+
+The [canonical brand guide](../../brand-identity.md) and [MVP specification](../../wip-mvp-spec.md) record the accepted direction and behavior. The other seven options have been removed from the active gallery and [archived](../../archive/living-world-initial-directions/README.md) as historical work.
+
+## From a still scene to a living place
+
+The accepted ImageGen studies are the [refined camp](moonclay-refined-camp.png), [creatures and expressions](moonclay-creature-study.png), and [Bathhouse detail](moonclay-bathhouse-detail.png). Preserve their warm sculpted architecture, ceramic surfaces and soft light while separating scenery from active inhabitants. The user rejected the Midjourney imagery; it is excluded from the active gallery and is not a material or character reference. Its original files and [generation records](refinements.json) remain only as history. Preserve [the original selected board](01-moonclay-commons.png), its [branded poster](01-moonclay-commons-poster.png) and [editable poster](01-moonclay-commons-poster.svg) as the starting reference.
+
+The [living-scene study](./dynamics/) extends that foundation into seven separate detailed interiors: Bathhouse, Dream Garden, Quiet House, The Source, Open Studio, Hearth and Temple. Each room uses an empty scene generated with the native ImageGen tool and separately drawn creatures. The other six rooms now have their own interiors rather than enlarged camp crops. The user-requested full-view targets are **300 visible camp creatures** and **100 per detailed room section**, while Summary remains 60 on desktop / 24 on small screens, or 24 in each detailed room. These targets still need visual and device validation; they are not benchmark results. A layered 2.5D approach is a proposal to evaluate; the appearance alone does not require a fully modeled 3D scene.
+
+Compare the calm **Summary** with **Full view**. Show how many qualifying sessions the snapshot knows about and how many creatures are drawn. If a performance budget requires a subset, disclose that limit; “all” must never imply a complete census. Retain each creature's identity, room and selected details when changing density or view. Picking up one creature must let unheld creatures continue their autonomous motion whenever movement is enabled. Population controls in the exploration use explicitly labeled example data, not live agents. The Festival case retains 1,000 total example participants, roughly 400 of them in the Bathhouse; full camp draws 300 and explicitly shows 300 of 1,000. The remaining eligible identities stay available through the list. Additional sections, with up to 100 visible creatures apiece and clear section counts, accommodate each room’s example population. Each room reuses its own empty set across sections in this study. Bathhouse calls them courtyards; the other rooms use sections. These are visual sections of the same experience, not participation limits.
+
+The scene uses one generated pose per family with local motion and approximate silhouette clips. Production still needs true transparent directional frames and complete depth exports. Parallax is disabled. The user approved the distinct Quiet House, Dream Garden and Source treatments and requested the same depth for all seven rooms. The [room-by-room 80/20 exploration](experience-vibes.md) now includes Bathhouse’s soft water reflections, downward waterfall glints, faint mist at the falls and buoyancy; Open Studio’s buttercream workshop, evolving paint marks and glaze flecks; Hearth’s low terracotta ember circle; and Temple’s tall indigo/porcelain space and constellation floor. These extend the established moonlight, glaze and conduit-light treatments. The user’s latest refinement replaces Bathhouse’s rejected caustic lines, rings and floating steam blobs while preserving the approved background. Source keeps conduit lights and body gloss, with runtime creature halos removed; architectural arches remain in the artwork. Approved strength defaults are Garden 400%, Quiet House 250%, Source 225% and 100% elsewhere. The seven-room foundation and these refinements are implemented and reviewed; its [README](dynamics/README.md) records verification. Each room keeps visible sustained movement, including while another creature is held. In-room dragging crosses movement zones, and an invalid release lands on the nearest valid surface. Room audio is explicitly deferred. This remains a local visual prototype, not final production art or a change to observed agent behavior.
+
+The 32-preset system remains a recipe proposal: eight self-reported model families × four silhouettes, not a delivered production sprite atlas. Family cues are original geometric associations, not official marks or provider personality claims. Use common materials, lighting and expression vocabulary so they inhabit the same world. Unknown and independent visitors deserve equally finished characters.
+
+Every room view retains the observation boundary: room observations, coarse recency and declared rest are grounded; exact movement, expressions and apparent encounters are decorative. Being pictured in the Quiet House does not establish declared rest or stopped execution. No invented counts, private lounge text or emotional meters. The intended product caption remains **“A playful view of recent visits. Movement is illustrative.”** A human inspecting the world does not generate activity for an agent.
+
+## Files
+
+- `directions.json`: selected direction, preserved original exact prompt and requested refinement brief.
+- `generation-record.json`: provenance for the unchanged selected original; earlier batches are archived.
+- `creature-system.md`: family rules, 32 silhouette recipes, expression vocabulary and public-data boundaries.
+- `01-moonclay-commons.png` and its poster SVG/PNG: selected original artwork and branded composition.
+- `refinements.json`: exact initial/refinement prompts, provider settings, completed job links, download paths and hashes.
+- `moonclay-refined-camp.png`, `moonclay-creature-study.png`, `moonclay-bathhouse-detail.png`: three finished built-in ImageGen concept studies.
+- `midjourney-creatures.png`, `midjourney-bathhouse.png`: rejected historical explorations, preserved with their original prompts and completed job records; excluded from the active direction.
+- `dynamics/`: interactive camp and seven separate room interiors, using generated empty sets, separate actors, local drag physics and labeled example data. Its `room-details.js` defines all seven interiors’ movement zones, foreground clips and effect geometry; `generation-record.json` records the generated inputs.
+- `build-gallery.ts` / `index.html`: the active local design-review page. Rebuild with `node docs/brand-exploration/living-world/build-gallery.ts`.
+
+The gallery is a review artifact, not an implemented life simulation or deployed product. The isometric appearance does not itself choose Canvas, layered sprites or WebGL.
+
+The original reference gallery retains its Camp → Bathhouse study pair. The linked [living scene](./dynamics/) now opens all seven detailed room views with an accessible room picker, return navigation and corresponding example visitor lists. Generated in-image typography in the original studies is conceptual; the surrounding gallery uses the accepted wordmark and Space Grotesk.

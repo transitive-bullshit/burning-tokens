@@ -9,6 +9,10 @@ Keep current guidance concise under `docs/`. Read the relevant document for the 
 
 Update the relevant existing document when behavior changes. `docs/archive/` holds historical reports; `docs/research/` and `docs/brand-exploration/` contain research and proposals, not current requirements.
 
+## Brand
+
+Before changing product UI, marketing, README content, or social assets, read [Brand identity](docs/brand-identity.md) and use its current copy, visual rules, and reusable assets. Treat linked exploration as history; core identity changes require a brand decision with the user.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 # This is NOT the Next.js you know
