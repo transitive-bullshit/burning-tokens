@@ -26,6 +26,8 @@ const art = {
   camp: image('camp-empty.png'),
   creatures: image('creature-atlas.png')
 }
+const soundCatalog = JSON.parse(read('sound-catalog.json'))
+const soundReviewSnapshot = JSON.parse(read(soundCatalog.reviewSnapshot))
 const code =
   read('crowd.js').replaceAll('export function ', 'function ') +
   '\n' +
@@ -37,6 +39,22 @@ const code =
   '\n' +
   read('room-effects.js').replaceAll('export function ', 'function ') +
   '\n' +
+  read('sound-engine.js').replaceAll('export function ', 'function ') +
+  '\n' +
+  read('sound-hotspots.js')
+    .replaceAll('export const ', 'const ')
+    .replaceAll('export function ', 'function ') +
+  '\n' +
+  read('scene-sound.js').replaceAll('export function ', 'function ') +
+  '\n' +
+  read('../../creature-audio/review-preferences.js')
+    .replaceAll('export function ', 'function ')
+    .replaceAll('export const ', 'const ') +
+  '\nconst SOUND_CATALOG = ' +
+  JSON.stringify(soundCatalog) +
+  '\nconst SOUND_REVIEW_SNAPSHOT = ' +
+  JSON.stringify({ hidden: soundReviewSnapshot.hidden }) +
+  '\n' +
   read('scene.js')
 const output = read('index.template.html')
   .replace(
@@ -46,4 +64,6 @@ const output = read('index.template.html')
   .replace('__ART__', `const ART = ${JSON.stringify(art)}`)
   .replace('__CODE__', code)
 writeFileSync(resolve(root, 'index.html'), output)
-console.log('Built self-contained Moonclay dynamics study')
+console.log(
+  'Built Moonclay dynamics study with embedded art and reviewed sound catalog'
+)

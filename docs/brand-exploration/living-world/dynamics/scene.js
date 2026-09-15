@@ -203,6 +203,20 @@ let elapsed = 0
 let lastTime = 0
 let scheduled = 0
 const transform = { scale: 1, x: 0, y: 0 }
+let sceneSound
+const soundReview = createSoundReviewPreferences({
+  onChange: (exclusions) => sceneSound?.setExclusions(exclusions)
+})
+soundReview.applySnapshot(SOUND_REVIEW_SNAPSHOT, SOUND_CATALOG.reviewRevision)
+soundReview.migrateFamilies(SOUND_CATALOG.retiredFamilies)
+sceneSound = createSceneSound({
+  catalog: SOUND_CATALOG,
+  initialExclusions: soundReview.getExclusions(),
+  getScene: () => state.scene,
+  getPaused: () => state.paused,
+  getScenery: () => state.scenery,
+  getActors: () => (state.creatures ? actors : [])
+})
 const loadImage = (src) =>
   new Promise((resolve, reject) => {
     const image = new Image()
@@ -422,6 +436,7 @@ function switchScene(scene, focusHeading = false) {
   if (scene !== 'camp' && !roomDetails[scene]) return
   if (grabOffset) finishDrag()
   state.scene = scene
+  sceneSound.roomChanged()
   applyEffectStrengths()
   $('effect-feedback').textContent = ''
   $('effect-copy-text').hidden = true
@@ -431,7 +446,7 @@ function switchScene(scene, focusHeading = false) {
   const detail = currentDetail()
   $('scene-caption').textContent = detail
     ? 'Pick up a creature and carry it between areas. Drop between them and it settles onto the nearest surface. Other creatures keep wandering.'
-    : 'Pick up a creature and drag it gently. Nearby bodies move aside. Use the visitor list to inspect or nudge with the keyboard.'
+    : 'Carry a creature between camp areas. Drop in a gap and it settles into the nearest movement zone. Other creatures keep wandering.'
   const selected = population.find((visitor) => visitor.id === state.selectedId)
   if (state.mode === 'full' && detail && selected?.room === detail.room)
     state.court = selected.court
@@ -441,6 +456,7 @@ function switchScene(scene, focusHeading = false) {
 }
 function updateSelection() {
   if (grabOffset) finishDrag()
+  sceneSound.resetInteraction()
   physics?.dispose()
   physicsActive = false
   const previous = new Map(actors.map((a) => [a.visitor.id, a]))
@@ -455,7 +471,7 @@ function updateSelection() {
   actors = createMotion(selection.visible, baseZones()).map((actor) => {
     const old = previous.get(actor.visitor.id)
     const oldZone = old && baseZones().find((zone) => zone.key === old.zone.key)
-    return oldZone && (currentDetail() || oldZone.key === actor.zone.key)
+    return oldZone
       ? {
           ...actor,
           zone: oldZone,
@@ -479,7 +495,7 @@ function updateSelection() {
     height: H,
     radius: creatureSize() * 0.22,
     zones: baseZones(),
-    allowZoneTransfer: Boolean(currentDetail())
+    allowZoneTransfer: true
   })
   renderControls()
   renderRoster()
@@ -512,7 +528,7 @@ function renderControls() {
     temple: `${effect.constellationPaths} constellations · ${effect.constellationNodes} star points · moonlit porcelain`
   }
   $('effect-status').textContent = effectNotes[state.scene]
-    ? effectNotes[state.scene] + '. Sound is reserved for a later pass.'
+    ? effectNotes[state.scene] + '.'
     : 'Layered ceramic scenery and independent visitors.'
   $('vibe-note').textContent =
     detail?.treatment ??
@@ -667,6 +683,26 @@ function renderInspection() {
     selection.visible.some((v) => v.id === visitor.id) && state.creatures
   $('inspection').innerHTML =
     `<h3>${visitor.label} · ${inView ? 'in view' : 'outside this view'}</h3><p><b>${FAMILY[visitor.family]}</b><br>Demo observation: ${ROOMS[visitor.room]}<br>Family is illustrative / self-reported in production.<br>${ROOMS[visitor.room]} ${visitor.room === 0 ? 'courtyard' : 'section'} ${visitor.court + 1}. Exact motion is decorative.</p>${inView ? '<div class="nudge" aria-label="Move selected creature"><span>Nudge</span><button data-nudge="left" aria-label="Nudge selected creature left">←</button><button data-nudge="up" aria-label="Nudge selected creature up">↑</button><button data-nudge="down" aria-label="Nudge selected creature down">↓</button><button data-nudge="right" aria-label="Nudge selected creature right">→</button></div>' : ''}`
+  const voiceLabel = document.createElement('p')
+  voiceLabel.className = 'voice-identity'
+  voiceLabel.textContent = `Voice: ${sceneSound.familyLabel(visitor.id)}`
+  $('inspection').append(voiceLabel)
+  const auditions = document.createElement('div')
+  auditions.className = 'voice-auditions'
+  auditions.setAttribute('aria-label', 'Hear this creature')
+  for (const [event, label] of [
+    ['hover', 'Curious'],
+    ['surprise', 'Surprised'],
+    ['drop', 'Delighted']
+  ]) {
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.textContent = label
+    button.dataset.voiceEvent = event
+    button.onclick = () => sceneSound.audition(visitor, event)
+    auditions.append(button)
+  }
+  $('inspection').append(auditions)
   for (const button of $('inspection').querySelectorAll('[data-nudge]'))
     button.onclick = () => {
       const moves = {
@@ -692,6 +728,7 @@ function selectVisitor(visitor) {
 function nudgeVisitor(dx, dy) {
   const actor = actors.find((a) => a.visitor.id === state.selectedId)
   if (!actor || !physics || !state.creatures) return
+  sceneSound.nudge(actor.visitor, actor.x)
   physics.grab(actor.visitor.id)
   physics.move(actor.x + dx / W, actor.y + dy / H)
   physicsActive = physics.step(0)
@@ -704,7 +741,7 @@ function nudgeVisitor(dx, dy) {
 function describeDrop(visitor, drop) {
   $('scene-caption').textContent = drop?.landing
     ? `${visitor.label} settles onto the nearest surface.`
-    : `${visitor.label} moved${drop?.transferred ? ' to another part of the room' : ''}. Nearby bodies respond with gentle collisions.`
+    : `${visitor.label} moved${drop?.transferred ? ' to another area' : ''}. Nearby bodies respond with gentle collisions.`
 }
 function creatureSize() {
   const count = selection?.visible.length ?? 0
@@ -997,6 +1034,7 @@ function frame(now) {
     stepMotion(actors, dt, elapsed)
     if (physicsActive) physicsActive = physics.step(dt)
   }
+  sceneSound.tick()
   draw()
   if (!state.paused) requestFrame()
 }
@@ -1079,6 +1117,7 @@ for (const button of document.querySelectorAll('[data-count]'))
   button.onclick = () => changePopulation(button.dataset.count)
 $('pause').onclick = () => {
   state.paused = !state.paused
+  sceneSound.pausedChanged()
   lastTime = 0
   renderControls()
   draw()
@@ -1087,6 +1126,8 @@ $('pause').onclick = () => {
 for (const name of ['scenery', 'creatures', 'effects', 'occlusion', 'guides'])
   $(name).onchange = (e) => {
     state[name] = e.target.checked
+    if (name === 'creatures' || name === 'scenery')
+      sceneSound.resetInteraction()
     renderControls()
     renderInspection()
     draw()
@@ -1147,7 +1188,7 @@ function settleWhenPaused() {
     for (let i = 0; i < 80 && physicsActive; i++)
       physicsActive = physics.step(1 / 60)
 }
-function finishDrag() {
+function finishDrag(event) {
   if (!grabOffset) return
   const held = population.find((v) => v.id === physics?.heldId)
   const pointerId = grabOffset.pointerId
@@ -1157,7 +1198,15 @@ function finishDrag() {
   canvas.style.cursor = 'grab'
   grabOffset = null
   settleWhenPaused()
-  if (held) describeDrop(held, drop)
+  if (held) {
+    describeDrop(held, drop)
+    const actor = actors.find((item) => item.visitor.id === held.id)
+    sceneSound.release(
+      held,
+      { x: actor?.x ?? 0.5, y: actor?.y ?? 0.5 },
+      event?.type !== 'pointerup'
+    )
+  }
   renderInspection()
   draw()
   requestFrame()
@@ -1166,10 +1215,14 @@ canvas.addEventListener('pointerdown', (event) => {
   if (event.button !== 0 || grabOffset || !physics) return
   const point = canvasPoint(event),
     hit = hitAt(point)
-  if (!hit) return
+  if (!hit) {
+    sceneSound.touchScene(sceneSoundPoint(point))
+    return
+  }
   const actor = actors.find((a) => a.visitor.id === hit.visitor.id)
   if (!actor || !physics.grab(actor.visitor.id)) return
   state.selectedId = actor.visitor.id
+  sceneSound.pickup(actor.visitor, sceneSoundPoint(point))
   grabOffset = {
     pointerId: event.pointerId,
     x: actor.x - (point.x - transform.x) / transform.scale / W,
@@ -1187,6 +1240,8 @@ canvas.addEventListener('pointerdown', (event) => {
 canvas.addEventListener('pointermove', (event) => {
   const point = canvasPoint(event)
   if (grabOffset && event.pointerId === grabOffset.pointerId) {
+    const held = population.find((visitor) => visitor.id === physics.heldId)
+    if (held) sceneSound.drag(held, sceneSoundPoint(point))
     physics.move(
       (point.x - transform.x) / transform.scale / W + grabOffset.x,
       (point.y - transform.y) / transform.scale / H + grabOffset.y
@@ -1197,8 +1252,17 @@ canvas.addEventListener('pointermove', (event) => {
     requestFrame()
     return
   }
-  canvas.style.cursor = hitAt(point) ? 'grab' : 'default'
+  const hit = hitAt(point)
+  const soundTarget = sceneSound.pointerHover(sceneSoundPoint(point), hit)
+  canvas.style.cursor = hit ? 'grab' : soundTarget ? 'pointer' : 'default'
 })
+function sceneSoundPoint(point) {
+  return {
+    x: (point.x - transform.x) / transform.scale / W,
+    y: (point.y - transform.y) / transform.scale / H
+  }
+}
+canvas.addEventListener('pointerleave', () => sceneSound.leave())
 canvas.addEventListener('pointerup', finishDrag)
 canvas.addEventListener('pointercancel', finishDrag)
 canvas.addEventListener('lostpointercapture', () => {
@@ -1207,16 +1271,34 @@ canvas.addEventListener('lostpointercapture', () => {
 reduced.addEventListener('change', (event) => {
   if (event.matches) {
     state.paused = true
+    sceneSound.pausedChanged()
     renderControls()
     draw()
   }
 })
 document.addEventListener('visibilitychange', () => {
+  if (document.hidden && grabOffset) finishDrag()
+  sceneSound.visibilityChanged()
   lastTime = 0
   if (document.hidden) {
     cancelAnimationFrame(scheduled)
     scheduled = 0
   } else requestFrame()
+})
+window.addEventListener('pagehide', (event) => {
+  if (grabOffset) finishDrag()
+  if (event.persisted) sceneSound.suspendPage()
+  else {
+    soundReview.destroy()
+    sceneSound.dispose()
+  }
+})
+window.addEventListener('pageshow', (event) => {
+  if (!event.persisted) return
+  sceneSound.setExclusions(soundReview.getExclusions())
+  sceneSound.visibilityChanged()
+  lastTime = 0
+  requestFrame()
 })
 new ResizeObserver(resize).observe(canvas)
 window.addEventListener('resize', () => updateSelection())
