@@ -1,6 +1,6 @@
 # Approved Git history purge inventory
 
-**Status: approved and purged locally on 2026-09-15. Remote force push pending explicit approval.** All 476 paths were removed from reachable Git commits and local snapshot trees. The application tree was verified unchanged.
+**Status: approved and purged locally on 2026-09-15. Rewritten remote `main` published with explicit user approval and a lease-protected force push.** All 476 paths were removed from reachable Git commits and local snapshot trees. The application tree was verified unchanged.
 
 476 exact historical paths are recorded below, including 474 unique blob revisions totalling 368.7 MiB uncompressed. This is not a prediction of compressed Git savings. Shared retained audio blobs remain reachable through their new public paths.
 
