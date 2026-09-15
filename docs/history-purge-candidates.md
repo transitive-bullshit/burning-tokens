@@ -1,14 +1,14 @@
-# Proposed Git history purge
+# Approved Git history purge inventory
 
-**Status: review only. Nothing has been purged from history or force-pushed.**
+**Status: approved and purged locally on 2026-09-15. Remote force push pending explicit approval.** All 476 paths were removed from reachable Git commits and local snapshot trees. The application tree was verified unchanged.
 
-476 exact historical paths are proposed below, including 474 unique blob revisions totalling 368.7 MiB uncompressed. This is not a prediction of compressed Git savings. Shared retained audio blobs remain reachable through their new public paths.
+476 exact historical paths are recorded below, including 474 unique blob revisions totalling 368.7 MiB uncompressed. This is not a prediction of compressed Git savings. Shared retained audio blobs remain reachable through their new public paths.
 
 Scope: only media and standalone HTML exports in old exploration directories. Current app files, `public/`, canonical documents, research PDF, licenses, and lightweight historical source/metadata are excluded.
 
 Every current original was backed up under `work/promotion-backup/docs/`; the full original history is recoverable from `work/promotion-backup/before-promotion.bundle`. Remaining historical documents were moved under `work/promotion-backup/remaining-exploration/docs/`. Historical-only versions are in the bundle.
 
-Approval can cover all four groups, selected groups, or exact paths. The replacement group removes redundant old paths, not the retained app files listed alongside them.
+The user approved all four groups. The replacement group removes redundant old paths, not the retained app files listed alongside them. All 474 distinct blob versions were extracted and hash-verified under `work/promotion-backup/historical-blobs/`; `verified-historical-backups.json` maps paths to those versions. `before-history-purge.bundle` also preserves the complete pre-purge history including the application migration commit.
 
 ## Deprecated artwork, branding directions and exports
 

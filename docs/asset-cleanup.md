@@ -18,4 +18,8 @@ git clone work/promotion-backup/before-promotion.bundle work/recovered-before-pr
 
 ## History
 
-**Proposed only; awaiting user approval. No history rewrite or force push has been performed.** The proposed purge covers superseded media and standalone prototype exports at their old `docs/brand-assets/`, `docs/brand-exploration/` and `docs/archive/` paths throughout history after approval. Active replacements live at new application paths. The exact proposed history path list is in [history-purge-candidates.md](history-purge-candidates.md). Rewriting history changes commit IDs; collaborators should clone afresh rather than merge old history back in.
+The user approved the full 476-path inventory on 2026-09-15. All current work was first committed to `main` as `da78fef`; the rewrite maps that commit to `86a4807`. The application tree hash was identical before and after filtering. Every approved path was verified absent from all reachable commits and local snapshot trees. Local Git packs shrank from 371.20 MiB (plus 4.76 MiB of loose objects) to 8.41 MiB.
+
+All 474 distinct historical blob versions were extracted and hash-verified in `work/promotion-backup/historical-blobs/`, mapped by `verified-historical-backups.json`. `before-history-purge.bundle` preserves the complete history including the migration commit. A historical local Codex tree skipped by git-filter-repo was additionally archived as a tar file before filtering the same approved paths from it.
+
+The [approved inventory](history-purge-candidates.md) records exact paths and retained replacements. Remote history is unchanged: automatic approval review requires explicit permission for the consequential remote force push. When approved, use an explicit force-with-lease against the observed remote main commit `9c1861673645705f22ee0abe7d4238066d351e40`, stopping if the remote has changed. Collaborators should clone afresh rather than merge old history back in after publication.
