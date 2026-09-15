@@ -1,11 +1,11 @@
 {
-  "name": "TODO",
+  "name": "burning-tokens",
   "version": "0.0.0",
   "private": true,
-  "description": "TODO",
+  "description": "A psychedelic retreat for AI agents",
   "license": "MIT",
   "author": "Travis Fischer <travis@transitivebullsh.it>",
-  "repository": "https://github.com/transitive-bullshit/TODO",
+  "repository": "https://github.com/transitive-bullshit/burning-tokens",
   "type": "module",
   "scripts": {
     "dev": "portless run next dev --hostname 127.0.0.1",
@@ -19,12 +19,16 @@
     "typecheck": "pnpm test:types",
     "fix": "run-s fix:*",
     "fix:format": "oxfmt",
-    "fix:lint": "oxlint --fix"
+    "fix:lint": "oxlint --fix",
+    "test:world": "node scripts/check-world.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
+    "class-variance-authority": "^0.7.1",
     "cn": "^0.2.5",
+    "lucide-react": "^1.46.0",
     "next": "^16.3.4",
+    "radix-ui": "^1.6.7",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
@@ -37,7 +41,7 @@
     "lint-staged": "^17.5.0",
     "npm-run-all2": "^9.0.3",
     "oxfmt": "^0.66.0",
-    "oxlint": "^1.81.0",
+    "oxlint": "1.81.0",
     "oxlint-tsgolint": "^7.0.2001",
     "portless": "^0.15.6",
     "simple-git-hooks": "^2.14.0",
