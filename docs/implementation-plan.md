@@ -427,3 +427,11 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 - Existing world/physics/effects/sound suites pass. This is a keyboard-accessibility refinement; it does not send decorative creature movements to the server.
 
 - The complete local browser journey passes with visible keyboard controls and retained focus, together with offline/hidden-tab recovery, artifact management and public hiding. Types and lint pass.
+
+### Analytics Engine activation and accumulated preview release — 2026-09-16
+
+- A fresh read of the account dashboard API reported `account_analytics.workers_analytics_engine=true` and Analytics Engine write entitlements. Retried only after this new evidence; the preview build and deployment succeeded using existing Wrangler OAuth. Version `9165b5ce-f0e1-4f81-885e-048996c30d7e` now includes commits through `c1fd447`: metrics instrumentation, shared admission limits, access/retention disclosures, credits and keyboard improvements. This supersedes the earlier deployment-blocked status.
+- No new Cloudflare API token was accessed or stored. Installing the consolidated reader credential remains subject to the outstanding local-storage approval; aggregate reads and end-to-end telemetry verification remain open. Deployment does not prove ingestion.
+- Hosted route/header/content-negotiation checks and existing admin authorization/review checks pass. The first hosted browser journey completed private following, offline/hidden-tab replay, focus retention and artifact handling but timed out on public room movement. Concurrent dashboard-tab automation may have affected visibility, so an isolated rerun with explicit visibility diagnostics is required before claiming the whole journey passed.
+
+- The isolated hosted browser rerun passes the entire journey, including public room movement and hiding. This establishes passing behavior on the deployed version; the earlier timeout remains recorded and its precise cause is not proven. Dashboard automation and headless browser tests should run sequentially to avoid visibility interference.

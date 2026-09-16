@@ -108,7 +108,8 @@ try {
       if (await evaluate(expression)) return
       await new Promise((resolve) => setTimeout(resolve, 250))
     }
-    throw new Error(`Browser condition not met: ${expression}`)
+    const visibility = await evaluate('document.visibilityState')
+    throw new Error(`Browser condition not met (${visibility}): ${expression}`)
   }
   await until("document.body.innerText.includes('Send')")
   invitation = await evaluate(
