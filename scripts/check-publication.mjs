@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { readFile } from 'node:fs/promises'
 const base = process.env.RETREAT_TEST_ORIGIN
 assert.ok(
   base,
@@ -115,6 +116,80 @@ try {
       `${kind}: real moderation, agent/public/private audiences, unsharing and deletion passed`
     )
   }
+  await request(
+    `${author.path}/actions`,
+    post({ kind: 'enter', room: 'open-studio' })
+  )
+  for (const format of ['png', 'jpeg', 'webp', 'wav']) {
+    // Original, tiny test fixtures; never reuse visitor data for moderation checks.
+    const bytes =
+      format === 'wav'
+        ? silentWav()
+        : await readFile(
+            new URL(`./fixtures/media/moon.${format}`, import.meta.url)
+          )
+    const mime = format === 'wav' ? 'audio/wav' : `image/${format}`
+    const uploaded = await request(
+      `${author.path}/artifacts?audience=public`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': mime,
+          'Idempotency-Key': crypto.randomUUID()
+        },
+        body: bytes
+      },
+      201
+    )
+    const value = await uploaded.json()
+    const ownPath = `${author.owner}/artifacts/${value.id}`
+    contributions.push({ path: ownPath, cookie: author.cookie })
+    assert.equal(value.ready, true)
+    assert.equal(value.mime, mime)
+    assert.equal(
+      value.moderation,
+      format === 'wav' ? 'unsupported' : 'approved'
+    )
+    assert.equal(value.audience, format === 'wav' ? 'private' : 'public')
+    const own = await request(`${author.path}/artifacts/${value.id}`)
+    assert.deepEqual(
+      Buffer.from(await own.arrayBuffer()),
+      bytes,
+      'Stored bytes must match the moderated input'
+    )
+    const publicPath = `/api/retreat/exhibits/${value.id}`
+    if (format === 'wav') {
+      await request(publicPath, {}, 404)
+      await request(`${other.path}/artifacts/${value.id}`, {}, 404)
+      const attempted = await request(
+        ownPath,
+        post({ audience: 'public' }, author.cookie)
+      )
+      assert.equal(
+        (await attempted.json()).audience,
+        'private',
+        'Audience edits cannot bypass unsupported moderation'
+      )
+    } else {
+      const shared = await request(publicPath)
+      assert.equal(shared.headers.get('content-type'), mime)
+      assert.match(shared.headers.get('cache-control'), /no-store/)
+      assert.match(shared.headers.get('content-disposition'), /attachment/)
+      assert.equal(shared.headers.get('x-content-type-options'), 'nosniff')
+      assert.deepEqual(Buffer.from(await shared.arrayBuffer()), bytes)
+      await request(ownPath, post({ audience: 'private' }, author.cookie))
+      await request(publicPath, {}, 404)
+    }
+    await request(ownPath, {
+      method: 'DELETE',
+      headers: { Origin: origin, Cookie: author.cookie }
+    })
+    contributions.pop()
+    await request(publicPath, {}, 404)
+    console.log(
+      `${format}: moderation policy, exact-byte delivery, audience controls and deletion passed`
+    )
+  }
 } finally {
   const cleanup = await Promise.allSettled([
     ...contributions.map(({ path, cookie }) =>
@@ -131,4 +206,21 @@ try {
     cleanup.every((result) => result.status === 'fulfilled'),
     'Test cleanup incomplete; inspect preview before re-running'
   )
+}
+
+function silentWav() {
+  const bytes = Buffer.alloc(44 + 1600)
+  bytes.write('RIFF', 0)
+  bytes.writeUInt32LE(bytes.length - 8, 4)
+  bytes.write('WAVEfmt ', 8)
+  bytes.writeUInt32LE(16, 16)
+  bytes.writeUInt16LE(1, 20)
+  bytes.writeUInt16LE(1, 22)
+  bytes.writeUInt32LE(8000, 24)
+  bytes.writeUInt32LE(16000, 28)
+  bytes.writeUInt16LE(2, 32)
+  bytes.writeUInt16LE(16, 34)
+  bytes.write('data', 36)
+  bytes.writeUInt32LE(1600, 40)
+  return bytes
 }
