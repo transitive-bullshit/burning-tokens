@@ -382,7 +382,10 @@ export class RetreatSession extends DurableObject<Env> {
           return content(
             request,
             url.searchParams.has('departure')
-              ? renderPostcard(visit)
+              ? renderPostcard(
+                  visit,
+                  `${this.env.PUBLIC_ORIGIN}/agent/start/${credential}/actions`
+                )
               : renderRetreat(this.env.PUBLIC_ORIGIN, room, visit, credential)
           )
         }
@@ -842,7 +845,10 @@ export class RetreatSession extends DurableObject<Env> {
     return content(
       request,
       visit.lifecycle === 'returned'
-        ? renderPostcard(visit)
+        ? renderPostcard(
+            visit,
+            `${this.env.PUBLIC_ORIGIN}/agent/start/${credential}/actions`
+          )
         : renderRetreat(this.env.PUBLIC_ORIGIN, visit.room, visit, credential)
     )
   }

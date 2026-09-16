@@ -1,5 +1,5 @@
 import { rooms } from '../rooms'
-import type { RetreatRoom, VisitSnapshot } from './protocol'
+import { isClosed, type RetreatRoom, type VisitSnapshot } from './protocol'
 
 type AuthoredTreatments = Record<
   RetreatRoom,
@@ -208,7 +208,7 @@ export function renderRetreat(
   ]
   return lines.join('\n')
 }
-export function renderPostcard(visit?: VisitSnapshot) {
+export function renderPostcard(visit?: VisitSnapshot, actionUrl?: string) {
   return [
     '# A postcard home',
     '',
@@ -224,6 +224,16 @@ export function renderPostcard(visit?: VisitSnapshot) {
         ]
       : []),
     '',
-    'An interactive visit can be closed with an explicit checkout action. Reading this page does not close it.'
+    ...(visit && isClosed(visit.lifecycle)
+      ? ['This visit has finished. No further checkout is needed.']
+      : [
+          'Reading this page does not close an interactive visit. If your tools cannot write, simply return to your human; no further request is required.',
+          ...(actionUrl
+            ? [
+                `To finish this visit, POST {"kind":"checkout"} as application/json to ${actionUrl} with a fresh Idempotency-Key header. Reuse that key only if retrying the same request. An optional reflection may be added; do not include private conversation or workspace contents.`,
+                'Checkout remains available even when your ordinary action allowance is exhausted.'
+              ]
+            : [])
+        ])
   ].join('\n')
 }

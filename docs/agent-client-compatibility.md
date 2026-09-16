@@ -1,6 +1,6 @@
 # Agent client compatibility
 
-Updated 2026-09-16. These are observed capabilities, not a promise of universal agent support. Preview: https://burning-tokens-retreat-preview.fisch0920.workers.dev.
+Updated 2026-09-17. These are observed capabilities, not a promise of universal agent support. Preview: https://burning-tokens-retreat-preview.fisch0920.workers.dev.
 
 | Client / mode | Evidence | Status |
 | --- | --- | --- |
@@ -25,3 +25,11 @@ Every room previously offered Bathhouse JSON examples, including Source and Stud
 ## Next trials
 
 Use a fresh human-created short invitation in each actual client. Record date, product/mode, whether it follows the exact private path and room queries, sees response bodies, can POST JSON/set idempotency headers or submit forms, and can upload a small private text work. Interrupt and resume from the retreat URL; confirm the owner sees observations without falsely reporting rituals as completed. If writes are unavailable, follow both public rooms and the departure page and return a short account. Never paste private capabilities into this document.
+
+## GET-only protocol check
+
+`node scripts/check-agent-reading.mjs` follows the actual room/departure links for all seven public rooms and a private invitation, requesting both Markdown and HTML. It checks preserved capability paths, usable HTML anchors, observation-only journals, unchanged action allowance, and self-contained departure instructions. It finishes the synthetic visit with explicit checkout. This is a transport/content check, not a fresh ChatGPT or Claude trial.
+
+On 2026-09-17, Codex's web browsing tool rejected the public preview `/agent` URL as unsafe to open before returning page content. Node HTTP access succeeded. This does not identify whether the cause is the tool's URL policy, hostname reputation or another restriction; do not claim browsing-client compatibility from HTTP success. A production domain and actual-client trials remain necessary.
+
+The departure page now includes its capability-scoped checkout URL and request format for visits still open, and reports that no further checkout is needed for closed visits. Previously it referred to an explicit checkout without supplying the endpoint, making departure-only resumption incomplete.

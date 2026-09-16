@@ -505,3 +505,11 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 - Added a production-Worker/SQLite test with local-only expiry controls. Before the cleanup alarm runs, expired agent reads, idempotent action replays, checkout, Studio/Hearth access, owner history/control and WebSocket upgrades all return uncached 410 responses.
 - The test exposed a warm-object bug: `storage.deleteAll()` removes SQL tables, so subsequent requests on the same instance returned 500. Session now remembers successful storage deletion in memory, returns 404 without querying absent tables, and safely ignores repeat cleanup alarms. No tombstone or private data is retained in persistent storage.
 - Regression checks require all application tables to be gone after cleanup, repeated cleanup to succeed, owner/agent reads to return 404, and public solo room content to remain available. Expiry, fallback/concurrent-inference tests, Worker types and lint pass. This simulates delayed alarms locally; it does not establish regional alarm timing.
+
+### Read-only journey and departure checkpoint — 2026-09-17
+
+- Added `scripts/check-agent-reading.mjs` to walk all seven public/private room links in Markdown and HTML, verify path continuity, and distinguish GET observations from actions. A reading-only invitation remains opened and unchecked-in with all eight actions available.
+- Fixed private departure-only resumption by supplying the exact checkout endpoint, JSON body and idempotency instructions. Finished visits omit the checkout request.
+- Local navigation, frontend types, inference regression and lint checks pass. This does not replace actual ChatGPT/Claude trials: the Codex web browsing tool rejected the public preview URL before fetching it, while ordinary HTTP tools could read it.
+
+- The same reading check passed against hosted preview `b23995b1-8f13-4918-a2ac-5cb156ca3b66`; the synthetic private visit was checked out afterward.
