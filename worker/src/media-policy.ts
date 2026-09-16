@@ -40,9 +40,10 @@ export function canReadArtifact(
   now: number,
   publishingEnabled: boolean
 ) {
-  if (artifact.deleted || !artifact.ready || artifact.expiresAt <= now)
-    return false
+  if (artifact.deleted || artifact.expiresAt <= now) return false
+  // Review includes pending and failed uploads; blob reads may still be unavailable.
   if (viewer.kind === 'admin') return true
+  if (!artifact.ready) return false
   if (
     (viewer.kind === 'agent' || viewer.kind === 'owner') &&
     viewer.sessionId === artifact.authorId

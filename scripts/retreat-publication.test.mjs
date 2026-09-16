@@ -19,6 +19,7 @@ const bundled = await build({
 })
 let authorizationGate
 let authorizationFailure = false
+let moderationFlagged = false
 let moderationGate
 function holdModeration() {
   let release, started
@@ -60,7 +61,8 @@ const runtime = new Miniflare(
           PUBLIC_ORIGIN: 'https://test.example',
           PUBLISHING_ENABLED: 'true',
           TYPESAFE_ENABLED: 'false',
-          OPENAI_API_KEY: 'test-only-not-a-secret'
+          OPENAI_API_KEY: 'test-only-not-a-secret',
+          STUDIO_ADMIN_KEY: 'test-only-admin-key'
         },
         outboundService: async (request) => {
           if (
@@ -83,7 +85,7 @@ const runtime = new Miniflare(
           }
           return Response.json({
             model: 'fixture-moderation',
-            results: [{ flagged: false }]
+            results: [{ flagged: moderationFlagged }]
           })
         }
       }
@@ -144,6 +146,91 @@ async function visitor(room) {
   }
 }
 try {
+  await test('administrator browser sessions are scoped, read-only and rate-limited', async () => {
+    const sessionPath = '/api/retreat/admin/session'
+    assert.equal((await request('/api/retreat/admin/artifacts')).status, 403)
+    const crossOrigin = post({ key: 'test-only-admin-key' })
+    crossOrigin.headers.Origin = 'https://elsewhere.example'
+    assert.equal((await request(sessionPath, crossOrigin)).status, 403)
+    assert.equal(
+      (await request(sessionPath, post({ key: 'wrong' }))).status,
+      403
+    )
+    const login = await request(
+      sessionPath,
+      post({ key: 'test-only-admin-key' })
+    )
+    assert.equal(login.status, 200)
+    const setCookie = login.headers.get('set-cookie')
+    for (const flag of [
+      'HttpOnly',
+      'Secure',
+      'SameSite=Strict',
+      'Path=/api/retreat/admin',
+      'Max-Age=1800'
+    ])
+      assert.ok(setCookie.includes(flag))
+    assert.equal(login.headers.get('cache-control'), 'no-store')
+    const admin = setCookie.split(';')[0]
+    assert.equal(
+      (await request(sessionPath, { headers: { Cookie: admin } })).status,
+      200
+    )
+    const v = await visitor('open-studio')
+    moderationFlagged = true
+    let work
+    try {
+      work = await (await v.upload()).json()
+    } finally {
+      moderationFlagged = false
+    }
+    assert.equal(work.moderation, 'rejected')
+    assert.equal(work.audience, 'private')
+    assert.equal(
+      (await request(`/api/retreat/exhibits/${work.id}`)).status,
+      404
+    )
+    const reviewed = await request(`/api/retreat/admin/artifacts/${work.id}`, {
+      headers: { Cookie: admin }
+    })
+    assert.equal(reviewed.status, 200)
+    assert.equal(await reviewed.text(), 'A public clay moon.')
+    assert.equal(
+      (
+        await request(
+          `/api/retreat/admin/artifacts/${work.id}`,
+          post({ audience: 'public' }, admin)
+        )
+      ).status,
+      405
+    )
+    assert.equal(
+      (await request(v.owner, { headers: { Cookie: admin } })).status,
+      403
+    )
+    const tampered = admin.slice(0, -1) + (admin.endsWith('a') ? 'b' : 'a')
+    assert.equal(
+      (await request(sessionPath, { headers: { Cookie: tampered } })).status,
+      403
+    )
+    const logout = await request(sessionPath, {
+      method: 'DELETE',
+      headers: { Origin: 'https://test.example', Cookie: admin }
+    })
+    assert.equal(logout.status, 200)
+    assert.match(logout.headers.get('set-cookie'), /Max-Age=0/)
+    assert.equal((await request(sessionPath)).status, 403)
+    for (let i = 0; i < 18; i++)
+      assert.equal(
+        (await request(sessionPath, post({ key: 'wrong' }))).status,
+        403
+      )
+    assert.equal(
+      (await request(sessionPath, post({ key: 'test-only-admin-key' }))).status,
+      429
+    )
+    await v.close()
+  })
   await test('approved publication is committed in the Session journal before being shared', async () => {
     const v = await visitor('open-studio')
     const response = await v.upload()

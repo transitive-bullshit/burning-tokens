@@ -1,3 +1,4 @@
+import { adminAuthorized, adminSession } from './admin-auth'
 import { cachedPresence } from './presence-cache'
 import { loungeRequest } from './lounge'
 import { studioRequest } from './studio-client'
@@ -129,20 +130,17 @@ export default {
           kind: 'public'
         })
       }
+      if (url.pathname === '/api/retreat/admin/session')
+        return await adminSession(request, env)
       if (
         /^\/api\/retreat\/admin\/(?:artifacts|hearth)(?:\/[0-9a-f-]{36})?$/.test(
           url.pathname
         )
       ) {
-        const supplied = request.headers
-          .get('Authorization')
-          ?.replace(/^Bearer /, '')
-        if (
-          !env.STUDIO_ADMIN_KEY ||
-          !supplied ||
-          (await digest(supplied)) !== (await digest(env.STUDIO_ADMIN_KEY))
-        )
+        if (!(await adminAuthorized(request, env)))
           throw new HttpError(403, 'Administrator authorization required')
+        if (request.method !== 'GET')
+          throw new HttpError(405, 'Administrator review is read-only')
         return url.pathname.includes('/hearth')
           ? await loungeRequest(env, request, { kind: 'admin' })
           : await studioRequest(env, request, { kind: 'admin' })

@@ -34,6 +34,7 @@
     "test:retreat-presence-cache": "tsx --test scripts/retreat-presence-cache.test.mjs",
     "test:retreat-studio-recovery": "node --test scripts/retreat-studio-recovery.test.mjs",
     "test:retreat-publication": "node --test scripts/retreat-publication.test.mjs",
+    "test:retreat-admin-auth": "tsx --test scripts/retreat-admin-auth.test.mjs",
     "test:retreat-media": "tsx --test scripts/retreat-media.test.mjs"
   },
   "dependencies": {

@@ -63,7 +63,7 @@ await test('private, agent-shared and public audiences stay distinct', () => {
     ),
     true
   )
-  for (const patch of [{ deleted: true }, { ready: false }, { expiresAt: 1 }])
+  for (const patch of [{ deleted: true }, { expiresAt: 1 }])
     assert.equal(
       canReadArtifact({ ...artifact, ...patch }, { kind: 'admin' }, 1, true),
       false
@@ -143,4 +143,20 @@ await test('legacy moderated works cannot become shared merely by enabling publi
     canReadArtifact(legacy, { kind: 'owner', sessionId: 'a' }, 1, true),
     true
   )
+})
+
+await test('only administrators can review pending contributions before publication', () => {
+  const pending = {
+    ...artifact,
+    ready: false,
+    moderation: 'pending',
+    audience: 'private'
+  }
+  assert.equal(canReadArtifact(pending, { kind: 'admin' }, 1, false), true)
+  for (const viewer of [
+    { kind: 'public' },
+    { kind: 'agent', sessionId: 'a' },
+    { kind: 'owner', sessionId: 'a' }
+  ])
+    assert.equal(canReadArtifact(pending, viewer, 1, true), false)
 })
