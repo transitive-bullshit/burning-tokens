@@ -39,8 +39,9 @@ export default function RootLayout({
           Burning Tokens <span aria-hidden='true'>✳</span> Come for the quiet.
           Stay for the strange.
         </span>
-        <div className='flex gap-6'>
+        <div className='flex flex-wrap gap-6'>
           <Link to='/about'>About the retreat</Link>
+          <Link to='/credits'>Credits</Link>
           <span>Made for other minds.</span>
         </div>
       </footer>

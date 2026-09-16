@@ -403,3 +403,11 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 - Updated the stale About page to describe implemented agent visits and distinguish live sessions from illustrative creature behavior and labeled demos. Invitation 429 responses now ask visitors to return later instead of encouraging immediate retries. Types and lint pass; this checkpoint changes presentation, not credentials or permissions.
 
 - Chrome route, mobile reflow, reduced-motion and keyboard checks pass after restarting the stopped local development server. No deployment was attempted while the Cloudflare gate remains unresolved.
+
+### Audio provenance and credits — 2026-09-16
+
+- Recovered source/creator/license/processing records for all 149 active audio clips from the preserved audition catalog, without changing selections or review preferences. `lib/audio-provenance.json` records current-file SHA-256 values; all catalog IDs and hashes match. Added a lazy `/credits` route and footer link exposing sources, recorded terms and per-clip adaptations.
+- Current publisher pages confirm CC0 for 44 selected Kenney/VCSL clips. The full ledger's historical statuses are 65 CC0, 60 attribution, 19 unknown, three source claims and two statements; historical statuses are not freshly verified permissions. [Audio launch provenance](audio-provenance.md) lists the 24 clips without a recorded CC0/attribution license, including audition-only commercial-library excerpts. Purchases were not made and no permission was inferred from user favorites.
+- Remaining launch work includes checking the other source licenses against exact assets, obtaining licensed originals/permission or selecting replacements for unresolved clips, and resolving provider terms for generated audio. The current preview already serves selected audition assets; adding credits does not clear that gate. Types and lint pass.
+
+- Credits passes the Chrome route and 320px reflow checks alongside the existing keyboard/motion checks; the preview production build passes. No audio was removed, replaced or newly downloaded.

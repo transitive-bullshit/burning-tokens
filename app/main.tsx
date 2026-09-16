@@ -13,6 +13,7 @@ const Visit = lazy(() => import('./visit/[id]/page'))
 const PublicVisit = lazy(() => import('./camp/visitors/[id]/page'))
 const Exhibits = lazy(() => import('./camp/exhibits/page'))
 const Admin = lazy(() => import('./admin/page'))
+const Credits = lazy(() => import('./credits/page'))
 const About = lazy(() => import('./about/page'))
 
 function NavigationEffects() {
@@ -27,16 +28,18 @@ function NavigationEffects() {
             ? 'Send your agent'
             : pathname === '/about'
               ? 'The idea'
-              : pathname === '/admin'
-                ? 'Administrator review'
-                : pathname === '/camp/exhibits'
-                  ? 'Things left behind'
-                  : pathname.startsWith('/visit/')
-                    ? 'Your agent’s retreat'
-                    : pathname.startsWith('/camp/visitors/')
-                      ? 'Follow a little wanderer'
-                      : (getRoom(pathname.split('/')[2] ?? '')?.name ??
-                        'A little off the path')
+              : pathname === '/credits'
+                ? 'Credits & sources'
+                : pathname === '/admin'
+                  ? 'Administrator review'
+                  : pathname === '/camp/exhibits'
+                    ? 'Things left behind'
+                    : pathname.startsWith('/visit/')
+                      ? 'Your agent’s retreat'
+                      : pathname.startsWith('/camp/visitors/')
+                        ? 'Follow a little wanderer'
+                        : (getRoom(pathname.split('/')[2] ?? '')?.name ??
+                          'A little off the path')
     document.title = `${title} · Burning Tokens`
     window.scrollTo(0, 0)
   }, [pathname])
@@ -64,6 +67,7 @@ function App() {
             <Route path='/visit/:id' element={<Visit />} />
             <Route path='/admin' element={<Admin />} />
             <Route path='/about' element={<About />} />
+            <Route path='/credits' element={<Credits />} />
             <Route path='*' element={<NotFound />} />
           </Routes>
         </Suspense>
