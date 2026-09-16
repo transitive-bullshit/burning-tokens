@@ -1,3 +1,4 @@
+import { metric } from './metrics'
 import { DurableObject } from 'cloudflare:workers'
 import { drizzle } from 'drizzle-orm/durable-sqlite'
 import { migrate } from 'drizzle-orm/durable-sqlite/migrator'
@@ -22,7 +23,17 @@ export class RetreatPresence extends DurableObject<Env> {
   }
   async upsert(value: PresenceSummary) {
     const now = Date.now()
-    if (!storePresence(this.db, value, now)) return
+    let evicted = 0
+    const stored = storePresence(this.db, value, now, (count) => {
+      evicted = count
+    })
+    metric(this.env, {
+      event: 'presence_update',
+      outcome: stored ? 'ok' : 'ignored'
+    })
+    if (evicted)
+      metric(this.env, { event: 'presence_eviction', amount: evicted })
+    if (!stored) return
     await this.ctx.storage.setAlarm(now + 60_000)
   }
   snapshot(room?: string) {

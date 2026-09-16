@@ -14,7 +14,8 @@
     "TYPESAFE_MODEL": "jev-latest",
     "TYPESAFE_DAILY_CALL_LIMIT": "1000",
     "TYPESAFE_DAILY_INPUT_LIMIT": "2000000",
-    "PUBLISHING_ENABLED": "false"
+    "PUBLISHING_ENABLED": "false",
+    "METRICS_ENABLED": "false"
   },
   "durable_objects": {
     "bindings": [
@@ -72,7 +73,10 @@
         "TYPESAFE_MODEL": "jev-latest",
         "TYPESAFE_DAILY_CALL_LIMIT": "1000",
         "TYPESAFE_DAILY_INPUT_LIMIT": "2000000",
-        "PUBLISHING_ENABLED": "true"
+        "PUBLISHING_ENABLED": "true",
+        "METRICS_ENABLED": "true",
+        "ANALYTICS_ACCOUNT_ID": "02b82b855bb1ee1f14bf68e5870aff82",
+        "ANALYTICS_DATASET": "burning_tokens_metrics_preview"
       },
       "durable_objects": {
         "bindings": [
@@ -102,6 +106,12 @@
         {
           "binding": "MEDIA",
           "bucket_name": "burning-tokens-studio-preview"
+        }
+      ],
+      "analytics_engine_datasets": [
+        {
+          "binding": "METRICS",
+          "dataset": "burning_tokens_metrics_preview"
         }
       ]
     }

@@ -9,7 +9,8 @@ export const PRESENCE_CAPACITY = 10_000
 export function storePresence(
   db: DrizzleSqliteDODatabase,
   value: PresenceSummary,
-  now: number
+  now: number,
+  onEviction?: (count: number) => void
 ): boolean {
   if (value.expiresAt <= now) return false
   return db.transaction((tx) => {
@@ -59,6 +60,7 @@ export function storePresence(
         )
         .limit(count - PRESENCE_CAPACITY)
         .all()
+      onEviction?.(evicted.length)
       const watermark = Math.max(
         admission.watermark,
         ...evicted.map((entry) => entry.value.presenceChangedAt ?? 0)

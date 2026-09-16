@@ -1,3 +1,4 @@
+import { metric } from './metrics'
 import { DurableObject } from 'cloudflare:workers'
 import { z } from 'zod'
 import {
@@ -79,7 +80,7 @@ const answerSchema = z.object({
     .object({ input_tokens: z.number(), output_tokens: z.number() })
     .optional()
 })
-export async function selectVariant(
+async function selectVariantInternal(
   env: Env,
   room: RetreatRoom,
   text: string
@@ -141,6 +142,13 @@ export async function selectVariant(
     parsing = true
     const parsed = answerSchema.parse(await response.json())
     parsing = false
+    if (parsed.usage)
+      metric(env, {
+        event: 'inference_usage',
+        scope: room === 'bathhouse' ? 'bathhouse' : 'source',
+        amount: parsed.usage.input_tokens,
+        extra: parsed.usage.output_tokens
+      })
     await budget.outcome(true)
     const { choice, confidence } = parsed.answers.theme
     return {
@@ -169,5 +177,32 @@ export async function selectVariant(
     }
     if (status !== undefined) decision.httpStatus = status
     return decision
+  }
+}
+
+export async function selectVariant(
+  env: Env,
+  room: RetreatRoom,
+  text: string
+): Promise<VariantDecision> {
+  const started = Date.now()
+  const scope = room === 'bathhouse' || room === 'source' ? room : 'none'
+  try {
+    const decision = await selectVariantInternal(env, room, text)
+    metric(env, {
+      event: 'inference',
+      outcome: decision.serviceFailure ?? decision.reason,
+      scope,
+      durationMs: Date.now() - started
+    })
+    return decision
+  } catch (err) {
+    metric(env, {
+      event: 'inference',
+      outcome: 'error',
+      scope,
+      durationMs: Date.now() - started
+    })
+    throw err
   }
 }

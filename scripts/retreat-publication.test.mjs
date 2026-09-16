@@ -172,6 +172,21 @@ try {
       assert.ok(setCookie.includes(flag))
     assert.equal(login.headers.get('cache-control'), 'no-store')
     const admin = setCookie.split(';')[0]
+    assert.equal((await request('/api/retreat/admin/metrics')).status, 403)
+    assert.equal(
+      (
+        await request('/api/retreat/admin/metrics', {
+          headers: { Cookie: admin }
+        })
+      ).status,
+      503,
+      'missing metrics reader credentials fail closed'
+    )
+    assert.equal(
+      (await request('/api/retreat/admin/metrics', post({}, admin))).status,
+      405
+    )
+
     assert.equal(
       (await request(sessionPath, { headers: { Cookie: admin } })).status,
       200

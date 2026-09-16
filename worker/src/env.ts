@@ -4,6 +4,11 @@ import type { RetreatSession } from './session'
 import type { RetreatPresence } from './presence'
 import type { InferenceBudget } from './inference'
 export interface Env {
+  CLOUDFLARE_API_TOKEN?: string
+  ANALYTICS_ACCOUNT_ID?: string
+  ANALYTICS_DATASET?: string
+  METRICS_ENABLED?: string
+  METRICS?: AnalyticsEngineDataset
   LOUNGE: DurableObjectNamespace<RetreatLounge>
   STUDIO: DurableObjectNamespace<RetreatStudio>
   MEDIA: R2Bucket

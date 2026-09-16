@@ -38,7 +38,8 @@
     "test:retreat-admin-auth": "tsx --test scripts/retreat-admin-auth.test.mjs",
     "test:retreat-media": "tsx --test scripts/retreat-media.test.mjs",
     "build:preview": "CLOUDFLARE_ENV=preview vite build",
-    "test:retreat-inference-diagnostics": "node --test scripts/retreat-inference-diagnostics.test.mjs"
+    "test:retreat-inference-diagnostics": "node --test scripts/retreat-inference-diagnostics.test.mjs",
+    "test:retreat-metrics": "tsx --test scripts/retreat-metrics.test.mjs"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",

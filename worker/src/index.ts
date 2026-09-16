@@ -1,3 +1,5 @@
+import { readMetrics } from './metrics-reader'
+import { metric, requestScope, statusOutcome } from './metrics'
 import { adminAuthorized, adminSession } from './admin-auth'
 import { cachedPresence } from './presence-cache'
 import { loungeRequest } from './lounge'
@@ -32,7 +34,7 @@ export { InferenceBudget } from './inference'
 
 const idPattern =
   /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
-export default {
+const handler = {
   async fetch(
     request: Request,
     env: Env,
@@ -130,6 +132,13 @@ export default {
           kind: 'public'
         })
       }
+      if (url.pathname === '/api/retreat/admin/metrics') {
+        if (!(await adminAuthorized(request, env)))
+          throw new HttpError(403, 'Administrator authorization required')
+        if (request.method !== 'GET')
+          throw new HttpError(405, 'Metrics are read-only')
+        return await readMetrics(env)
+      }
       if (url.pathname === '/api/retreat/admin/session')
         return await adminSession(request, env)
       if (
@@ -194,5 +203,34 @@ export default {
         ? json({ error: err.message }, err.status)
         : json({ error: 'The retreat is temporarily unavailable' }, 503)
     }
+  }
+} satisfies ExportedHandler<Env>
+
+export default {
+  async fetch(
+    request: Request,
+    env: Env,
+    ctx: ExecutionContext
+  ): Promise<Response> {
+    const started = Date.now()
+    let response: Response
+    try {
+      response = await handler.fetch(request, env, ctx)
+    } catch {
+      response = json({ error: 'The retreat is temporarily unavailable' }, 503)
+    }
+    metric(env, {
+      event: 'http',
+      scope: requestScope(new URL(request.url).pathname),
+      outcome: statusOutcome(response.status),
+      durationMs: Date.now() - started
+    })
+    const cache = response.headers.get('X-Retreat-Cache')
+    if (cache)
+      metric(env, {
+        event: 'presence_cache',
+        outcome: cache === 'HIT' ? 'hit' : cache === 'MISS' ? 'miss' : 'bypass'
+      })
+    return response
   }
 } satisfies ExportedHandler<Env>

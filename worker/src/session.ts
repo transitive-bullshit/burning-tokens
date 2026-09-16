@@ -1,3 +1,4 @@
+import { metric } from './metrics'
 import { VisitStream } from './visit-stream'
 import { hearthMessageSchema } from '../../lib/retreat/hearth'
 import { loungeRequest } from './lounge'
@@ -70,6 +71,7 @@ export class RetreatSession extends DurableObject<Env> {
     if (this.db.select().from(sessions).get())
       throw new HttpError(409, 'Visit already exists')
     this.db.insert(sessions).values({ key: 1, state }).run()
+    metric(this.env, { event: 'session_created' })
     await this.ctx.storage.setAlarm(state.expiresAt)
   }
   private state() {
@@ -236,8 +238,13 @@ export class RetreatSession extends DurableObject<Env> {
         })
         .run()
     })
+    metric(this.env, { event: 'session_event' })
   }
   private broadcast() {
+    metric(this.env, {
+      event: 'viewer_count',
+      amount: this.ctx.getWebSockets().length
+    })
     for (const socket of this.ctx.getWebSockets()) this.stream.send(socket)
   }
   private async schedule() {
@@ -425,6 +432,10 @@ export class RetreatSession extends DurableObject<Env> {
           throw new HttpError(400, 'Invalid visit cursor')
         const pair = new WebSocketPair()
         this.ctx.acceptWebSocket(pair[1])
+        metric(this.env, {
+          event: 'viewer_count',
+          amount: this.ctx.getWebSockets().length
+        })
         this.stream.open(pair[1], cursor)
         return new Response(null, { status: 101, webSocket: pair[0] })
       }
@@ -849,8 +860,19 @@ export class RetreatSession extends DurableObject<Env> {
           Date.now() + PRESENCE_UPDATE_INTERVAL_MS
         )
         await this.env.PRESENCE.getByName('camp').upsert(pending.value)
+        metric(this.env, {
+          event: 'outbox',
+          durationMs:
+            Date.now() - (pending.value.presenceChangedAt ?? pending.due)
+        })
         this.db.delete(outbox).where(eq(outbox.value, pending.value)).run()
       } catch {
+        metric(this.env, {
+          event: 'outbox',
+          outcome: 'error',
+          durationMs:
+            Date.now() - (pending.value.presenceChangedAt ?? pending.due)
+        })
         const current = this.db.select().from(outbox).get()
         if (current)
           this.db
