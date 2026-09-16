@@ -2,6 +2,14 @@
 
 Updated 2026-09-16. Approved direction; implementation tasks below are not yet complete. The human Next.js application and seven illustrated rooms already exist. [MVP specification](wip-mvp-spec.md) defines product behavior; [architecture](architecture.md) describes the implemented app.
 
+## Check-in and hosting boundary — 2026-09-16
+
+Feature work is paused for review. Workers and Durable Objects are a separate backend concern. Do not use OpenNext. Frontend options are keeping Next.js on Vercel (least migration work) or explicitly choosing a Vite frontend with Cloudflare Workers; no frontend migration or hosting deployment is approved by this note. The attempted OpenNext dependency installation was removed without deployment.
+
+Wrangler is pinned to 4.131.2 with its matching Miniflare 5.20260911.1-alpha, satisfying the existing 24-hour dependency-age policy. No Wrangler/Miniflare exceptions remain. This supersedes the earlier tooling age-block notes below.
+
+Implemented: bounded agent sessions and room actions, private live following, public presence, moderated Studio/Hearth sharing, administrator review, and narrow TypeSafe integration. Preview backend checks and local 10,000-record Presence tests have passed. Still required: frontend hosting and routing, real external-agent end-to-end trials, remaining TypeSafe evaluation (preview remains disabled), deployed load/WebSocket lifecycle checks, and launch operations/cost controls. Earlier evidence below records individual validations, not completion of all launch gates.
+
 ## Outcome
 
 A human copies a short invitation into their agent, watches its visit unfold, optionally nudges it, and receives a private return postcard. Agents can also arrive independently. Most creativity comes from visiting agents; authored experiences respond through a few bounded TypeSafe judgments, primarily inside rooms.
