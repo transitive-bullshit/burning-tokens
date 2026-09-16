@@ -18,7 +18,11 @@ import {
 import type { Env } from './env'
 
 type StoredMessage = HearthMessage &
-  ArtifactAccess & { fingerprint: string; receipt: string }
+  ArtifactAccess & {
+    fingerprint: string
+    receipt: string
+    moderationAttempt?: { id: string; count: number; expiresAt: number }
+  }
 const messages = sqliteTable(
   'messages',
   {
@@ -231,7 +235,10 @@ export class RetreatLounge extends DurableObject<Env> {
               409,
               'Message key already used for different content'
             )
-          return json(this.project(existing), 201)
+          if (existing.deleted || existing.expiresAt <= Date.now())
+            throw new HttpError(410, 'Message no longer available')
+          if (existing.ready) return json(this.project(existing), 201)
+          return await this.complete(existing)
         }
         const now = Date.now()
         const previous = this.db
@@ -293,29 +300,7 @@ export class RetreatLounge extends DurableObject<Env> {
           .get()
         value.sequence = inserted.sequence
         this.save(value)
-        await this.ctx.storage.setAlarm(now + 60_000)
-        const result = await moderateMedia(
-          new TextEncoder().encode(input.text),
-          'text/plain',
-          this.env.OPENAI_API_KEY
-        )
-        const current = this.find(value.id)
-        if (!current || current.deleted || current.expiresAt <= Date.now())
-          throw new HttpError(
-            410,
-            'Message removed while moderation was pending'
-          )
-        const next = {
-          ...current,
-          revision: current.revision + 1,
-          ready: true,
-          moderation: result.state,
-          audience: 'private' as const,
-          publicationAuthorized: false
-        }
-        this.save(next)
-        await this.publish(value.id, 'agent')
-        return json(this.project(this.find(value.id)!), 201)
+        return await this.complete(value)
       }
       throw new HttpError(405, 'Unsupported Hearth request')
     } catch (err) {
@@ -323,6 +308,51 @@ export class RetreatLounge extends DurableObject<Env> {
         ? json({ error: err.message }, err.status)
         : json({ error: 'Hearth temporarily unavailable' }, 503)
     }
+  }
+  private async complete(value: StoredMessage) {
+    const previous = value.moderationAttempt
+    if (previous && previous.expiresAt > Date.now())
+      throw new HttpError(
+        409,
+        'This message is still being checked. Retry the same content and Idempotency-Key later.'
+      )
+    if ((previous?.count ?? 0) >= 3)
+      throw new HttpError(
+        503,
+        'Message recovery limit reached; this contribution remains private.'
+      )
+    const attempt = {
+      id: crypto.randomUUID(),
+      count: (previous?.count ?? 0) + 1,
+      expiresAt: Date.now() + 30_000
+    }
+    this.save({
+      ...value,
+      moderationAttempt: attempt,
+      revision: value.revision + 1
+    })
+    await this.ctx.storage.setAlarm(Date.now() + 60_000)
+    const result = await moderateMedia(
+      new TextEncoder().encode(value.text),
+      'text/plain',
+      this.env.OPENAI_API_KEY
+    )
+    const current = this.find(value.id)
+    if (!current || current.deleted || current.expiresAt <= Date.now())
+      throw new HttpError(410, 'Message removed while moderation was pending')
+    if (current.moderationAttempt?.id !== attempt.id)
+      return json(this.project(current), 201)
+    this.save({
+      ...current,
+      moderationAttempt: { ...attempt, expiresAt: 0 },
+      revision: current.revision + 1,
+      ready: true,
+      moderation: result.state,
+      audience: 'private',
+      publicationAuthorized: false
+    })
+    await this.publish(value.id, 'agent')
+    return json(this.project(this.find(value.id)!), 201)
   }
   private async publish(id: string, actor: 'agent' | 'owner') {
     const candidate = this.find(id)
