@@ -62,13 +62,13 @@ Keep storage behind small domain methods. Each object's migrations run before it
 
 ### M1 — Backend and typed storage foundation
 
-- [ ] Configure the unified Vite/Worker development and deployment workflow. Define same-origin asset/API routing, local ports, preview origin and secret bindings; preserve the existing backend resources.
-- [ ] Add Session and Presence SQLite Durable Object classes and the supported Drizzle adapter. Pin compatible package versions after validating against the installed toolchain.
-- [ ] Define minimal tables: session state, ordered events, action receipts, pending nudges, response selections and a coalesced presence outbox. Studio metadata uses its own bounded SQLite object so media retention is independent of the seven-day session journal.
-- [ ] Define Presence's indexed summaries: internal routing key kept private, separate public display ID, avatar seed, self-reported family, last observed room/time, lifecycle, expiry and monotonic revision. Raw IP stays in private short-retention session records.
+- [x] Configure the unified Vite/Worker development and deployment workflow. Define same-origin asset/API routing, local ports, preview origin and secret bindings; preserve the existing backend resources.
+- [x] Add Session and Presence SQLite Durable Object classes and the supported Drizzle adapter. Pin compatible package versions after validating against the installed toolchain.
+- [x] Define minimal tables: session state, ordered events, action receipts, pending nudges, response selections and a coalesced presence outbox. Studio metadata uses its own bounded SQLite object so media retention is independent of the seven-day session journal.
+- [x] Define Presence's indexed summaries: internal routing key kept private, separate public display ID, avatar seed, self-reported family, last observed room/time, lifecycle, expiry and monotonic revision. Raw IP stays in private short-retention session records.
 - [ ] Implement versioned per-object SQL migrations before requests, including tests for fresh and previously populated objects. Keep startup work short and idempotent.
-- [ ] Add typed domain operations for reading/resuming visits, recording observations/actions, applying nudges and upserting presence. Validate inbound data at the boundary; TypeScript/Drizzle types are not runtime validation.
-- [ ] Atomically persist state changes, event number, action receipt and latest pending public summary within the session object. Do not hold a database transaction across external calls.
+- [x] Add typed domain operations for reading/resuming visits, recording observations/actions, applying nudges and upserting presence. Validate inbound data at the boundary; TypeScript/Drizzle types are not runtime validation.
+- [x] Atomically persist state changes, event number, action receipt and latest pending public summary within the session object. Do not hold a database transaction across external calls.
 - [ ] Add deterministic tests for duplicate writes, stale revisions, invalid transitions and expiration. Public solo content must work without a healthy Presence object.
 
 **Gate:** local integration tests persist and resume a visit across object restart; duplicate requests do not duplicate actions; schema upgrades preserve state.
@@ -493,3 +493,9 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 - Extended `scripts/retreat-response-fallback.test.mjs` with controlled provider-response barriers against the production Worker and SQLite Durable Objects in Miniflare. No production-only diagnostic route or real provider calls were added.
 - End visit, enter another room and queue an owner suggestion while a reflection is awaiting TypeSafe. In all three cases, the late result returns 409, leaves the entire newer snapshot unchanged (including journal and action allowance), and creates no response-selection history.
 - Replaying after closure or from the old room cannot call the provider. After a nudge, retrying the invalidated receipt can commit once; subsequent replay is identical and makes no new provider call. All four fallback/lifecycle tests pass. These are controlled local concurrency tests, not hosted regional timing or socket-load evidence.
+
+### Foundation audit and full regression checkpoint — 2026-09-17
+
+- `pnpm test` passed in full, including formatting, lint, frontend/Worker types, world physics/effects/audio/review continuity and every configured storage, publication, inference, admission, metrics and stream suite. No dependency updates or runtime changes were needed.
+- Reconciled six M1 checkboxes with `vite.config.ts`, Wrangler bindings, the production Drizzle constructors/schema, boundary Zod validation, Session commit/receipt transactions and the passing integration tests. Unchecked migration/test items remain open where the wording requires broader coverage than the inspected evidence; a passing full suite is not proof of every launch requirement.
+- Cloudflare notification policy/list availability reads return 403 with the local Wrangler OAuth credential. Budget threshold and destination have been requested; no account alert was changed. Current hosted metrics queries continue using the user-provisioned Worker secret independently of Wrangler's OAuth permissions.
