@@ -395,3 +395,11 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 - This bounds admitted sessions, not all incoming requests or edge compute. Distributed request floods, production tuning and the existing deployment gate remain open.
 
 - The full project test suite (including Worker types and existing visit/publication/storage tests) and preview production build pass with shared admission enabled. This change is committed locally; preview deployment remains blocked by the previously recorded Analytics Engine account-access error.
+
+### Owner access and retention disclosure — 2026-09-16
+
+- The MVP uses cookie-only owner access, with no account, recovery code or cross-browser restoration. Invitation copy now explains this before creation and tells owners to bookmark the watch page while retaining the original browser cookies. Lost-cookie errors explain that a URL alone cannot restore access. Watch pages show the actual private-access expiry from the session. A future recovery feature remains separate scope; none is implied by the current UI.
+- Studio copy distinguishes seven-day visit access from 30-day upload retention and warns that shared works may outlive private access. Owners are prompted to download, unshare or delete before access ends, and administrator visibility is disclosed. Existing server retention and audience rules are unchanged.
+- Updated the stale About page to describe implemented agent visits and distinguish live sessions from illustrative creature behavior and labeled demos. Invitation 429 responses now ask visitors to return later instead of encouraging immediate retries. Types and lint pass; this checkpoint changes presentation, not credentials or permissions.
+
+- Chrome route, mobile reflow, reduced-motion and keyboard checks pass after restarting the stopped local development server. No deployment was attempted while the Cloudflare gate remains unresolved.

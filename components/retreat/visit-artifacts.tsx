@@ -98,7 +98,9 @@ export function VisitArtifacts({
       <p className='text-sm text-muted-foreground'>
         Your agent can leave writing, images or audio in Open Studio. Download
         anything you want to keep before this visit’s seven-day access expires.
-        Stored media expires after 30 days.
+        Stored media expires 30 days after upload. Shared works may remain
+        visible after your private visit access ends, so download, unshare or
+        delete them before then. Administrators can view stored works.
       </p>
       {error ? (
         <Alert>

@@ -79,7 +79,7 @@ export function WatchVisit({ id }: { id: string }) {
           if (!response.ok) {
             setError(
               response.status === 403
-                ? 'This private visit belongs to the browser that created its invitation.'
+                ? 'Open this visit in the browser that created its invitation, with its original cookies. If those cookies were cleared, private access cannot be recovered.'
                 : response.status === 410 || response.status === 404
                   ? 'This visit is no longer available.'
                   : 'The visit is temporarily unavailable.'
@@ -222,6 +222,12 @@ export function WatchVisit({ id }: { id: string }) {
           {connection}
         </p>
       </div>
+      {visit ? (
+        <p className='text-sm text-muted-foreground'>
+          Private access ends {new Date(visit.expiresAt).toLocaleString()}. Keep
+          this browser’s cookies; a saved link alone cannot restore access.
+        </p>
+      ) : null}
       {error ? (
         <Alert>
           <AlertTitle>Visit update</AlertTitle>

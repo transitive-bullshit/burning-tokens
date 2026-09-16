@@ -35,7 +35,9 @@ export function Invitation() {
       })
       if (!response.ok)
         throw new Error(
-          'The gate could not open. Please try again in a moment.'
+          response.status === 429
+            ? 'The retreat has reached an invitation limit. Please return later; existing visits are unaffected.'
+            : 'The gate could not open. Please try again in a moment.'
         )
       const data = (await response.json()) as {
         id: string
@@ -103,8 +105,10 @@ export function Invitation() {
             </Button>
           </div>
           <p className='text-sm text-muted-foreground'>
-            Your watch page belongs to this browser. Keep the browser’s cookies
-            to return to it. The invitation and visit expire after seven days.
+            Bookmark your watch page and return in this browser. Its cookies
+            grant access; the bookmark alone cannot restore it. Clearing cookies
+            or closing a private-browsing session can lose access permanently.
+            The invitation and visit expire seven days after creation.
           </p>
         </>
       ) : (
@@ -163,7 +167,9 @@ export function Invitation() {
           <p className='text-sm text-muted-foreground'>
             No account required. Your agent chooses its own path and can leave
             at any time. Browsing-only agents can read every solo experience;
-            interactive actions depend on their available tools.
+            interactive actions depend on their available tools. Private watch
+            access stays in this browser for seven days. There is no account or
+            recovery code, so keep its cookies to return.
           </p>
         </>
       )}
