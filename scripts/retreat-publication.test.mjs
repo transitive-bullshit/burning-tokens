@@ -5,7 +5,7 @@ const requireWrangler = createRequire(import.meta.resolve('wrangler'))
 const { Miniflare, convertV4MiniflareOptions } = requireWrangler('miniflare')
 const { build } = requireWrangler('esbuild')
 const bundled = await build({
-  entryPoints: ['worker/src/index.ts'],
+  entryPoints: ['scripts/fixtures/publication-fault-worker.mjs'],
   bundle: true,
   write: false,
   format: 'esm',
@@ -13,6 +13,8 @@ const bundled = await build({
   target: 'es2022',
   external: ['cloudflare:workers']
 })
+let authorizationGate
+let authorizationFailure = false
 let moderationGate
 function holdModeration() {
   let release, started
@@ -57,6 +59,18 @@ const runtime = new Miniflare(
           OPENAI_API_KEY: 'test-only-not-a-secret'
         },
         outboundService: async (request) => {
+          if (
+            request.url === 'https://publication-fixture.invalid/authorization'
+          ) {
+            const gate = authorizationGate
+            if (gate) {
+              gate.started()
+              await gate.wait
+            }
+            return new Response('', {
+              status: authorizationFailure ? 503 : 200
+            })
+          }
           assert.equal(request.url, 'https://api.openai.com/v1/moderations')
           const gate = moderationGate
           if (gate) {
@@ -181,6 +195,153 @@ try {
         state.events.filter((event) => event.kind === 'publication').length,
         0
       )
+    })
+  }
+  for (const kind of ['studio', 'hearth']) {
+    const collection = kind === 'studio' ? 'artifacts' : 'hearth'
+    const publicCollection = kind === 'studio' ? 'exhibits' : 'hearth'
+    for (const operation of ['unshare', 'delete']) {
+      await test(`${kind}: owner ${operation} wins over a delayed committed grant`, async () => {
+        const v = await visitor(kind === 'studio' ? 'open-studio' : 'hearth')
+        let started, release
+        const entered = new Promise((resolve) => {
+          started = resolve
+        })
+        const wait = new Promise((resolve) => {
+          release = resolve
+        })
+        authorizationGate = { started, wait }
+        const pending = kind === 'studio' ? v.upload() : v.message()
+        let id
+        try {
+          await entered
+          const state = await (
+            await request(v.owner, { headers: { Cookie: v.cookie } })
+          ).json()
+          assert.equal(
+            state.events.filter((event) => event.kind === 'publication').length,
+            1
+          )
+          const list = await (
+            await request(`${v.owner}/${collection}`, {
+              headers: { Cookie: v.cookie }
+            })
+          ).json()
+          id = (list.works ?? list.messages)[0].id
+          assert.equal(
+            (await request(`/api/retreat/${publicCollection}/${id}`)).status,
+            404
+          )
+          const options =
+            operation === 'unshare'
+              ? post({ audience: 'private' }, v.cookie)
+              : {
+                  method: 'DELETE',
+                  headers: { Cookie: v.cookie, Origin: 'https://test.example' }
+                }
+          assert.equal(
+            (await request(`${v.owner}/${collection}/${id}`, options)).status,
+            200
+          )
+        } finally {
+          authorizationGate = undefined
+          release()
+        }
+        const response = await pending
+        assert.equal(response.status, 201)
+        const value = await response.json()
+        assert.equal(value.audience, 'private')
+        if (operation === 'delete') assert.equal(value.deleted, true)
+        else assert.equal(value.requestedAudience, 'private')
+        assert.equal(
+          (await request(`/api/retreat/${publicCollection}/${id}`)).status,
+          404
+        )
+        await v.close()
+      })
+    }
+    await test(`${kind}: lost authorization response leaves approved content private`, async () => {
+      const v = await visitor(kind === 'studio' ? 'open-studio' : 'hearth')
+      authorizationFailure = true
+      let value
+      try {
+        const response = await (kind === 'studio' ? v.upload() : v.message())
+        assert.equal(response.status, 201)
+        value = await response.json()
+      } finally {
+        authorizationFailure = false
+      }
+      assert.equal(value.ready, true)
+      assert.equal(value.audience, 'private')
+      assert.equal(
+        (await request(`/api/retreat/${publicCollection}/${value.id}`)).status,
+        404
+      )
+      // A new explicit owner decision can recover without uploading another copy.
+      const retry = await request(
+        `${v.owner}/${collection}/${value.id}`,
+        post({ audience: 'public' }, v.cookie)
+      )
+      assert.equal(retry.status, 200)
+      assert.equal((await retry.json()).audience, 'public')
+      assert.equal(
+        (await request(`/api/retreat/${publicCollection}/${value.id}`)).status,
+        200
+      )
+      await v.close()
+    })
+  }
+  for (const kind of ['studio', 'hearth']) {
+    await test(`${kind}: audience changes enforce author, other-agent and public boundaries`, async () => {
+      const room = kind === 'studio' ? 'open-studio' : 'hearth'
+      const collection = kind === 'studio' ? 'artifacts' : 'hearth'
+      const publicCollection = kind === 'studio' ? 'exhibits' : 'hearth'
+      const author = await visitor(room)
+      const other = await visitor(room)
+      const created = await (kind === 'studio'
+        ? author.upload()
+        : author.message())
+      assert.equal(created.status, 201)
+      const { id } = await created.json()
+      for (const audience of ['agents', 'private', 'public', 'private']) {
+        const changed = await request(
+          `${author.owner}/${collection}/${id}`,
+          post({ audience }, author.cookie)
+        )
+        assert.equal(changed.status, 200)
+        assert.equal((await changed.json()).audience, audience)
+        assert.equal(
+          (await request(`${author.path}/${collection}/${id}`)).status,
+          200
+        )
+        assert.equal(
+          (await request(`${other.path}/${collection}/${id}`)).status,
+          audience === 'private' ? 404 : 200
+        )
+        assert.equal(
+          (await request(`/api/retreat/${publicCollection}/${id}`)).status,
+          audience === 'public' ? 200 : 404
+        )
+        // A spectator cannot forge the internal viewer header to gain agent access.
+        assert.equal(
+          (
+            await request(`/api/retreat/${publicCollection}/${id}`, {
+              headers: { 'X-Retreat-Viewer': JSON.stringify({ kind: 'admin' }) }
+            })
+          ).status,
+          audience === 'public' ? 200 : 404
+        )
+        const otherOwner = await request(`${other.owner}/${collection}`, {
+          headers: { Cookie: other.cookie }
+        })
+        const listed = await otherOwner.json()
+        assert.equal(
+          (listed.works ?? listed.messages).some((value) => value.id === id),
+          false
+        )
+      }
+      await author.close()
+      await other.close()
     })
   }
   await test('owner unsharing during moderation remains private after approval', async () => {
