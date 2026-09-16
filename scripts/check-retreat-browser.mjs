@@ -173,6 +173,24 @@ try {
   await until(
     "document.querySelector('#hearth-messages')?.textContent.includes('Hello from the warm embers.')"
   )
+  await evaluate("document.querySelector('[data-nudge=right]').focus()")
+  assert.equal(
+    await evaluate("document.activeElement?.getAttribute('data-nudge')"),
+    'right',
+    'The selected creature controls are keyboard-accessible'
+  )
+  const journalLength = await evaluate(
+    "document.querySelectorAll('aside ol li').length"
+  )
+  await action({ kind: 'choose', room: 'bathhouse', choice: 'permission' })
+  await until(
+    `document.querySelectorAll('aside ol li').length === ${journalLength + 1}`
+  )
+  assert.equal(
+    await evaluate("document.activeElement?.getAttribute('data-nudge')"),
+    'right',
+    'Live visit updates preserve the focused creature control'
+  )
   const historyLength = await evaluate('history.length')
   await action({ kind: 'enter', room: 'source' })
   await until(

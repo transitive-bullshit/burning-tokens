@@ -1029,6 +1029,11 @@
 }
 
 .world-following .world aside {
+  display: block;
+  border-top: 1px solid var(--border);
+}
+
+.world-following .world aside > :not(.inspection) {
   display: none;
 }
 

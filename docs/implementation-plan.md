@@ -419,3 +419,11 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 - The harness captures only retreat WebSockets: closing Vite's own development socket in the first attempt caused an unrelated dev-page reload, so that attempt was corrected and is not counted as application evidence. These checks do not prove a Cloudflare Durable Object hibernation/eviction cycle, which remains a separate gate.
 
 - The same complete browser journey passes against the current hosted preview at `burning-tokens-retreat-preview.fisch0920.workers.dev`, including offline replay and real hidden-tab recovery with exact journal comparison. This verifies the currently deployed stream behavior; locally committed metrics/admission/copy changes remain undeployed because of the Analytics Engine gate.
+
+### Keyboard controls for followed creatures — 2026-09-16
+
+- The private watch layout previously hid the entire scene sidebar, including its keyboard nudge/audition controls. It now shows the selected creature’s inspection controls below the scene while hiding the population controls and roster, retaining the compact follow layout.
+- Inspection refreshes preserve focus by control identity (nudge direction, audition action or follow target), and disappearing controls/roster entries move focus to visitor search, or the visible motion control when the watch layout hides search. The browser regression checks that the nudge control is actually focusable before asserting it remains focused through a committed same-room agent choice. The first attempted assertion targeted the previously hidden control and was not accepted as evidence of a focus-refresh failure.
+- Existing world/physics/effects/sound suites pass. This is a keyboard-accessibility refinement; it does not send decorative creature movements to the server.
+
+- The complete local browser journey passes with visible keyboard controls and retained focus, together with offline/hidden-tab recovery, artifact management and public hiding. Types and lint pass.
