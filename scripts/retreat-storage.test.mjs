@@ -84,3 +84,20 @@ await test('judgments cannot select arbitrary content or treat confidence as aut
   )
   assert.equal(fallbackDecision('unavailable').choice, null)
 })
+
+await test('uncertain model candidates remain diagnostic and invalid output is discarded', () => {
+  const allowed = ['signal', 'strange', 'reflect', 'none']
+  const uncertain = interpretedDecision('strange', 0.74, allowed, 'test')
+  assert.equal(uncertain.candidate, 'strange')
+  assert.equal(uncertain.choice, null)
+  assert.equal(uncertain.reason, 'uncertain')
+  const invalid = interpretedDecision(
+    'arbitrary untrusted model text',
+    1,
+    allowed,
+    'test'
+  )
+  assert.equal(invalid.candidate, null)
+  assert.equal(invalid.choice, null)
+  assert.equal(invalid.reason, 'invalid-choice')
+})

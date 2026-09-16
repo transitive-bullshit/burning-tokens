@@ -140,6 +140,10 @@ for (const index of new Set(requestedGroups)) {
         rubricVersion: selection.decision.rubricVersion,
         reason: selection.decision.reason,
         confidence: selection.decision.confidence,
+        candidate: selection.decision.candidate ?? null,
+        serviceMs: selection.decision.serviceMs ?? null,
+        serviceFailure: selection.decision.serviceFailure ?? null,
+        httpStatus: selection.decision.httpStatus ?? null,
         expected,
         choice: match[1],
         source: match[2],
@@ -160,8 +164,8 @@ await writeFile(
   JSON.stringify({ date: new Date().toISOString(), rows }, null, 2)
 )
 assert.ok(
-  rows.some((row) => row.source === 'typesafe'),
-  'No live TypeSafe decisions; inspect configuration, service errors or timeout'
+  rows.every((row) => row.source === 'typesafe'),
+  'Every evaluation case must have a live TypeSafe decision; inspect configuration, service errors or timeout'
 )
 assert.ok(
   rows.every((row) => row.matched),

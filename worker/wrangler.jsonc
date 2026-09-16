@@ -68,7 +68,7 @@
       "workers_dev": true,
       "vars": {
         "PUBLIC_ORIGIN": "https://burning-tokens-retreat-preview.fisch0920.workers.dev",
-        "TYPESAFE_ENABLED": "false",
+        "TYPESAFE_ENABLED": "true",
         "TYPESAFE_MODEL": "jev-latest",
         "TYPESAFE_DAILY_CALL_LIMIT": "1000",
         "TYPESAFE_DAILY_INPUT_LIMIT": "2000000",

@@ -123,6 +123,9 @@ export async function selectVariant(
   const budget = env.BUDGET.getByName('global')
   if (!(await budget.reserve(new TextEncoder().encode(payload).length)))
     return fallbackDecision('global-budget', env.TYPESAFE_MODEL)
+  const started = Date.now()
+  let status: number | undefined
+  let parsing = false
   try {
     const response = await fetch('https://api.typesafe.ai/v1/systemone', {
       method: 'POST',
@@ -133,18 +136,38 @@ export async function selectVariant(
       body: payload,
       signal: AbortSignal.timeout(1500)
     })
+    status = response.status
     if (!response.ok) throw new Error('Classifier unavailable')
+    parsing = true
     const parsed = answerSchema.parse(await response.json())
+    parsing = false
     await budget.outcome(true)
     const { choice, confidence } = parsed.answers.theme
-    return interpretedDecision(
-      choice,
-      confidence,
-      Object.keys(criteria),
-      env.TYPESAFE_MODEL
-    )
-  } catch {
+    return {
+      ...interpretedDecision(
+        choice,
+        confidence,
+        Object.keys(criteria),
+        env.TYPESAFE_MODEL
+      ),
+      serviceMs: Date.now() - started
+    }
+  } catch (err) {
     await budget.outcome(false).catch(() => {})
-    return fallbackDecision('unavailable', env.TYPESAFE_MODEL)
+    const decision: VariantDecision = {
+      ...fallbackDecision('unavailable', env.TYPESAFE_MODEL),
+      serviceMs: Date.now() - started,
+      serviceFailure:
+        err instanceof Error &&
+        ['TimeoutError', 'AbortError'].includes(err.name)
+          ? 'timeout'
+          : status !== undefined && (status < 200 || status >= 300)
+            ? 'http'
+            : parsing
+              ? 'invalid-response'
+              : 'transport'
+    }
+    if (status !== undefined) decision.httpStatus = status
+    return decision
   }
 }

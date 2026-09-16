@@ -37,7 +37,8 @@
     "test:retreat-hearth-recovery": "node --test scripts/retreat-hearth-recovery.test.mjs",
     "test:retreat-admin-auth": "tsx --test scripts/retreat-admin-auth.test.mjs",
     "test:retreat-media": "tsx --test scripts/retreat-media.test.mjs",
-    "build:preview": "CLOUDFLARE_ENV=preview vite build"
+    "build:preview": "CLOUDFLARE_ENV=preview vite build",
+    "test:retreat-inference-diagnostics": "node --test scripts/retreat-inference-diagnostics.test.mjs"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",

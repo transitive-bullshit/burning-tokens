@@ -15,6 +15,11 @@ export type VariantDecision = {
   model: string | null
   rubricVersion: string
   confidence: number | null
+  // Optional for older stored selections; diagnostics never grant a choice.
+  candidate?: string | null
+  serviceMs?: number
+  serviceFailure?: 'timeout' | 'http' | 'invalid-response' | 'transport'
+  httpStatus?: number
 }
 export type ResponseSelection = {
   room: string
@@ -55,6 +60,7 @@ export function interpretedDecision(
     reason,
     model,
     rubricVersion: RESPONSE_RUBRIC_VERSION,
-    confidence
+    confidence,
+    candidate: allowed.includes(choice) ? choice : null
   }
 }
