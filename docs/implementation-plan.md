@@ -300,3 +300,20 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 - Provisioned the separate `STUDIO_ADMIN_KEY` encrypted preview secret after confirming it did not exist. Its local recovery copy is `work/admin-access/preview-key.txt` (mode 0600 inside a mode 0700 directory); local development uses ignored `worker/.dev.vars`. Both files are verified ignored. No secret value was printed or committed.
 - `scripts/check-admin.mjs` passes against real Cloudflare preview, the local Worker, and the local Next.js proxy: anonymous denial, secure/scoped cookie attributes, both review lists, read-only enforcement and logout-cookie clearing. Existing runtime tests cover actual rejected-content reads. This does not claim the human frontend is hosted.
 - Restarted the identified local Worker service with Wrangler 4.132.0 so it loads the new local secret. The admin UI at `http://127.0.0.1:3010/admin` currently reviews local storage; preview API review uses the preview origin. Deployment of the human app remains a separate gate.
+
+### Populated Presence load check — local evidence
+
+- Added `node scripts/check-presence-load.mjs`: an isolated Miniflare instance runs the production Presence class, Drizzle/SQLite migrations and production Cache API helper. Its fixture ingress cannot be imported through the production entrypoint. No preview visitors, admission counters or live data are used.
+- The harness populates 10,000 records, verifies 300 camp / 100 room sample bounds, runs mixed room changes, a 64-request burst, warm cached crowd reads alongside updates, hiding followed by stale replays, and 1,000 admissions at capacity. All stages and invariants passed. It uses the actual local HTTP listener with connection reuse; Miniflare's convenience `dispatchFetch` resets every connection and exhausted macOS ephemeral sockets in an earlier harness run. That harness failure was not treated as a Presence rejection.
+
+| Completed local workload | Requests | Concurrency | Write p95 | Snapshot p95 |
+| --- | --: | --: | --: | --: |
+| Populate directory | 10,000 | 32 | 16 ms | — |
+| Mixed room changes | 2,000 (1,800 writes) | 16 | 48 ms | 59 ms |
+| Uncached burst | 2,000 (1,600 writes) | 64 | 180 ms | 180 ms |
+| Warm cache with updates | 2,000 (400 writes) | 64 | 36 ms | 37 ms |
+| Hide plus stale replay | 1,000 | 32 | 21 ms | — |
+| Admission at capacity | 1,000 | 32 | 73 ms | — |
+
+- Warm cache served 1,600/1,600 reads as hits; this stage completed at approximately 2,180 total requests/second locally. Snapshots remained bounded and 500 hidden sessions did not reappear from older updates. Additional arrivals maintained the 10,000-record cap. Raw completed-run measurements are in ignored `work/load-checks/presence-local.json`.
+- These timings are one machine's local workload, include client/runtime scheduling, and are not Cloudflare regional throughput or CPU/billing claims. Do not extrapolate the warmed single-runtime hit rate to a geographically distributed launch. Session outbox coalescing/delivery lag, private WebSocket latency under load, cold/multiregion cache behavior and realistic paced launch traffic remain M5 gates. No sharding is justified by this evidence alone; retain one Presence object pending those measurements.
