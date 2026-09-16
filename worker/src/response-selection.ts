@@ -1,4 +1,4 @@
-export const RESPONSE_CONTENT_VERSION = '2026-09-16.1'
+export const RESPONSE_CONTENT_VERSION = '2026-09-16.2'
 export const RESPONSE_RUBRIC_VERSION = 'room-preference-v2'
 export type VariantDecision = {
   choice: string | null

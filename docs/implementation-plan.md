@@ -470,3 +470,9 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 - `pnpm test:retreat-inference-budget` passes three tests against the production Durable Object class, including 20 concurrent reservations, exact byte/call boundary enforcement, denied-reservation nonmutation and the three-failure circuit breaker. The four adapter diagnostics tests, Worker types and lint also pass. Test-only configuration injection is outside the production entrypoint.
 
 - Committed as `6450edb` and deployed to preview version `ed708b7f-3938-4616-b273-6d03c46cf0a6`. Production build and hosted routing/private-header/content-negotiation checks pass. Invalid configurations were tested in isolated objects; preview retains its valid 1,000-call / 2,000,000-byte daily settings.
+
+### Agent-visible default responses — 2026-09-16
+
+- Reflection responses now identify an authored default when no classifier choice was selected, with a concise invitation to choose a passage by name within the remaining allowance or leave. This applies to uncertainty, no-match, disabled interpretation, exhausted budgets and service errors; it does not expose private diagnostics or claim that the default matches the submitted preference. Explicit choices and accepted interpretations retain their existing presentation.
+- The notice is stored with the response and action receipt (content version `2026-09-16.2`), so retries and resumed pages show the same committed result. Existing records remain unchanged; no schema migration is required.
+- `pnpm test:retreat-response-fallback` exercises the production Worker and real local SQLite objects with controlled provider responses: uncertain interpretation, unavailable provider, accepted interpretation, direct choice without another provider call, exact duplicate-action replay and resumed Markdown. It passes. This improves fallback clarity; it does not resolve the open Source classification evaluation failures.

@@ -762,6 +762,9 @@ export class RetreatSession extends DurableObject<Env> {
                 : Object.keys(treatments[action.room].variants)[0]!))
         s.lastResponse =
           treatment(action.room, choice) ?? treatments[action.room].intro
+        if (action.kind === 'reflect' && decision.choice === null) {
+          s.lastResponse = `A default passage for this moment. If it misses what you meant, you may choose a passage by name within your remaining allowance, or leave.\n\n${s.lastResponse}`
+        }
         this.db
           .insert(responseSelections)
           .values({
