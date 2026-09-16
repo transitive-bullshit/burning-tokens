@@ -77,6 +77,18 @@ try {
   })
   const session = attached.sessionId
   await call('Page.enable', {}, session)
+  await call('Network.enable', {}, session)
+  await call(
+    'Page.addScriptToEvaluateOnNewDocument',
+    {
+      source: `window.retreatTestSockets = []; const NativeSocket = window.WebSocket;
+      window.WebSocket = class extends NativeSocket {
+        constructor(...args) { super(...args); if (new URL(String(args[0]), location.href).pathname.startsWith('/api/retreat/visits/')) window.retreatTestSockets.push(this) }
+      };`
+    },
+    session
+  )
+
   await call(
     'Emulation.setDeviceMetricsOverride',
     { width: 1440, height: 1100, deviceScaleFactor: 1, mobile: false },
@@ -171,6 +183,78 @@ try {
     historyLength,
     'automatic follow does not add history'
   )
+  await until(
+    "[...document.querySelectorAll('[role=status]')].some(e=>e.textContent==='Live')"
+  )
+  await call(
+    'Network.emulateNetworkConditions',
+    {
+      offline: true,
+      latency: 0,
+      downloadThroughput: -1,
+      uploadThroughput: -1
+    },
+    session
+  )
+  // Offline emulation does not consistently terminate existing WebSockets.
+  // Close the real transport too; code 4000 exercises cursor replay on reconnect.
+  await evaluate(
+    "window.retreatTestSockets.forEach(s=>{if(s.readyState===1)s.close(4000,'Test transport interruption')})"
+  )
+  await until("document.body.innerText.includes('Reconnecting')")
+  await action({ kind: 'enter', room: 'quiet-house' })
+  await action({ kind: 'enter', room: 'source' })
+  assert.equal(
+    await evaluate("document.querySelector('h1').textContent.trim()"),
+    'The Source'
+  )
+  await call(
+    'Network.emulateNetworkConditions',
+    {
+      offline: false,
+      latency: 0,
+      downloadThroughput: -1,
+      uploadThroughput: -1
+    },
+    session
+  )
+  await until(
+    "[...document.querySelectorAll('[role=status]')].some(e=>e.textContent==='Live')"
+  )
+  const journalMatches = async () => {
+    const expected = await evaluate(
+      `fetch('/api/retreat/visits/${invitation.id}').then(r=>r.json()).then(v=>v.events.map(e=>e.text))`
+    )
+    const shown = await evaluate(
+      "[...document.querySelectorAll('aside ol li p')].map(e=>e.textContent)"
+    )
+    assert.deepEqual(
+      shown,
+      expected,
+      'The journal catches up exactly without gaps or duplicates'
+    )
+  }
+  await journalMatches()
+  assert.equal(
+    await evaluate('history.length'),
+    historyLength,
+    'Reconnect does not add navigation history'
+  )
+  const other = await call('Target.createTarget', { url: 'about:blank' })
+  await call('Target.activateTarget', { targetId: other.targetId })
+  await until('document.hidden')
+  await until(
+    "document.body.innerText.includes('Paused while this tab is hidden')"
+  )
+  await action({ kind: 'enter', room: 'temple' })
+  await action({ kind: 'enter', room: 'source' })
+  await call('Target.activateTarget', { targetId: target.targetId })
+  await until('!document.hidden')
+  await until(
+    "[...document.querySelectorAll('[role=status]')].some(e=>e.textContent==='Live')"
+  )
+  await journalMatches()
+  await call('Target.closeTarget', { targetId: other.targetId })
   await evaluate(
     "[...document.querySelectorAll('nav[aria-label=\"Preview retreat rooms\"] button')].find(b=>b.textContent==='Dream Garden').click()"
   )
@@ -271,7 +355,7 @@ try {
     `fetch('/api/retreat/visits/${publicInvitation.id}/control', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'end'})})`
   )
   console.log(
-    'Browser checks passed: owned invitation cookie, private creature, live room following, stable automatic history, manual back navigation, artifact controls, checkout, public selection/follow, public room movement, stable history and hiding. Screenshot: work/browser-checks/private-visit.png'
+    'Browser checks passed: owned invitation cookie, private creature, live room following, offline replay, hidden-tab recovery, stable automatic history, manual back navigation, artifact controls, checkout, public selection/follow, public room movement, stable history and hiding. Screenshot: work/browser-checks/private-visit.png'
   )
 } finally {
   if (artifact && invitation)

@@ -411,3 +411,11 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 - Remaining launch work includes checking the other source licenses against exact assets, obtaining licensed originals/permission or selecting replacements for unresolved clips, and resolving provider terms for generated audio. The current preview already serves selected audition assets; adding credits does not clear that gate. Types and lint pass.
 
 - Credits passes the Chrome route and 320px reflow checks alongside the existing keyboard/motion checks; the preview production build passes. No audio was removed, replaced or newly downloaded.
+
+### Watch-page interruption recovery — 2026-09-16
+
+- Extended the Chrome private/public journey harness with offline networking plus closure of the real retreat WebSocket using code 4000, exercising cursor replay rather than forcing a fresh snapshot. While the owner is offline, an independent HTTP client commits two room moves. After reconnection, the rendered journal must equal the authoritative server event texts exactly, in order, and browser history must stay unchanged.
+- Added actual tab backgrounding using a second Chrome target, verified `document.hidden` and the paused status, committed two more moves, then returned to the watch tab and compared the complete journal again. No synthetic visibility event or mocked visit data is used. Local checks pass together with artifact controls, checkout, public follow/movement and privacy hiding.
+- The harness captures only retreat WebSockets: closing Vite's own development socket in the first attempt caused an unrelated dev-page reload, so that attempt was corrected and is not counted as application evidence. These checks do not prove a Cloudflare Durable Object hibernation/eviction cycle, which remains a separate gate.
+
+- The same complete browser journey passes against the current hosted preview at `burning-tokens-retreat-preview.fisch0920.workers.dev`, including offline replay and real hidden-tab recovery with exact journal comparison. This verifies the currently deployed stream behavior; locally committed metrics/admission/copy changes remain undeployed because of the Analytics Engine gate.
