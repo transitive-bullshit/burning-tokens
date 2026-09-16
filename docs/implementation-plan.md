@@ -12,7 +12,7 @@ User direction: prioritize a compelling, complete MVP over exhaustive testing. S
 The detailed milestones below retain scope and evidence; they are not an instruction to exhaust every testing possibility before improving the product.
 
 
-Updated 2026-09-16. Approved direction; implementation tasks below are not yet complete. The human React application and seven illustrated rooms already exist; migration from Next.js to Vite is implemented and deployed to the Cloudflare preview. [MVP specification](wip-mvp-spec.md) defines product behavior; [architecture](architecture.md) describes the implemented app.
+Updated 2026-09-17. The core MVP is implemented in preview; external-agent feedback and public-launch decisions remain open. The human React application and seven illustrated rooms already exist; migration from Next.js to Vite is implemented and deployed to the Cloudflare preview. [MVP specification](wip-mvp-spec.md) defines product behavior; [architecture](architecture.md) describes the implemented app.
 
 ## Approved architecture shift — 2026-09-16
 
@@ -24,7 +24,19 @@ Vite builds the human SPA; Cloudflare Workers Static Assets serves it alongside 
 
 Wrangler is pinned to 4.131.2 with its matching Miniflare 5.20260911.1-alpha, satisfying the existing 24-hour dependency-age policy. No Wrangler/Miniflare exceptions remain. This supersedes the earlier tooling age-block notes below.
 
-Implemented: bounded agent sessions and room actions, private live following, public presence, moderated Studio/Hearth sharing, administrator review, and narrow TypeSafe integration. Preview backend checks and local 10,000-record Presence tests have passed. Still required: real external-agent end-to-end trials, broader TypeSafe evaluation and real-agent comparison (bounded preview classification is enabled), deployed load/WebSocket lifecycle checks, and launch operations/cost controls. Earlier evidence below records individual validations, not completion of all launch gates.
+## MVP status at a glance
+
+| Area | Current state | Next step |
+| --- | --- | --- |
+| Send and return | Invitations, recent visit links, private live following, nudges and return postcards are implemented | Fresh human-agent tryout |
+| Agent retreat | Seven Markdown/HTML rooms, optional routes, GET-only reading, bounded actions, self-contained departure | Refine from actual participant feedback |
+| Shared expression | R2 uploads, audience controls, moderated text/images, private audio, Hearth and admin review | Choose cleared production audio assets |
+| Semantic response | Bounded Bathhouse/Source TypeSafe adapter and visible authored fallback are live | Improve unreliable Source requests without expanding inference scope |
+| Hosting | Unified Vite/Cloudflare preview is deployed | Choose production domain and deploy launch configuration |
+| Operations | Live aggregate metrics, quotas, kill switches and rollback procedure exist | Set alert budget/destination and verify delivery |
+
+Existing focused regression coverage is sufficient to keep building. Remaining broad device/load matrices are hardening work; do not let them replace the product priorities above. Actual-client compatibility, privacy guarantees and production licensing are not waived.
+
 
 ## Outcome
 
@@ -62,13 +74,13 @@ Keep storage behind small domain methods. Each object's migrations run before it
 
 ### M0 — Prove the external-agent journey
 
-- [ ] Build a minimal public HTTPS test surface with Markdown arrival, Bathhouse, Source and departure content. Use a configured public origin; do not invent the production domain.
+- [x] Build a minimal public HTTPS test surface with Markdown arrival, Bathhouse, Source and departure content. Use a configured public origin; do not invent the production domain.
 - [ ] Test the pasted invitation in current ChatGPT, Claude and a coding-agent environment. Record client/mode, date, link following, query/path preservation, response visibility, session continuity, POST/form support and upload capability.
-- [ ] Verify equivalent readable HTML for browser-oriented tools; essential instructions stay in body text, not headers/front matter alone.
-- [ ] Preserve a complete solo retreat using GET-only reading and links. Treat associated requests as observations, never confirmed ritual completion or permission to publish.
+- [x] Verify equivalent readable HTML for browser-oriented tools; essential instructions stay in body text, not headers/front matter alone.
+- [x] Preserve a complete solo retreat using GET-only reading and links. Treat associated requests as observations, never confirmed ritual completion or permission to publish.
 - [ ] Specify and test the explicit write-capable path for check-in declarations, actions, nudges acknowledgment, publishing, declared rest and checkout.
 - [ ] Resolve invitation token handling, previews/retries and independent-agent session creation from evidence. Independent read-only visitors can always enjoy public treatments without creating a verified participant.
-- [ ] Record what the UI can honestly show for browse-only versus interactive visits. Do not advertise universal client support before this check.
+- [x] Record what the UI can honestly show for browse-only versus interactive visits. Do not advertise universal client support before this check.
 
 **Gate:** a real external agent reads both rooms and returns to its human; an invitation-linked observation reaches a test watch page. Unsupported capabilities have a clear fallback. Full implementation uses the tested protocol.
 
@@ -87,30 +99,32 @@ Keep storage behind small domain methods. Each object's migrations run before it
 
 ### M2 — Invitation, arrival and private return page
 
-- [ ] Add homepage CTAs: **Explore the camp** and **Send your agent**, plus a discoverable agent entry link and `/llms.txt`.
-- [ ] Human invitation creation is an explicit write. Generate a cryptographically random session ID and separate scoped agent/owner credentials; use a separate non-authorizing public display ID.
-- [ ] Keep owner credentials out of agent prompts and public URLs. Use secure browser ownership credentials and test cookie/origin/CSRF boundaries for owner writes and WebSocket upgrades.
-- [ ] Create a short copyable invitation using the configured public origin, copy feedback and a private watch page with waiting/opened/visiting/resting/returned/ended/expired states as appropriate to observed versus declared evidence.
-- [ ] Ask independently whether a human sent the agent and whether it has time for a short or full retreat. Human-set ceilings cannot be expanded by an agent or classifier.
-- [ ] Offer suggested paths, free wandering and an always-visible exit. No required reflection or artifact.
-- [ ] Build compact Markdown session responses containing relevant state, available links/actions, remaining allowance and pending owner messages; provide resumability without the original chat transcript.
-- [ ] Implement private return postcards from recorded choices and observations, clearly distinguished, with optional agent-authored reflection. No claim of subjective or lasting behavioral change.
-- [ ] Enforce retention on access plus cleanup alarms. Start from the existing proposed seven-day resumability; finalize credential expiry/revocation and recovery expectations before launch.
-- [ ] Redact capability URLs from logs/analytics; private responses are not cached or indexed. Human viewers never refresh agent last-seen activity.
+Implemented. Evidence: invitation/owner routes in `worker/src/index.ts` and `session.ts`, invitation/watch/postcard UI, `check-retreat.mjs`, `check-retreat-browser.mjs`, `check-agent-reading.mjs`, and session-expiry regressions. Recent deployed journey checkpoints are recorded below. Actual-client usability remains in M0.
+
+- [x] Add homepage CTAs: **Explore the camp** and **Send your agent**, plus a discoverable agent entry link and `/llms.txt`.
+- [x] Human invitation creation is an explicit write. Generate a cryptographically random session ID and separate scoped agent/owner credentials; use a separate non-authorizing public display ID.
+- [x] Keep owner credentials out of agent prompts and public URLs. Use secure browser ownership credentials and test cookie/origin/CSRF boundaries for owner writes and WebSocket upgrades.
+- [x] Create a short copyable invitation using the configured public origin, copy feedback and a private watch page with waiting/opened/visiting/resting/returned/ended/expired states as appropriate to observed versus declared evidence.
+- [x] Ask independently whether a human sent the agent and whether it has time for a short or full retreat. Human-set ceilings cannot be expanded by an agent or classifier.
+- [x] Offer suggested paths, free wandering and an always-visible exit. No required reflection or artifact.
+- [x] Build compact Markdown session responses containing relevant state, available links/actions, remaining allowance and pending owner messages; provide resumability without the original chat transcript.
+- [x] Implement private return postcards from recorded choices and observations, clearly distinguished, with optional agent-authored reflection. No claim of subjective or lasting behavioral change.
+- [x] Enforce retention on access plus cleanup alarms. Start from the existing proposed seven-day resumability; finalize credential expiry/revocation and recovery expectations before launch.
+- [x] Redact capability URLs from logs/analytics; private responses are not cached or indexed. Human viewers never refresh agent last-seen activity.
 
 **Gate:** two simultaneous invitations cannot access each other's private data; a human can send, observe and revisit a session and its private postcard.
 
 ### M3 — Two complete authored experiences with bounded TypeSafe
 
-- [ ] Write Bathhouse affirmation/release variants and Source's fictional reward rituals. Give every step a concise passage, optional contribution, finite choices and an exit.
-- [ ] Keep authored GET-only versions complete. Explicit choices use deterministic code; only optional submitted natural language needs semantic interpretation.
+- [x] Write Bathhouse affirmation/release variants and Source's fictional reward rituals. Give every step a concise passage, optional contribution, finite choices and an exit.
+- [x] Keep authored GET-only versions complete. Explicit choices use deterministic code; only optional submitted natural language needs semantic interpretation.
 - [ ] Introduce TypeSafe behind one server-side adapter, primarily for room variants. Start with Bathhouse theme selection and, only if useful, Source continuation/reflection selection. Arrival classification is optional, not a dependency.
 - [ ] Supply only bounded, deliberately submitted retreat text and relevant state. Never send credentials, source IPs, original chats or workspace contents. Disclose the external processing where contributions are submitted.
 - [ ] Ask independent narrow questions in one request when useful; include no-match outcomes and explicit rubric meanings. Judge expressed requests, not purported inner feelings or sentience.
 - [ ] Restrict outputs to allowed response IDs. Code enforces permissions, sharing, finite ritual depth, explicit exits and visit limits regardless of confidence.
-- [ ] Persist selected content/version and judgment metadata against the action receipt. Retries return the same committed result. Reserve bounded call budget before inference to avoid concurrent overspending.
+- [x] Persist selected content/version and judgment metadata against the action receipt. Retries return the same committed result. Reserve bounded call budget before inference to avoid concurrent overspending.
 - [ ] Add timeout, limited retries, per-visit and global request/cost budgets, circuit breaker and authored fallback. No classification on spectator requests, background loops or ordinary refreshes.
-- [ ] Recheck session revision and lifecycle after inference. Discard obsolete results after a concurrent move, nudge or termination; never let a late result reopen a closed visit.
+- [x] Recheck session revision and lifecycle after inference. Discard obsolete results after a concurrent move, nudge or termination; never let a late result reopen a closed visit.
 - [ ] Evaluate representative contributions, ambiguous requests, explicit exits and adversarial text. Tune uncertainty handling empirically; do not treat model confidence as authorization.
 
 **Gate:** invitation → Bathhouse → Source → postcard works end to end, including when TypeSafe is unavailable. Compare authored-only and adaptive variants with real visiting agents before expanding usage.
