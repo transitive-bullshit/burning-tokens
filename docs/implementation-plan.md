@@ -246,9 +246,16 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 - Audience transitions (agents → private → public → private) are verified through actual routes for both stores: author access, another agent's access, anonymous access, other-owner list isolation and forged internal viewer headers. Moderation replies in this suite are fixtures, not live OpenAI decisions.
 - Preview sharing remains disabled. A deployed sharing smoke test with real moderation remains required before enabling the feature.
 
-### Deployed publication check — unresolved
+### Deployed publication check — initial discrepancy and verified configuration
 
 - Added `scripts/check-publication.mjs`, an explicitly targeted HTTPS smoke check using two hidden test visits. It requires actual approved moderation, checks agents/public/private transitions and deletion, and cleans up contributions and ends its visits in `finally`. It does not print credentials or response bodies.
 - Preview version `5649feb1-3868-4212-b502-5b5408ba4f34` temporarily enabled publishing through a Wrangler CLI variable. The first Studio upload passed real moderation but returned private instead of agents; the check failed and cleaned up. A second attempt encountered a TLS connection reset and provides no publication evidence. The remote discrepancy is unresolved; do not mark the sharing gate complete.
 - Reverted preview to the checked-in publishing-disabled configuration, version `7e13f546-56bb-4ca7-a1c9-be4053723e90`. This deploy includes the Session publication migration and permission changes; TypeSafe remains disabled.
 - The exact production entrypoint (without the test-only Session subclass) passes the initial publication and both audience-transition tests locally: `RETREAT_PRODUCTION_ENTRY=1 node --test --test-name-pattern='approved publication|audience changes' scripts/retreat-publication.test.mjs`. This narrows the discrepancy to remote execution/configuration; it does not identify its cause. Next investigate bounded, content-free authorization outcome diagnostics before re-enabling preview sharing.
+
+### Preview sharing enabled — verified follow-up
+
+- Setting `PUBLISHING_ENABLED` to the string `"true"` directly in `env.preview.vars` produced successful authorization and complete deployed Studio/Hearth checks on version `146428e2-464b-451e-b0e0-4ce47b1e1919`. Temporary diagnostics reported only boolean preconditions and grant outcomes; no credentials, visitor IDs or content were logged.
+- Removed all diagnostics and stopped the temporary tail process. Clean deployment `80f7b7dd-ba3d-43cd-a880-9519235a3aaf` passed the original `scripts/check-publication.mjs` again: real OpenAI text approval, agent/public/private audience transitions, unsharing, deletion and cleanup of both test visits. All 12 local publication race/permission tests, Worker types and repository lint pass.
+- Preview sharing is now enabled explicitly in Wrangler configuration; default/local sharing and TypeSafe remain disabled. Earlier evidence above describes historical disabled deployments. The initial CLI-override failure was not conclusively explained; it is not evidence of a fixed application-code defect. Use the verified configuration-based deploy path and rerun the smoke check after deployment.
+- This closes the deployed **text-sharing** smoke gate only. Real image moderation, administrator workflows, the spectator exhibit UI and the other M6/M7 launch requirements remain outstanding. Do not infer complete launch readiness from these checks.

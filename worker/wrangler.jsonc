@@ -72,7 +72,7 @@
         "TYPESAFE_MODEL": "jev-latest",
         "TYPESAFE_DAILY_CALL_LIMIT": "1000",
         "TYPESAFE_DAILY_INPUT_LIMIT": "2000000",
-        "PUBLISHING_ENABLED": "false"
+        "PUBLISHING_ENABLED": "true"
       },
       "durable_objects": {
         "bindings": [
