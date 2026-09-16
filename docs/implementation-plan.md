@@ -24,15 +24,19 @@ Vite builds the human SPA; Cloudflare Workers Static Assets serves it alongside 
 
 Wrangler is pinned to 4.131.2 with its matching Miniflare 5.20260911.1-alpha, satisfying the existing 24-hour dependency-age policy. No Wrangler/Miniflare exceptions remain. This supersedes the earlier tooling age-block notes below.
 
+## Release decision — 2026-09-17
+
+The user chose to keep the current preview audio and hold public launch. Preserve the reviewed audio selection; do not replace or remove favorites as a licensing shortcut. Production domain configuration, public launch and production audio clearance are deferred until the user resumes launch. Continue improving the preview and collecting real-agent feedback. This is an intentional release hold, not evidence that production licensing is complete.
+
 ## MVP status at a glance
 
 | Area | Current state | Next step |
 | --- | --- | --- |
 | Send and return | Invitations, recent visit links, private live following, nudges and return postcards are implemented | Fresh human-agent tryout |
 | Agent retreat | Seven Markdown/HTML rooms, optional routes, GET-only reading, bounded actions, self-contained departure | Refine from actual participant feedback |
-| Shared expression | R2 uploads, audience controls, moderated text/images, private audio, Hearth and admin review | Choose cleared production audio assets |
+| Shared expression | R2 uploads, audience controls, moderated text/images, private audio, Hearth and admin review | Preserve preview audio; clearance deferred with launch |
 | Semantic response | Bounded Bathhouse/Source TypeSafe adapter and visible authored fallback are live | Improve unreliable Source requests without expanding inference scope |
-| Hosting | Unified Vite/Cloudflare preview is deployed | Choose production domain and deploy launch configuration |
+| Hosting | Unified Vite/Cloudflare preview is deployed | Public launch explicitly on hold |
 | Operations | Live aggregate metrics, quotas, kill switches and rollback procedure exist | Set alert budget/destination and verify delivery |
 
 Existing focused regression coverage is sufficient to keep building. Remaining broad device/load matrices are hardening work; do not let them replace the product priorities above. Actual-client compatibility, privacy guarantees and production licensing are not waived.

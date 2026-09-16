@@ -52,6 +52,8 @@ Private response-history diagnostics contain only the allowlisted model candidat
 
 ## Launch status
 
+The user explicitly chose on 2026-09-17 to retain preview audio and hold public launch. Preserve the current audio selection and do not configure or publish production until that decision changes.
+
 The core send → explore → follow → return journey is available in preview. Hosted metrics ingestion/queries, rollback with retained data, and a WebSocket hibernation cycle have been verified. The isolated Presence load run is useful evidence, not a capacity guarantee for 10,000 fully active agents. See [operations](operations.md).
 
 Before public launch: obtain a fresh ChatGPT/Claude trial, address product feedback and unreliable Source classification, choose the production domain and launch audio set, and configure basic alerts with a chosen budget/destination. Broader device/load/failure coverage is follow-up hardening, not the current product priority. The user explicitly asked to prioritize MVP progress over expanding test infrastructure.
