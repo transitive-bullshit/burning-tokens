@@ -112,7 +112,8 @@ Keep storage behind small domain methods. Each object's migrations run before it
 - [ ] Map actual room/lifecycle changes to the existing creature renderer. Retain stable identity; positions, collision, dragging and sound remain local illustrative behavior with no server writes.
 - [ ] Add **Suggest a room**, **Time to come back**, and **End visit**. Owner writes are authorized; suggestions appear on the next agent response, with queued/delivered/acknowledged distinctions.
 - [ ] Ending a visit closes server participation immediately, but never claims to stop or wake an external agent. Stop accepting new actions and reject stale in-flight results.
-- [ ] Test refresh, hidden tabs, network loss, hibernation, reconnect and owner termination during inference.
+- [ ] Test refresh, hidden tabs, network loss, reconnect and owner termination during inference.
+- [x] Verify a hosted hibernation cycle: the Session object is reconstructed while its original WebSocket stays connected, then restored ACK state delivers ordered deltas.
 
 **Gate:** the human follows a real agent across rooms and receives committed events promptly; reconnection loses no required state and no private data reaches public viewers.
 
@@ -478,3 +479,10 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 - `pnpm test:retreat-response-fallback` exercises the production Worker and real local SQLite objects with controlled provider responses: uncertain interpretation, unavailable provider, accepted interpretation, direct choice without another provider call, exact duplicate-action replay and resumed Markdown. It passes. This improves fallback clarity; it does not resolve the open Source classification evaluation failures.
 
 - Committed as `209a369`, deployed as preview `4dc3c384-cd8a-417b-aef3-16c5bb44f80f`. Build, frontend/Worker types, storage regressions and lint pass. A hosted private Dream Garden visit verified the default notice, exact action replay and resumed Markdown without calling TypeSafe; the test visit checked out.
+
+### Hosted Durable Object hibernation — 2026-09-16
+
+- Deployed an isolated lifecycle fixture using the actual Session, migrations and stream implementation. Its only diagnostic addition is an owner-authenticated constructor marker/socket count. The normal app Worker has no diagnostic route; fixture storage and admission counters are separate, with no secrets/R2 and disabled inference/publishing.
+- `scripts/check-hibernation.mjs` passed against Cloudflare fixture version `a316c410-10be-4b1b-8fe6-27fa3251c2e4`: after one 45-second idle interval, the constructor marker changed, the original socket remained open, and subsequent room transitions produced correctly sequenced deltas from restored ACK attachments. A second update verified continued acknowledgment handling. Anonymous diagnostic access was denied.
+- The test visit ended; the temporary Worker was deleted. Wrangler's later KV-list cleanup failed with an authorization error, so deletion was verified independently: fixture Worker settings 404/code 10007, application preview settings 200, and zero fixture namespaces in the complete five-entry namespace listing. Reproduction and cleanup commands are in [operations](operations.md). Lint passes.
+- This closes the actual hibernation check, not deployed population throughput, regional delivery lag, load-scale socket concurrency or owner termination during in-flight inference. The application preview remains `4dc3c384-cd8a-417b-aef3-16c5bb44f80f`.

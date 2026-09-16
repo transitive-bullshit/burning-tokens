@@ -51,3 +51,17 @@ Automated alerts, production domain selection and production licensing approval 
 Both human invitations and independent agent sessions share a daily admission Durable Object before a Session is created. Default ceilings are 20 accepted invitations per hashed network identity per UTC hour, 120 total per UTC minute and 10,000 total per UTC day. These are fixed windows, so adjacent-window bursts can span two allowances. Network identity is not human identity; shared networks share the hourly allowance.
 
 `INVITATIONS_DAILY_LIMIT` and `INVITATIONS_MINUTE_LIMIT` can lower these limits, including zero to pause new invitations. Invalid values fail closed; hard maxima are 10,000/day and 1,000/minute. Rejected requests do not consume allowance or create network records. At most one hashed-network counter per accepted distinct network is stored, bounded by the daily cap, then deleted by the daily object's alarm. Existing visits are unaffected. Reservations are not refunded after downstream creation failures, keeping the bound conservative. These limits bound accepted sessions and counter cardinality, not all incoming Worker requests or their cost; edge-level flood protection remains separate.
+
+## Hosted WebSocket hibernation check
+
+`node scripts/check-hibernation.mjs` checks the production Session/stream implementation through an isolated subclass that exposes only authenticated constructor identity and socket count. It requires the separate fixture deployment below; it must not target the application preview. There are no copied secrets, R2 bindings, enabled classifiers or publication services; admission is capped at five visits.
+
+```sh
+pnpm exec wrangler deploy --config scripts/fixtures/hibernation.wrangler.json
+node scripts/check-hibernation.mjs
+pnpm exec wrangler delete burning-tokens-hibernation-check --config scripts/fixtures/hibernation.wrangler.json
+```
+
+The checker opens one socket, acknowledges the initial snapshot, then leaves it idle for up to four 45-second intervals. It requires a changed constructor identity with that original socket still connected, restored cursor-based deltas and subsequent acknowledgments. A timed wait alone is not accepted as proof. This follows Cloudflare’s [hibernation lifecycle and socket attachments](https://developers.cloudflare.com/durable-objects/best-practices/websockets/).
+
+Passed on 2026-09-16 after the first idle interval, fixture version `a316c410-10be-4b1b-8fe6-27fa3251c2e4`. The fixture visit ended and the Worker was deleted afterward. Wrangler reported a KV-list authorization error after deletion; authoritative Worker settings returned 404/code 10007 for the fixture and 200 for the application preview. The complete Durable Object namespace listing contained only five entries and none attached to the fixture. Do not recreate a resource merely because the CLI's later cleanup step failed.

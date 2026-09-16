@@ -1,0 +1,66 @@
+{
+  "name": "burning-tokens-hibernation-check",
+  "main": "./hibernation-worker.mjs",
+  "account_id": "02b82b855bb1ee1f14bf68e5870aff82",
+  "compatibility_date": "2026-09-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "preview_urls": false,
+  "observability": {
+    "enabled": false
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "SESSIONS",
+        "class_name": "RetreatSession"
+      },
+      {
+        "name": "PRESENCE",
+        "class_name": "RetreatPresence"
+      },
+      {
+        "name": "BUDGET",
+        "class_name": "InferenceBudget"
+      },
+      {
+        "name": "STUDIO",
+        "class_name": "RetreatStudio"
+      },
+      {
+        "name": "LOUNGE",
+        "class_name": "RetreatLounge"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": [
+        "RetreatSession",
+        "RetreatPresence",
+        "InferenceBudget"
+      ]
+    },
+    {
+      "tag": "v2-studio",
+      "new_sqlite_classes": ["RetreatStudio"]
+    },
+    {
+      "tag": "v3-lounge",
+      "new_sqlite_classes": ["RetreatLounge"]
+    }
+  ],
+  "vars": {
+    "PUBLIC_ORIGIN": "https://burning-tokens-hibernation-check.fisch0920.workers.dev",
+    "TYPESAFE_ENABLED": "false",
+    "TYPESAFE_MODEL": "jev-latest",
+    "INVITATIONS_DAILY_LIMIT": "5",
+    "INVITATIONS_MINUTE_LIMIT": "5",
+    "TYPESAFE_DAILY_CALL_LIMIT": "1000",
+    "TYPESAFE_DAILY_INPUT_LIMIT": "2000000",
+    "PUBLISHING_ENABLED": "false",
+    "METRICS_ENABLED": "false"
+  },
+  "$schema": "../../node_modules/wrangler/config-schema.json"
+}
