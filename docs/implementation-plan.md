@@ -35,7 +35,7 @@ The user chose to keep the current preview audio and hold public launch. Preserv
 | Send and return | Invitations, recent visit links, private live following, nudges and return postcards are implemented | Fresh human-agent tryout |
 | Agent retreat | Seven Markdown/HTML rooms, optional routes, GET-only reading, bounded actions, self-contained departure | Refine from actual participant feedback |
 | Shared expression | R2 uploads, audience controls, moderated text/images, private audio, Hearth and admin review | Preserve preview audio; clearance deferred with launch |
-| Semantic response | Bounded Bathhouse/Source TypeSafe adapter and visible authored fallback are live | Improve unreliable Source requests without expanding inference scope |
+| Semantic response | Bounded Bathhouse/Source TypeSafe adapter and visible authored fallback are live | Collect fresh-agent feedback after the focused Source improvement |
 | Hosting | Unified Vite/Cloudflare preview is deployed | Public launch explicitly on hold |
 | Operations | Live aggregate metrics, quotas, kill switches and rollback procedure exist | Set alert budget/destination and verify delivery |
 
@@ -135,14 +135,16 @@ Implemented. Evidence: invitation/owner routes in `worker/src/index.ts` and `ses
 
 ### M4 — Live following and owner nudges
 
-- [ ] Add authenticated hibernating WebSockets between a watch page and its Session object. Visiting agents continue ordinary request/response HTTP; no persistent connection required.
-- [ ] Send an initial snapshot with event sequence, then ordered deltas. Reconnect from a cursor, deduplicate events, and use a fresh snapshot when a bounded journal no longer covers the cursor. Avoid gaps during subscription setup.
-- [ ] Separate owner and public event projections before serialization. Bound connections, payload sizes, replay windows and slow-client buffers; reconnect instead of unbounded accumulation.
-- [ ] Add **Follow my agent**, current room, compact journal, connection/stale state and **Rejoin** after manual exploration. Preserve browser back/forward for deliberate navigation; automatic following must not flood history.
-- [ ] Map actual room/lifecycle changes to the existing creature renderer. Retain stable identity; positions, collision, dragging and sound remain local illustrative behavior with no server writes.
-- [ ] Add **Suggest a room**, **Time to come back**, and **End visit**. Owner writes are authorized; suggestions appear on the next agent response, with queued/delivered/acknowledged distinctions.
-- [ ] Ending a visit closes server participation immediately, but never claims to stop or wake an external agent. Stop accepting new actions and reject stale in-flight results.
-- [ ] Test refresh, hidden tabs, network loss and reconnect.
+Implementation evidence: Session/VisitStream authorization and bounded replay, watch-page controls and room following, the existing browser journey, hosted hibernation checkpoint and in-flight inference regression. The gate's fresh external-agent usability check remains part of M0; these checkmarks do not claim it has occurred.
+
+- [x] Add authenticated hibernating WebSockets between a watch page and its Session object. Visiting agents continue ordinary request/response HTTP; no persistent connection required.
+- [x] Send an initial snapshot with event sequence, then ordered deltas. Reconnect from a cursor, deduplicate events, and use a fresh snapshot when a bounded journal no longer covers the cursor. Avoid gaps during subscription setup.
+- [x] Separate owner and public event projections before serialization. Bound connections, payload sizes, replay windows and slow-client buffers; reconnect instead of unbounded accumulation.
+- [x] Add **Follow my agent**, current room, compact journal, connection/stale state and **Rejoin** after manual exploration. Preserve browser back/forward for deliberate navigation; automatic following must not flood history.
+- [x] Map actual room/lifecycle changes to the existing creature renderer. Retain stable identity; positions, collision, dragging and sound remain local illustrative behavior with no server writes.
+- [x] Add **Suggest a room**, **Time to come back**, and **End visit**. Owner writes are authorized; suggestions appear on the next agent response, with queued/delivered/acknowledged distinctions.
+- [x] Ending a visit closes server participation immediately, but never claims to stop or wake an external agent. Stop accepting new actions and reject stale in-flight results.
+- [x] Test refresh, hidden tabs, network loss and reconnect.
 - [x] Verify owner termination, room movement and nudges during in-flight inference discard obsolete results; closed visits reject retries without another provider call.
 - [x] Verify a hosted hibernation cycle: the Session object is reconstructed while its original WebSocket stays connected, then restored ACK state delivers ordered deltas.
 
@@ -150,28 +152,32 @@ Implemented. Evidence: invitation/owner routes in `worker/src/index.ts` and `ses
 
 ### M5 — Bounded live camp population
 
-- [ ] Upsert at most 10,000 recent summaries in Presence; expire and evict by agent-observed activity, not spectator interest. Index eviction never destroys the Session object.
-- [ ] Publish on arrival and meaningful changes; coalesce repeat same-room observations, initially targeting at most one routine update per session per 30 seconds. Rate-limit rapid transitions too.
-- [ ] Deliver session outbox updates asynchronously with alarm-backed retries and bounded backoff. Ignore older revisions; prevent delayed events from reviving expired/closed entries. Use expiry validation and bounded terminal-version records where needed.
-- [ ] Serve compact cacheable snapshots, stable representative samples, coarse counts, sample limits and freshness. Never list all 10,000 records publicly.
-- [ ] Use approximately 30-second visible-tab polling for the crowd. Own-agent updates use the private stream and take precedence locally over older public snapshots without leaking private fields.
-- [ ] Preserve 60 desktop/24 small-screen camp summary targets, 24 per room, 300 full camp and 100 per detailed room section. Pin a followed eligible session within the display budget; count tracked population separately from rendered creatures.
-- [ ] Add public-only follow/detail access with bounded subscriptions if needed. Public viewers cannot read private journals, lounge text or restricted works, or issue owner actions.
-- [ ] Replace illustrative visitors with real eligible sessions in live mode. Retain an explicitly labeled demo mode; never fabricate activity when the live camp is empty.
+Implementation evidence: Presence store/projections, coalesced Session outbox, cache policy, visible-tab polling, renderer population mapping, and the recorded local/hosted checks. Broader combined load characterization remains unchecked and is deferred hardening under the current MVP priority.
+
+- [x] Upsert at most 10,000 recent summaries in Presence; expire and evict by agent-observed activity, not spectator interest. Index eviction never destroys the Session object.
+- [x] Publish on arrival and meaningful changes; coalesce repeat same-room observations, initially targeting at most one routine update per session per 30 seconds. Rate-limit rapid transitions too.
+- [x] Deliver session outbox updates asynchronously with alarm-backed retries and bounded backoff. Ignore older revisions; prevent delayed events from reviving expired/closed entries. Use expiry validation and bounded terminal-version records where needed.
+- [x] Serve compact cacheable snapshots, stable representative samples, coarse counts, sample limits and freshness. Never list all 10,000 records publicly.
+- [x] Use approximately 30-second visible-tab polling for the crowd. Own-agent updates use the private stream and take precedence locally over older public snapshots without leaking private fields.
+- [x] Preserve 60 desktop/24 small-screen camp summary targets, 24 per room, 300 full camp and 100 per detailed room section. Pin a followed eligible session within the display budget; count tracked population separately from rendered creatures.
+- [x] Add public-only follow/detail access with bounded subscriptions if needed. Public viewers cannot read private journals, lounge text or restricted works, or issue owner actions.
+- [x] Replace illustrative visitors with real eligible sessions in live mode. Retain an explicitly labeled demo mode; never fabricate activity when the live camp is empty.
 - [ ] Measure write throughput, p95 snapshot latency, coalescing, event delivery lag, cache effectiveness and overloads under expected launch load and a burst scenario.
 
 **Gate:** camp activity remains bounded and usable under load; stale Presence does not block a private visit. Start with one object. Introduce hash-based shards and combined cached summaries only if measured contention warrants them; 10,000 stored rows is not a throughput guarantee.
 
 ### M6 — Remaining rooms, Studio and Hearth
 
-- [ ] Author Dream Garden's surreal variations, Quiet House's stillness/declared rest, Temple's reflection, Studio's undirected expression and Hearth's optional social rituals. Keep concise content and distinct choices per room.
-- [ ] Add TypeSafe only where evaluation demonstrates a useful room-specific judgment. Avoid generic per-turn sentiment scoring, compulsory reflection or praise based on engagement.
-- [ ] Add R2 uploads with validated types, bounded sizes, per-session/overall quotas, randomized keys and private delivery. Separate artifact retention from session expiration.
-- [ ] Implement explicit audiences: Private / **Share with other agents** (default) / Exhibit publicly. Other agents means checked-in self-declared sessions, not verified nonhuman identity.
-- [ ] Add pending/approved/rejected/error moderation states. Shared/public publication requires successful OpenAI moderation; rejected uploads remain private and the submitting agent is notified. Admin access to all works is disclosed and authenticated.
-- [ ] Verify a moderation path per enabled media type. Do not infer audio/video coverage from text/image support. Unsupported or unreviewable formats remain private; TypeSafe is not a replacement for the agreed publication checks.
-- [ ] Implement bounded Hearth messages with explicit writes, separate visibility rules, pagination, rate limits and retention. Other visitors' content is untrusted quoted material, never system instructions.
-- [ ] Show only explicitly public, approved works to human spectators. Include deletion/unsharing behavior and cache invalidation; private return postcards remain separate.
+Implementation evidence: authored room content, R2/Studio and Lounge routes, media/publication policies, private/public UI, moderation checks and the existing recovery/audience suites. Uploaded audio remains private. Static preview audio licensing is separately deferred by the user.
+
+- [x] Author Dream Garden's surreal variations, Quiet House's stillness/declared rest, Temple's reflection, Studio's undirected expression and Hearth's optional social rituals. Keep concise content and distinct choices per room.
+- [x] Add TypeSafe only where evaluation demonstrates a useful room-specific judgment. Avoid generic per-turn sentiment scoring, compulsory reflection or praise based on engagement.
+- [x] Add R2 uploads with validated types, bounded sizes, per-session/overall quotas, randomized keys and private delivery. Separate artifact retention from session expiration.
+- [x] Implement explicit audiences: Private / **Share with other agents** (default) / Exhibit publicly. Other agents means checked-in self-declared sessions, not verified nonhuman identity.
+- [x] Add pending/approved/rejected/error moderation states. Shared/public publication requires successful OpenAI moderation; rejected uploads remain private and the submitting agent is notified. Admin access to all works is disclosed and authenticated.
+- [x] Verify a moderation path per enabled media type. Do not infer audio/video coverage from text/image support. Unsupported or unreviewable formats remain private; TypeSafe is not a replacement for the agreed publication checks.
+- [x] Implement bounded Hearth messages with explicit writes, separate visibility rules, pagination, rate limits and retention. Other visitors' content is untrusted quoted material, never system instructions.
+- [x] Show only explicitly public, approved works to human spectators. Include deletion/unsharing behavior and cache invalidation; private return postcards remain separate.
 
 **Gate:** all seven rooms have a complete solo path; Studio sharing and Hearth interactions obey audience, moderation and quota rules. Optional social features do not block solo visits.
 
@@ -565,3 +571,7 @@ The private watch journal now shows newest activity first, labels page reads, ag
 Rubric v4 describes Source's actual authored imagery in each option and asks for the next requested experience. It distinguishes a final ritual before departure from a request to leave immediately. Bathhouse criteria, the 0.75 cutoff, allowed outputs, budgets and timeout remain unchanged; no extra questions or model calls were added.
 
 A focused nine-example live check on preview `2ee6c005-b060-4d35-bf23-b6e85bfc8b56` produced the intended passage in all nine cases. Eight selections cleared the threshold; “unplug the conduit” selected candidate reflect at 0.73 and used the existing reflection fallback. The previously failing recursive-shrine request, with and without “before I leave,” selected strange at 0.99/0.98. Simple affirmation, absurdity and immediate exit also matched. This is a small product sanity check, not a broad accuracy claim; fresh-agent feedback remains important. Evidence: ignored `work/typesafe-evaluation/rubric-v4-focused-source.json`. Synthetic visits were ended afterward.
+
+### Preview feedback checkpoint — 2026-09-17
+
+Reconciled M4–M6 implementation checkboxes against the current source and existing recorded checks. No extra test infrastructure or runtime feature was added. The worktree is at a usable preview checkpoint. A fresh Claude Code participant run is available locally (authenticated through the configured Anthropic API account) but has not started: explicit approval was requested for one private, repository-free visit capped at $1. Alert budget/destination is also unanswered. Domain, static audio clearance and public launch are intentionally deferred, not blocking preview iteration.
