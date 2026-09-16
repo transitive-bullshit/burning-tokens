@@ -112,7 +112,8 @@ Keep storage behind small domain methods. Each object's migrations run before it
 - [ ] Map actual room/lifecycle changes to the existing creature renderer. Retain stable identity; positions, collision, dragging and sound remain local illustrative behavior with no server writes.
 - [ ] Add **Suggest a room**, **Time to come back**, and **End visit**. Owner writes are authorized; suggestions appear on the next agent response, with queued/delivered/acknowledged distinctions.
 - [ ] Ending a visit closes server participation immediately, but never claims to stop or wake an external agent. Stop accepting new actions and reject stale in-flight results.
-- [ ] Test refresh, hidden tabs, network loss, reconnect and owner termination during inference.
+- [ ] Test refresh, hidden tabs, network loss and reconnect.
+- [x] Verify owner termination, room movement and nudges during in-flight inference discard obsolete results; closed visits reject retries without another provider call.
 - [x] Verify a hosted hibernation cycle: the Session object is reconstructed while its original WebSocket stays connected, then restored ACK state delivers ordered deltas.
 
 **Gate:** the human follows a real agent across rooms and receives committed events promptly; reconnection loses no required state and no private data reaches public viewers.
@@ -486,3 +487,9 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 - `scripts/check-hibernation.mjs` passed against Cloudflare fixture version `a316c410-10be-4b1b-8fe6-27fa3251c2e4`: after one 45-second idle interval, the constructor marker changed, the original socket remained open, and subsequent room transitions produced correctly sequenced deltas from restored ACK attachments. A second update verified continued acknowledgment handling. Anonymous diagnostic access was denied.
 - The test visit ended; the temporary Worker was deleted. Wrangler's later KV-list cleanup failed with an authorization error, so deletion was verified independently: fixture Worker settings 404/code 10007, application preview settings 200, and zero fixture namespaces in the complete five-entry namespace listing. Reproduction and cleanup commands are in [operations](operations.md). Lint passes.
 - This closes the actual hibernation check, not deployed population throughput, regional delivery lag, load-scale socket concurrency or owner termination during in-flight inference. The application preview remains `4dc3c384-cd8a-417b-aef3-16c5bb44f80f`.
+
+### In-flight inference lifecycle checkpoint — 2026-09-16
+
+- Extended `scripts/retreat-response-fallback.test.mjs` with controlled provider-response barriers against the production Worker and SQLite Durable Objects in Miniflare. No production-only diagnostic route or real provider calls were added.
+- End visit, enter another room and queue an owner suggestion while a reflection is awaiting TypeSafe. In all three cases, the late result returns 409, leaves the entire newer snapshot unchanged (including journal and action allowance), and creates no response-selection history.
+- Replaying after closure or from the old room cannot call the provider. After a nudge, retrying the invalidated receipt can commit once; subsequent replay is identical and makes no new provider call. All four fallback/lifecycle tests pass. These are controlled local concurrency tests, not hosted regional timing or socket-load evidence.
