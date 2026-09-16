@@ -61,6 +61,7 @@ import {
 
 export class RetreatSession extends DurableObject<Env> {
   private db
+  private storageDeleted = false
   private readonly stream = new VisitStream(() => this.snapshot())
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env)
@@ -75,6 +76,8 @@ export class RetreatSession extends DurableObject<Env> {
     await this.ctx.storage.setAlarm(state.expiresAt)
   }
   private state() {
+    if (this.storageDeleted)
+      throw new HttpError(404, 'Visit not found or expired')
     const row = this.db.select().from(sessions).get()
     if (!row) throw new HttpError(404, 'Visit not found or expired')
     if (row.state.expiresAt <= Date.now())
@@ -847,12 +850,15 @@ export class RetreatSession extends DurableObject<Env> {
     this.stream.message(socket, message)
   }
   async alarm() {
+    if (this.storageDeleted) return
     const stored = this.db.select().from(sessions).get()?.state
     if (!stored) return
     if (stored.expiresAt <= Date.now()) {
       for (const socket of this.ctx.getWebSockets())
         socket.close(1000, 'Visit expired')
       await this.ctx.storage.deleteAll()
+      // deleteAll removes SQLite tables too; this instance can still receive requests.
+      this.storageDeleted = true
       return
     }
     const pending = this.db.select().from(outbox).get()
