@@ -155,3 +155,7 @@ The scoped build requires Node.js 24 or newer and pnpm; the installed build pack
 This Markdown is the canonical decision record. `brand.json` projects the copy, exact palette, type and asset paths for the renderer; `tokens.css` projects the same web styling values. When a field changes, update these together and rebuild affected outputs. Never infer new brand rules from incidental generated lettering, image details or a mockup’s nonexistent feature.
 
 Marketing, README copy, social previews and invitations should use the name, descriptive one-liner and primary invitation consistently. Agent-facing pages retain the voice and explicit choices in readable prose. Normal applications and supporting copy can evolve within this system. Changing the name, positioning, core visual language, wordmark or voice is a new brand decision to resolve with the user.
+
+## Button links
+
+Links presented as buttons or pills never use text underlines, including on hover. Use color, surface and focus treatments for interaction feedback. This applies to the homepage agent-entry pill and shared Button component.
