@@ -41,7 +41,8 @@
     "test:retreat-inference-diagnostics": "node --test scripts/retreat-inference-diagnostics.test.mjs",
     "test:retreat-admission": "tsx --test scripts/retreat-admission.test.mjs",
     "test:retreat-metrics": "tsx --test scripts/retreat-metrics.test.mjs",
-    "test:retreat-outbox-recovery": "node --test scripts/retreat-outbox-recovery.test.mjs"
+    "test:retreat-outbox-recovery": "node --test scripts/retreat-outbox-recovery.test.mjs",
+    "test:retreat-inference-budget": "node --test scripts/retreat-inference-budget.test.mjs"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",

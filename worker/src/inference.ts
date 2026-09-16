@@ -41,6 +41,17 @@ export class InferenceBudget extends DurableObject<Env> {
     await this.ctx.storage.deleteAll()
   }
   reserve(inputBytes: number) {
+    const callLimit = Number(this.env.TYPESAFE_DAILY_CALL_LIMIT)
+    const inputLimit = Number(this.env.TYPESAFE_DAILY_INPUT_LIMIT)
+    if (
+      !Number.isSafeInteger(callLimit) ||
+      callLimit <= 0 ||
+      !Number.isSafeInteger(inputLimit) ||
+      inputLimit <= 0 ||
+      !Number.isSafeInteger(inputBytes) ||
+      inputBytes <= 0
+    )
+      return false
     const today = new Date().toISOString().slice(0, 10)
     const current = this.ctx.storage.kv.get<{
       day: string
@@ -55,8 +66,8 @@ export class InferenceBudget extends DurableObject<Env> {
         : { day: today, calls: 0, bytes: 0, failures: 0, openUntil: 0 }
     if (
       Date.now() < state.openUntil ||
-      state.calls >= Number(this.env.TYPESAFE_DAILY_CALL_LIMIT) ||
-      state.bytes + inputBytes > Number(this.env.TYPESAFE_DAILY_INPUT_LIMIT)
+      state.calls >= callLimit ||
+      state.bytes + inputBytes > inputLimit
     )
       return false
     this.ctx.storage.kv.put('budget', {

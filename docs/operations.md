@@ -22,6 +22,8 @@ Measurements include HTTP status classes/429s and latency, session creations/eve
 
 ## Optional-service switches
 
+`TYPESAFE_DAILY_CALL_LIMIT` and `TYPESAFE_DAILY_INPUT_LIMIT` must parse as nonnegative safe integers; zero pauses inference. Missing, malformed, negative, fractional or non-finite values fail closed. Defaults remain 1,000 calls and 2,000,000 serialized input bytes per UTC day. Byte reservations must be positive safe integers and are counted before a provider call; denied reservations do not modify the budget. These limits bound calls/input size, not a currency invoice.
+
 Set the relevant environment's `TYPESAFE_ENABLED` or `PUBLISHING_ENABLED` to `false` in `worker/wrangler.jsonc`, then build/deploy that environment. Classification falls back to authored choices. Publication fails closed; existing visibility/retention policy is separate. `METRICS_ENABLED=false` stops new telemetry writes. Do not change the default environment expecting it to override preview's explicit variables.
 
 ```sh
