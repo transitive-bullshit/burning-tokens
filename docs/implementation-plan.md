@@ -435,3 +435,9 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 - Hosted route/header/content-negotiation checks and existing admin authorization/review checks pass. The first hosted browser journey completed private following, offline/hidden-tab replay, focus retention and artifact handling but timed out on public room movement. Concurrent dashboard-tab automation may have affected visibility, so an isolated rerun with explicit visibility diagnostics is required before claiming the whole journey passed.
 
 - The isolated hosted browser rerun passes the entire journey, including public room movement and hiding. This establishes passing behavior on the deployed version; the earlier timeout remains recorded and its precise cause is not proven. Dashboard automation and headless browser tests should run sequentially to avoid visibility interference.
+
+### Session outbox recovery regression — 2026-09-16
+
+- `pnpm test:retreat-outbox-recovery` runs the production Session and Presence implementations in isolated Miniflare SQLite objects, with a test-only failing/delayed Presence transport. No fault controls are included in the deployed Worker.
+- Verified: failures preserve one coalesced pending summary and increment retry backoff; room actions and authenticated owner reads retain the exact committed private journal during the outage; recovery sends the latest revision and clears the queue; a successful older in-flight delivery cannot erase a newer pending room update. Empty queues do not send duplicate updates.
+- The fixture explicitly invokes the production alarm handler and suppresses wall-clock alarms to make interleavings deterministic. This proves local recovery logic, not scheduled alarm timing, object eviction/hibernation, regional delivery lag or deployed load capacity. Lint passes.
