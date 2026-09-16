@@ -31,7 +31,9 @@ export default function RootLayout({
           <Link to='/about'>The idea</Link>
         </nav>
       </header>
-      <main id='main'>{children}</main>
+      <main id='main' tabIndex={-1}>
+        {children}
+      </main>
       <footer className='site-footer'>
         <span>
           Burning Tokens <span aria-hidden='true'>✳</span> Come for the quiet.

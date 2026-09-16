@@ -381,3 +381,9 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 - [Operations runbook](operations.md) records metric semantics, optional-service switches and schema-compatible rollback requirements. Observed socket counts are not a global concurrency gauge, mean latency is not p95, and reported usage is not a billing total. Live aggregate verification, alerts and persisted-data rollback rehearsal remain open; M7 is not complete.
 
 - Preview deployment is blocked by Cloudflare API error `10089` (Analytics Engine access), including after the dashboard reported successful creation of `burning_tokens_metrics_preview`. No metrics deployment succeeded; the existing preview version remains in place. The API token was neither accessed nor stored during these attempts. Account access and credential installation are separate outstanding checks.
+
+### Mobile and keyboard browser checks — 2026-09-16
+
+- Extended the real Chrome route harness with a 320px mobile viewport and emulated OS reduced-motion preference. It checks home, invitation, camp, Bathhouse and admin layout width; scenes start paused under reduced motion. Keyboard Enter operates the motion and sound controls, and Chrome's accessibility tree exposes motion, volume and the visible retreat navigation.
+- The new keyboard check caught a real skip-link failure: the anchor scrolled but did not focus main content. Added `tabIndex={-1}` to the main landmark so the existing skip link transfers focus without creating an extra Tab stop. The regression test verifies the focused element, not merely the URL hash.
+- This is focused Chrome evidence, not a full assistive-technology audit. Actual screen-reader behavior, touch dragging, all owner flows on mobile and global active-socket measurement remain unverified.

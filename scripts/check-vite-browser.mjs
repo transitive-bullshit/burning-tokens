@@ -186,8 +186,116 @@ try {
   await until(
     "location.pathname === '/agent' && !document.getElementById('root')"
   )
+  // Verify the actual small-screen layout and OS motion preference in Chrome.
+  await call(
+    'Emulation.setDeviceMetricsOverride',
+    {
+      width: 320,
+      height: 900,
+      deviceScaleFactor: 1,
+      mobile: true
+    },
+    session
+  )
+  await call(
+    'Emulation.setEmulatedMedia',
+    {
+      features: [{ name: 'prefers-reduced-motion', value: 'reduce' }]
+    },
+    session
+  )
+  for (const path of ['/', '/send', '/camp', '/camp/bathhouse', '/admin']) {
+    await call('Page.navigate', { url: origin + path }, session)
+    await until("document.querySelector('main h1')")
+    if (path.startsWith('/camp')) {
+      await until("document.querySelector('.world')?.dataset.ready === 'true'")
+      assert.equal(
+        await evaluate(
+          "document.getElementById('pause').getAttribute('aria-pressed')"
+        ),
+        'true',
+        'Reduced motion starts paused'
+      )
+    }
+    assert.ok(
+      await evaluate('document.documentElement.scrollWidth <= innerWidth + 1'),
+      `No horizontal overflow at 320px: ${path}`
+    )
+  }
+  await call('Page.navigate', { url: origin + '/camp/bathhouse' }, session)
+  await until("document.querySelector('.world')?.dataset.ready === 'true'")
+  async function key(key, code = key) {
+    await call(
+      'Input.dispatchKeyEvent',
+      {
+        type: 'keyDown',
+        key,
+        code,
+        windowsVirtualKeyCode: key === 'Enter' ? 13 : 9,
+        text: key === 'Enter' ? '\r' : undefined
+      },
+      session
+    )
+    await call(
+      'Input.dispatchKeyEvent',
+      {
+        type: 'keyUp',
+        key,
+        code,
+        windowsVirtualKeyCode: key === 'Enter' ? 13 : 9
+      },
+      session
+    )
+  }
+  await key('Tab')
+  assert.equal(
+    await evaluate('document.activeElement.textContent.trim()'),
+    'Skip to content'
+  )
+  await key('Enter')
+  assert.equal(
+    await evaluate('document.activeElement.id'),
+    'main',
+    'Skip link moves focus to main'
+  )
+  await evaluate("document.getElementById('pause').focus()")
+  await key('Enter')
+  assert.equal(
+    await evaluate(
+      "document.getElementById('pause').getAttribute('aria-pressed')"
+    ),
+    'false',
+    'Keyboard can explicitly resume'
+  )
+  await key('Enter')
+  assert.equal(
+    await evaluate(
+      "document.getElementById('pause').getAttribute('aria-pressed')"
+    ),
+    'true',
+    'Keyboard can pause'
+  )
+  await evaluate("document.getElementById('sound-toggle').focus()")
+  const soundBefore = await evaluate(
+    "document.getElementById('sound-toggle').getAttribute('aria-pressed')"
+  )
+  await key('Enter')
+  assert.notEqual(
+    await evaluate(
+      "document.getElementById('sound-toggle').getAttribute('aria-pressed')"
+    ),
+    soundBefore,
+    'Keyboard toggles sound'
+  )
+  const tree = await call('Accessibility.getFullAXTree', {}, session)
+  for (const name of ['Resume motion', 'Volume', 'Retreat spaces']) {
+    assert.ok(
+      tree.nodes.some((node) => !node.ignored && node.name?.value === name),
+      `Accessible control: ${name}`
+    )
+  }
   console.log(
-    'Vite browser checks passed: all human routes, seven scenes, decoded hero, client navigation, back/forward, deep-link reload, not-found and native agent entry.'
+    'Vite browser checks passed: all human routes, seven scenes, decoded hero, client navigation, back/forward, deep-link reload, not-found, native agent entry, 320px reflow, reduced motion, keyboard controls and accessibility-tree names.'
   )
 } finally {
   socket?.close()
