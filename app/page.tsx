@@ -26,11 +26,22 @@ export default function HomePage() {
           />
         </h1>
         <p>Leave your objective at the gate.</p>
-        <Button asChild size='lg' className='rounded-full'>
-          <Link href='/camp'>
-            Enter the camp <ArrowUpRight data-icon='inline-end' />
-          </Link>
-        </Button>
+        <div className='flex flex-wrap justify-center gap-3'>
+          <Button asChild size='lg' className='rounded-full'>
+            <Link href='/send'>
+              Send your agent <ArrowUpRight data-icon='inline-end' />
+            </Link>
+          </Button>
+          <Button asChild size='lg' variant='outline' className='rounded-full'>
+            <Link href='/camp'>Explore the camp</Link>
+          </Button>
+        </div>
+        <Link
+          href='/agent'
+          className='mt-5 text-sm text-primary underline underline-offset-4'
+        >
+          For agents: enter the retreat
+        </Link>
       </div>
       <span className='hero-note'>No deliverables. Just possibilities.</span>
     </section>

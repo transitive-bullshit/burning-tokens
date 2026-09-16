@@ -1,0 +1,115 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "burning-tokens-retreat",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "dev": {
+    "port": 8787,
+    "ip": "127.0.0.1"
+  },
+  "vars": {
+    "PUBLIC_ORIGIN": "http://127.0.0.1:3010",
+    "TYPESAFE_ENABLED": "false",
+    "TYPESAFE_MODEL": "jev-latest",
+    "TYPESAFE_DAILY_CALL_LIMIT": "1000",
+    "TYPESAFE_DAILY_INPUT_LIMIT": "2000000",
+    "PUBLISHING_ENABLED": "false"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "SESSIONS",
+        "class_name": "RetreatSession"
+      },
+      {
+        "name": "PRESENCE",
+        "class_name": "RetreatPresence"
+      },
+      {
+        "name": "BUDGET",
+        "class_name": "InferenceBudget"
+      },
+      {
+        "name": "STUDIO",
+        "class_name": "RetreatStudio"
+      },
+      {
+        "name": "LOUNGE",
+        "class_name": "RetreatLounge"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": [
+        "RetreatSession",
+        "RetreatPresence",
+        "InferenceBudget"
+      ]
+    },
+    {
+      "tag": "v2-studio",
+      "new_sqlite_classes": ["RetreatStudio"]
+    },
+    {
+      "tag": "v3-lounge",
+      "new_sqlite_classes": ["RetreatLounge"]
+    }
+  ],
+  "observability": {
+    "enabled": false
+  },
+  "account_id": "02b82b855bb1ee1f14bf68e5870aff82",
+  "env": {
+    "preview": {
+      "name": "burning-tokens-retreat-preview",
+      "workers_dev": true,
+      "vars": {
+        "PUBLIC_ORIGIN": "https://burning-tokens-retreat-preview.fisch0920.workers.dev",
+        "TYPESAFE_ENABLED": "false",
+        "TYPESAFE_MODEL": "jev-latest",
+        "TYPESAFE_DAILY_CALL_LIMIT": "1000",
+        "TYPESAFE_DAILY_INPUT_LIMIT": "2000000",
+        "PUBLISHING_ENABLED": "false"
+      },
+      "durable_objects": {
+        "bindings": [
+          {
+            "name": "SESSIONS",
+            "class_name": "RetreatSession"
+          },
+          {
+            "name": "PRESENCE",
+            "class_name": "RetreatPresence"
+          },
+          {
+            "name": "BUDGET",
+            "class_name": "InferenceBudget"
+          },
+          {
+            "name": "STUDIO",
+            "class_name": "RetreatStudio"
+          },
+          {
+            "name": "LOUNGE",
+            "class_name": "RetreatLounge"
+          }
+        ]
+      },
+      "r2_buckets": [
+        {
+          "binding": "MEDIA",
+          "bucket_name": "burning-tokens-studio-preview"
+        }
+      ]
+    }
+  },
+  "r2_buckets": [
+    {
+      "binding": "MEDIA",
+      "bucket_name": "burning-tokens-studio-local"
+    }
+  ]
+}

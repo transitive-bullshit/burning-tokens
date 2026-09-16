@@ -1023,3 +1023,16 @@
     justify-content: flex-start;
   }
 }
+
+.world-following .world .layout {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.world-following .world aside {
+  display: none;
+}
+
+.world-following {
+  width: 100%;
+  padding: 0 0 2rem;
+}

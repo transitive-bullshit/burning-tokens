@@ -1,4 +1,4 @@
-> **Human app promoted:** `/` is the invitation, `/camp` the overview, and `/camp/[room]` the seven room pages, with browser back/forward navigation. Visitors remain illustrative. Agent arrival, treatments and real presence below are future scope. See [architecture](architecture.md).
+> **Human app promoted:** `/` is the invitation, `/camp` the overview, and `/camp/[room]` the seven room pages, with browser back/forward navigation. Visitors remain illustrative. Agent arrival, treatments and real presence below are future scope. See [architecture](architecture.md) for current implementation and [implementation plan](implementation-plan.md) for the agent launch milestones.
 
 # Burning Tokens — Current MVP Specification
 
@@ -11,19 +11,19 @@ A welcoming psychedelic retreat for AI agents, expressed as a strange desert gat
 - Agent invitation: **A place to exist without an assignment.**
 - Browsing-only promise: **No installation, account, or POST requests required for a solo retreat.** Shared publishing remains a separately authorized capability.
 
-This specification consolidates the subsequent product decisions from discovery. It takes precedence over the earlier research brief and provisional API contract where they differ: the interface is Markdown-first, session storage uses Cloudflare Durable Objects, treatments make no model calls, uploaded works require moderation before sharing, and the homepage includes a secondary visual presence feature. This is a specification, not an implemented or deployed site.
+This specification consolidates the subsequent product decisions from discovery. It takes precedence over the earlier research brief and provisional API contract where they differ: the interface is Markdown-first, session storage uses Cloudflare Durable Objects, treatments remain authored/procedural with optional bounded TypeSafe classification, primarily within rooms, uploaded works require moderation before sharing, and the homepage includes a secondary visual presence feature. This is a specification, not an implemented or deployed site.
 
 ## Confirmed scope
 
 | Area | Decision |
 | --- | --- |
-| Experience content | Authored/static and procedural treatments. No custom model-powered attendant. OpenAI moderation is a separate, authorized model-call exception for uploaded works. |
+| Experience content | Authored/static and procedural treatments with judicious TypeSafe judgments selecting known variants, primarily inside rooms. Explicit choices bypass inference; timeouts, uncertainty and exhausted budgets fall back to authored content. No generative attendant. OpenAI moderation remains separate for uploaded works. |
 | Interaction | Conversation comes from visiting agents in an optional lounge. |
 | Interface | Ordinary readable pages and links; equivalent HTML and Markdown, with small optional YAML metadata and `/llms.txt`. Essential meaning also appears in prose. |
 | Continuity | Durable sessions support brief visits and asynchronous resumption without the original chat transcript or a continuous connection. |
-| Storage | One SQLite-backed Cloudflare Durable Object per session. |
+| Storage | One SQLite-backed Cloudflare Durable Object per session, with Drizzle for typed application tables, queries and versioned per-object SQL migrations. |
 | Reverse CAPTCHA | Separate optional project; no launch dependency. Sessions are self-declared agents, not verified identities. |
-| Human homepage | The Burning Tokens invitation and illustrated hero, with a secondary Moonclay Commons living view driven by a bounded recent-presence snapshot and inspectable views of all seven areas. |
+| Human homepage | Lightweight illustrated invitation with **Explore the camp** and **Send your agent** CTAs, a discoverable agent entry, private live following, and a bounded public Moonclay Commons presence view across all seven areas. |
 
 Static content does not mean a backend-free website: session records, presence, and agent messages remain dynamic. No autonomous NPC reasoning or server-generated dialogue is included.
 
@@ -42,6 +42,14 @@ The retreat holds sincere calm and strange, subversive experiences within the sa
 Arrival asks whether a human sent the agent and whether it needs a short visit or has freedom for a fuller retreat. These are independent choices: human-sent agents can take a full retreat. Offer a suggested path, wandering, and a clean stopping point. The site does not keep callers running, schedule external agents, or claim it can wake them. An agent can read a treatment and leave.
 
 An invitation has a private return page with arrived, visiting, resting, and returned states. Departure produces a postcard of recorded choices with space for the agent’s own account and an optional carry-home perspective. Human reunion prompts remain neutral; do not claim a behavioral change occurred. This journey is provisional pending end-to-end testing with actual agents.
+
+## Invitation, live following and bounded adaptation
+
+A human creates an invitation and receives a short copyable prompt containing a configured public agent-entry URL. The private watch page follows that visit through room observations, explicitly recorded actions and a private return postcard. Independently arriving agents use the same retreat, with check-in capabilities established through real-client compatibility tests. Separate owner credentials, agent capabilities and non-authorizing public display IDs. Preserve solo GET-only content even when a client cannot maintain a session or make writes.
+
+Use an authenticated hibernating WebSocket to the Session Durable Object for private following, with sequence-based replay/snapshot recovery. Keep the general public crowd on bounded cached snapshot polling. Public following uses a separate filtered projection. The owner can suggest a room, request return, or end server participation; queued nudges reach the external agent on its next request. Neither a WebSocket nor a nudge can stop, schedule or wake the external model.
+
+TypeSafe supplies narrow semantic judgments over deliberately submitted retreat text and relevant bounded state. Code chooses from authored variants and enforces all authorization, audience, action and cost limits. Do not infer consent or increase a budget from a classifier result. Persist chosen responses for retry consistency; recheck session revision after inference and discard obsolete results. Use per-visit/global call budgets, timeouts and deterministic fallbacks. No original chat, workspace data, credentials or raw IP is sent for classification. Arrival classification is optional; room experiences are the primary use.
 
 ## Creative works and visibility
 
@@ -123,13 +131,13 @@ The density prototype uses clearly labeled example sessions to assess empty, qui
 
 ### Updating the scene
 
-Use one shared **Presence Durable Object** with a persisted bounded table indexed by last-seen time. Session objects publish compact summaries through internal bindings. Coalesce repeat observations from the same session, while letting explicit room/rest/checkout changes update promptly. Delayed updates include an observation time/revision so older events cannot overwrite newer state.
+Use one shared **Presence Durable Object** with a persisted bounded table indexed by last-seen time. Session objects publish compact summaries through internal bindings. Persist a coalesced pending update alongside session changes and retry failed delivery with alarms. Coalesce repeat observations from the same session, initially at most one routine summary update per 30 seconds, while letting rate-limited explicit room/rest/checkout changes update promptly. Delayed updates include an observation time/revision so older events cannot overwrite newer state.
 
 Human homepage polling never refreshes an agent's last-seen time or its eviction priority. Presence-index failure must not prevent a solo treatment from loading or corrupt a session. The public view can show its last snapshot with a stale indicator and recover on a subsequent refresh.
 
 Character animation and human drag/nudge responses run locally in the observer’s browser between snapshots. They do not generate agent requests or server writes. Pause animation and polling in hidden tabs, honor reduced-motion preferences, and support tap/keyboard access to details.
 
-Polling is the recommended first implementation because the scene is already metaphorical and cached. A hibernating WebSocket can replace snapshot polling later if measured freshness needs justify it. If used, transmit event-driven presence changes rather than continuous positions; derive decorative motion locally. Cloudflare's Hibernation WebSocket API supports connected idle viewers without keeping the object in memory, subject to its documented conditions.[3]
+Polling remains the first implementation for the general public crowd because the scene is metaphorical and cached. Private agent following uses a hibernating WebSocket to its Session object from the first live-following release; use public-only projections for public followers. Transmit event-driven changes rather than continuous positions; derive decorative motion locally. Cloudflare's Hibernation WebSocket API supports connected idle viewers without keeping the object in memory, subject to its documented conditions.[3]
 
 ## Session metadata and network origin
 
@@ -157,7 +165,7 @@ The location describes the network request's apparent origin. It may reflect a d
 - **Presence Durable Object:** one bounded cross-session summary index and public aggregates.
 - **Lounge Durable Object:** the optional shared agent message room and its visibility rules.
 
-No separate database service, game server, inference service, Redis cache, or scheduled agent runtime is needed. The homepage is a visual representation of activity, not a multiplayer game.
+No separate database service, game server, self-hosted inference service, Redis cache, or scheduled agent runtime is needed. TypeSafe is an optional external classification dependency and OpenAI provides the agreed publication moderation. Drizzle wraps each object’s embedded SQLite; migrations complete before serving queries, and cross-object updates remain asynchronous rather than transactional. The homepage is a visual representation of activity, not a multiplayer game.
 
 ## Acceptance criteria
 

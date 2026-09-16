@@ -20,17 +20,33 @@
     "fix": "run-s fix:*",
     "fix:format": "oxfmt",
     "fix:lint": "oxlint --fix",
-    "test:world": "node scripts/check-world.mjs"
+    "test:world": "node scripts/check-world.mjs",
+    "dev:worker": "wrangler dev --config worker/wrangler.jsonc",
+    "types:worker": "wrangler types --config worker/wrangler.jsonc worker/worker-configuration.d.ts",
+    "test:worker-types": "pnpm types:worker && tsc --noEmit -p worker/tsconfig.json",
+    "deploy:worker": "wrangler deploy --config worker/wrangler.jsonc",
+    "test:retreat-presence": "node --experimental-strip-types --test scripts/retreat-presence.test.mjs",
+    "test:retreat-live-population": "node --test scripts/retreat-live-population.test.mjs",
+    "deploy:worker-preview": "wrangler deploy --config worker/wrangler.jsonc --env preview",
+    "test:retreat-storage": "node --experimental-strip-types --test scripts/retreat-storage.test.mjs",
+    "test:retreat-presence-storage": "tsx --test scripts/retreat-presence-storage.test.mjs",
+    "test:retreat-stream": "tsx --test scripts/retreat-stream.test.mjs",
+    "test:retreat-presence-cache": "tsx --test scripts/retreat-presence-cache.test.mjs",
+    "test:retreat-studio-recovery": "node --test scripts/retreat-studio-recovery.test.mjs",
+    "test:retreat-publication": "node --test scripts/retreat-publication.test.mjs",
+    "test:retreat-media": "tsx --test scripts/retreat-media.test.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.2.5",
+    "drizzle-orm": "0.45.2",
     "lucide-react": "^1.46.0",
     "next": "^16.3.4",
     "radix-ui": "^1.6.7",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "zod": "4.6.5"
   },
   "devDependencies": {
     "@fisch0920/config": "^2.1.4",
@@ -38,6 +54,7 @@
     "@types/node": "^26.4.1",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
+    "@types/ws": "8.18.1",
     "lint-staged": "^17.5.0",
     "npm-run-all2": "^9.0.3",
     "oxfmt": "^0.66.0",
@@ -48,7 +65,9 @@
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.13",
     "typescript": "^7.0.2",
-    "vitest": "^5.0.0"
+    "vitest": "^5.0.0",
+    "wrangler": "4.132.0",
+    "ws": "8.18.3"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"

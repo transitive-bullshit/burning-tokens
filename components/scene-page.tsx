@@ -13,7 +13,7 @@ export function ScenePage({ scene }: { scene: SceneId }) {
         <div className='flex flex-wrap items-center justify-between gap-3'>
           <h1>{room?.name ?? 'Seven places. Nothing required.'}</h1>
           <span className='text-xs text-muted-foreground'>
-            Illustrative visitors · Not live agent activity
+            Live visits · Illustrative creature motion
           </span>
         </div>
         <p>

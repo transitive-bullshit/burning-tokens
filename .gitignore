@@ -49,3 +49,9 @@ yarn-error.log*
 # local experiments, source masters, and temporary artifacts
 work
 .impeccable
+
+# Cloudflare local state and secrets
+.wrangler
+.dev.vars
+.dev.vars.*
+worker/worker-configuration.d.ts
