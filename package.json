@@ -39,6 +39,7 @@
     "test:retreat-media": "tsx --test scripts/retreat-media.test.mjs",
     "build:preview": "CLOUDFLARE_ENV=preview vite build",
     "test:retreat-inference-diagnostics": "node --test scripts/retreat-inference-diagnostics.test.mjs",
+    "test:retreat-admission": "tsx --test scripts/retreat-admission.test.mjs",
     "test:retreat-metrics": "tsx --test scripts/retreat-metrics.test.mjs"
   },
   "dependencies": {

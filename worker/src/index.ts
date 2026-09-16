@@ -71,7 +71,12 @@ const handler = {
         const admissionKey = await digest(
           request.headers.get('CF-Connecting-IP') ?? 'local-unknown'
         )
-        if (!(await env.BUDGET.getByName(`admission:${admissionKey}`).admit()))
+        const admissionDay = new Date().toISOString().slice(0, 10)
+        if (
+          !(await env.BUDGET.getByName(
+            `visit-admission:${admissionDay}`
+          ).admitVisit(admissionKey, admissionDay))
+        )
           throw new HttpError(
             429,
             'Invitation limit reached. Please return later.'

@@ -1,4 +1,5 @@
 import { metric } from './metrics'
+import { reserveVisit } from './admission'
 import { DurableObject } from 'cloudflare:workers'
 import { z } from 'zod'
 import {
@@ -11,7 +12,17 @@ import type { RetreatRoom } from '../../lib/retreat/protocol'
 
 // Infrastructure counters use the native atomic KV API; application data uses Drizzle.
 export class InferenceBudget extends DurableObject<Env> {
-  // A separate object name is used per anonymous network key for admission.
+  async admitVisit(network: string, day: string) {
+    const now = Date.now()
+    if (day !== new Date(now).toISOString().slice(0, 10)) return false
+    const accepted = reserveVisit(this.ctx.storage.kv, network, now, this.env)
+    if (accepted)
+      await this.ctx.storage.setAlarm(
+        (Math.floor(now / 86_400_000) + 1) * 86_400_000
+      )
+    return accepted
+  }
+  // Legacy per-network counters remain in use for administrator login only.
   async admit() {
     const now = Date.now()
     const previous = this.ctx.storage.kv.get<{ start: number; count: number }>(

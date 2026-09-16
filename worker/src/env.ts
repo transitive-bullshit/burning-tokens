@@ -7,6 +7,8 @@ export interface Env {
   CLOUDFLARE_API_TOKEN?: string
   ANALYTICS_ACCOUNT_ID?: string
   ANALYTICS_DATASET?: string
+  INVITATIONS_DAILY_LIMIT?: string
+  INVITATIONS_MINUTE_LIMIT?: string
   METRICS_ENABLED?: string
   METRICS?: AnalyticsEngineDataset
   LOUNGE: DurableObjectNamespace<RetreatLounge>

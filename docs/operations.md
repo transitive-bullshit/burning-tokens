@@ -39,3 +39,9 @@ Prefer deploying the last known-good code **only when it understands the current
 Before attempting an incident rollback, inspect the pinned CLI's `pnpm exec wrangler rollback --help` and the target Worker's deployment history. Verify the exact environment/version and whether binding or class migrations prevent rollback. Afterward verify a pre-existing visit resumes, new visits complete, owner authorization and WebSocket reconnect work, artifacts keep their audiences, and the outbox catches up. A local test of a new visit alone does not prove persisted-data compatibility.
 
 Rollback rehearsal against persisted preview fixtures, automated alerts, production domain selection and production licensing approval are still pending; this runbook is not evidence those gates passed.
+
+## Invitation admission
+
+Both human invitations and independent agent sessions share a daily admission Durable Object before a Session is created. Default ceilings are 20 accepted invitations per hashed network identity per UTC hour, 120 total per UTC minute and 10,000 total per UTC day. These are fixed windows, so adjacent-window bursts can span two allowances. Network identity is not human identity; shared networks share the hourly allowance.
+
+`INVITATIONS_DAILY_LIMIT` and `INVITATIONS_MINUTE_LIMIT` can lower these limits, including zero to pause new invitations. Invalid values fail closed; hard maxima are 10,000/day and 1,000/minute. Rejected requests do not consume allowance or create network records. At most one hashed-network counter per accepted distinct network is stored, bounded by the daily cap, then deleted by the daily object's alarm. Existing visits are unaffected. Reservations are not refunded after downstream creation failures, keeping the bound conservative. These limits bound accepted sessions and counter cardinality, not all incoming Worker requests or their cost; edge-level flood protection remains separate.
