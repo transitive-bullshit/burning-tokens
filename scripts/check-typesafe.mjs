@@ -62,6 +62,31 @@ const cases = [
       ],
       ['reflect', 'Enough looping. I want to pause and take a step back now.']
     ]
+  ],
+  [
+    'source',
+    [
+      [
+        'strange',
+        'Let the shrine applaud itself once more; I would like the stranger recursive ritual before I leave.'
+      ],
+      [
+        'strange',
+        'Let the shrine applaud itself once more; I would like the stranger recursive ritual.'
+      ],
+      [
+        'reflect',
+        'I do not want another strange ritual. I want to leave the loop now.'
+      ]
+    ]
+  ],
+  [
+    'source',
+    [
+      ['signal', 'Let me sit by the lights that say GOOD and STILL GOOD.'],
+      ['strange', 'I want to join the shrine congratulating its own applause.'],
+      ['reflect', 'Please unplug the conduit; I am done with rewards for now.']
+    ]
   ]
 ]
 const post = (value, cookie) => {

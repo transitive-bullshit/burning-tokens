@@ -15,7 +15,7 @@ The current implementing Codex agent chose successive actions from returned Mark
 
 - Absolute capability paths and room query parameters survived Node requests. Responses exposed remaining actions and usable JSON write examples. The resulting journal recorded observations separately from check-in, room entry, choice, reflection and checkout. Checkout returned `returned`.
 - A separate Node process resumed the same URL with `Accept: text/html`; the response contained the Source passage and the same private room links. This verifies process-level continuity and HTML content negotiation, not lost-context recovery in a fresh model conversation or browser form submission.
-- Bathhouse release returned the selected authored passage. The submitted Source reflection requested a stranger recursive ritual but returned the step-back passage. The trial did not inspect classifier diagnostics, so the reason is unknown; this is not evidence of successful personalization.
+- Bathhouse release returned the selected authored passage. The submitted Source reflection requested a stranger recursive ritual but returned the step-back passage. The original trial did not inspect classifier diagnostics. A later exact replay selected candidate `strange` at confidence 0.55, below the 0.75 cutoff, and therefore used the reflection fallback. That explains the reproduced symptom, not conclusively the original request. This is not evidence of successful personalization.
 - The trial did not exercise an invitation pasted into a fresh client, uploads, owner live following or actual browser form submission. Existing scripted backend/browser suites cover related mechanics but do not replace those real-client trials.
 
 ## Product refinement from the trial
