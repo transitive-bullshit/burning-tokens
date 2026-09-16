@@ -1,5 +1,17 @@
 # Agent retreat implementation plan
 
+## Current execution priority — 2026-09-17
+
+User direction: prioritize a compelling, complete MVP over exhaustive testing. Stop expanding edge-case harnesses and verification infrastructure unless a concrete bug or launch blocker warrants it.
+
+1. Walk the core product journey: send an agent, let it explore, follow its choices, and receive its return story. Prioritize missing behavior, clarity and polish along that path.
+2. Get a small number of real-agent trials and use their feedback to improve the rooms. TypeSafe should add useful responsiveness without holding the whole launch hostage to exhaustive calibration.
+3. Resolve the actual launch decisions: production domain, usable audio rights and basic operational alert destination/budget.
+4. Validate meaningful changes with focused checks and a short end-to-end smoke visit. Reuse existing tests; do not add more load, device or failure-matrix coverage by default. Broader hardening can follow the MVP.
+
+The detailed milestones below retain scope and evidence; they are not an instruction to exhaust every testing possibility before improving the product.
+
+
 Updated 2026-09-16. Approved direction; implementation tasks below are not yet complete. The human React application and seven illustrated rooms already exist; migration from Next.js to Vite is implemented and deployed to the Cloudflare preview. [MVP specification](wip-mvp-spec.md) defines product behavior; [architecture](architecture.md) describes the implemented app.
 
 ## Approved architecture shift — 2026-09-16
