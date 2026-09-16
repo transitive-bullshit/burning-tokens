@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { createRequire } from 'node:module'
-import { mkdir, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 const requireWrangler = createRequire(import.meta.resolve('wrangler'))
 const { Miniflare, convertV4MiniflareOptions } = requireWrangler('miniflare')
 const { build } = requireWrangler('esbuild')
@@ -13,28 +13,71 @@ const bundled = await build({
   target: 'es2022',
   external: ['cloudflare:workers']
 })
-const runtime = new Miniflare(
-  convertV4MiniflareOptions({
-    workers: [
-      {
-        name: 'presence-load-check',
-        script: bundled.outputFiles[0].text,
-        modules: true,
-        compatibilityDate: '2026-09-15',
-        compatibilityFlags: ['nodejs_compat'],
-        durableObjects: {
-          PRESENCE: { className: 'RetreatPresence', useSQLite: true }
-        }
-      }
-    ]
-  })
-)
-// Miniflare dispatchFetch deliberately resets every connection. Use its actual
-// HTTP listener so this sustained benchmark reuses sockets like a normal client.
-const runtimeOrigin = await runtime.ready
-function dispatch(url, options) {
+const remote = process.env.RETREAT_LOAD_ORIGIN
+if (remote)
+  assert.equal(
+    remote,
+    'https://burning-tokens-presence-load-check.fisch0920.workers.dev',
+    'Remote load only targets the isolated fixture'
+  )
+const runtime = remote
+  ? null
+  : new Miniflare(
+      convertV4MiniflareOptions({
+        workers: [
+          {
+            name: 'presence-load-check',
+            script: bundled.outputFiles[0].text,
+            modules: true,
+            compatibilityDate: '2026-09-15',
+            compatibilityFlags: ['nodejs_compat'],
+            bindings: { LOCAL_LOAD_FIXTURE: 'true' },
+            durableObjects: {
+              PRESENCE: { className: 'RetreatPresence', useSQLite: true }
+            }
+          }
+        ]
+      })
+    )
+const runtimeOrigin = remote ?? (await runtime.ready)
+const loadKey = remote
+  ? (await readFile('work/load-checks/fixture-key.txt', 'utf8')).trim()
+  : null
+const edgeLocations = new Set()
+const run = crypto.randomUUID()
+let networkRetries = 0
+async function dispatch(url, options) {
   const target = new URL(url)
-  return fetch(new URL(target.pathname + target.search, runtimeOrigin), options)
+  const headers = new Headers(options?.headers)
+  if (loadKey) headers.set('X-Load-Test-Key', loadKey)
+  headers.set('X-Load-Test-Run', run)
+  let response
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      response = await fetch(
+        new URL(target.pathname + target.search, runtimeOrigin),
+        {
+          ...options,
+          headers,
+          redirect: 'error',
+          signal: AbortSignal.timeout(30000)
+        }
+      )
+      break
+    } catch (err) {
+      if (
+        attempt > 0 ||
+        !['ECONNRESET', 'UND_ERR_SOCKET'].includes(err.cause?.code)
+      )
+        throw err
+      networkRetries++
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    }
+  }
+
+  const location = response.headers.get('CF-Ray')?.split('-').at(-1)
+  if (location) edgeLocations.add(location)
+  return response
 }
 const rooms = [
   'bathhouse',
@@ -95,24 +138,37 @@ async function read(room, cached = false) {
 }
 async function parallel(count, concurrency, work) {
   let next = 0
+  let completed = 0
   await Promise.all(
     Array.from({ length: concurrency }, async () => {
       while (next < count) {
         const index = next++
         await work(index)
+        if (++completed % 1000 === 0)
+          console.log(JSON.stringify({ completed, total: count }))
       }
     })
   )
 }
 async function stage(name, count, concurrency, work) {
   rows.length = 0
+  const retriesBefore = networkRetries
   const started = performance.now()
+  console.log(
+    JSON.stringify({
+      stage: name,
+      status: 'starting',
+      jobs: count,
+      concurrency
+    })
+  )
   await parallel(count, concurrency, work)
   const elapsedMs = performance.now() - started
   const result = {
     name,
     jobs: count,
     operations: rows.length,
+    networkRetries: networkRetries - retriesBefore,
     concurrency,
     elapsedMs: Math.round(elapsedMs),
     operationsPerSecond: Math.round((rows.length * 1000) / elapsedMs)
@@ -182,12 +238,16 @@ try {
   assert.equal(final.shown, 300)
   await mkdir('work/load-checks', { recursive: true })
   await writeFile(
-    'work/load-checks/presence-local.json',
+    remote
+      ? 'work/load-checks/presence-cloudflare.json'
+      : 'work/load-checks/presence-local.json',
     JSON.stringify(
       {
         date: new Date().toISOString(),
-        environment:
-          'isolated local Miniflare HTTP listener, production Presence class and SQLite, with direct and production Cache API paths',
+        environment: remote
+          ? 'isolated hosted Cloudflare Worker, production Presence class and SQLite; one load generator'
+          : 'isolated local Miniflare HTTP listener, production Presence class and SQLite, with direct and production Cache API paths',
+        edgeLocations: [...edgeLocations],
         results
       },
       null,
@@ -195,8 +255,8 @@ try {
     )
   )
   console.log(
-    'Presence bounds and stale-update protection hold under this local workload. This does not measure Cloudflare regional throughput, Session outbox lag or regional edge-cache effectiveness.'
+    'Presence bounds and stale-update protection passed for this workload. Timings include client/network latency. This does not measure Session outbox lag, private sockets or multi-region capacity.'
   )
 } finally {
-  await runtime.dispose()
+  await runtime?.dispose()
 }

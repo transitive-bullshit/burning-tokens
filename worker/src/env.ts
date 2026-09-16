@@ -4,7 +4,7 @@ import type { RetreatSession } from './session'
 import type { RetreatPresence } from './presence'
 import type { InferenceBudget } from './inference'
 export interface Env {
-  CLOUDFLARE_API_TOKEN?: string
+  CLOUDFLARE_TOKEN?: string
   ANALYTICS_ACCOUNT_ID?: string
   ANALYTICS_DATASET?: string
   INVITATIONS_DAILY_LIMIT?: string

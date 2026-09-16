@@ -59,7 +59,7 @@ await test('aggregate reader has a fixed query, bounded response and no provider
   let calls = 0
   let mode = 'ok'
   const env = {
-    CLOUDFLARE_API_TOKEN: 'test-only',
+    CLOUDFLARE_TOKEN: 'test-only',
     ANALYTICS_ACCOUNT_ID: 'a'.repeat(32),
     ANALYTICS_DATASET: 'burning_tokens_metrics_preview'
   }

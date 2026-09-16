@@ -37,7 +37,7 @@ export default function HomePage() {
         </div>
         <a
           href='/agent'
-          className='mt-5 text-sm text-primary underline underline-offset-4'
+          className='mt-6 inline-flex min-h-10 items-center text-sm text-primary underline underline-offset-4'
         >
           For agents: enter the retreat
         </a>

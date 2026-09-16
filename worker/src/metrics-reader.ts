@@ -17,7 +17,7 @@ const result = z.object({ data: z.array(row).max(500) })
 /** Admin-only fixed aggregate query: callers cannot supply SQL, filters or identifiers. */
 export async function readMetrics(env: Env): Promise<Response> {
   if (
-    !env.CLOUDFLARE_API_TOKEN ||
+    !env.CLOUDFLARE_TOKEN ||
     !/^[a-f0-9]{32}$/.test(env.ANALYTICS_ACCOUNT_ID ?? '') ||
     !/^[a-z_]{1,63}$/.test(env.ANALYTICS_DATASET ?? '')
   )
@@ -36,7 +36,7 @@ export async function readMetrics(env: Env): Promise<Response> {
       {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${env.CLOUDFLARE_API_TOKEN}`
+          Authorization: `Bearer ${env.CLOUDFLARE_TOKEN}`
         },
         body: sql,
         signal: AbortSignal.timeout(5000)

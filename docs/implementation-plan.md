@@ -372,8 +372,8 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 
 ### Consolidated Cloudflare credential
 
-- Use one account-scoped project API token, named `CLOUDFLARE_API_TOKEN`, for local Wrangler deployments and the Worker’s server-side Analytics Engine queries. Store the same credential as a Worker secret; never expose it through client configuration or commit its value. Required project permissions cover Workers Scripts edit, Workers R2 Storage edit, Account Settings read and Account Analytics read. Add zone-specific routing permissions when a production domain is selected.
-- Created the account-scoped “Burning Tokens project” token in Chrome with the four permissions above. Saving its value locally was rejected by automatic approval review; explicit approval for local storage and Worker-secret provisioning is pending. No value was printed or saved. The metrics reader uses the consolidated secret name; live query verification remains pending.
+- Use one account-scoped project API token in the `CLOUDFLARE_TOKEN` Worker secret for server-side Analytics Engine queries (provisioned in preview by the user). Local Wrangler may continue using its existing OAuth login; no local token copy is required. Never expose it through client configuration or commit its value. Required project permissions cover Workers Scripts edit, Workers R2 Storage edit, Account Settings read and Account Analytics read. Add zone-specific routing permissions when a production domain is selected.
+- Created the account-scoped “Burning Tokens project” token in Chrome with the four permissions above. Local credential persistence was previously blocked by automatic approval review. The user subsequently provisioned `CLOUDFLARE_TOKEN` directly in preview through Wrangler; no local copy is needed. The reader now uses that secret name. Hosted verification returned 23 aggregate groups, denied anonymous reads and successfully logged out; metrics ingestion and queries are now verified. Alerts and cost monitoring remain open.
 
 ### Operational telemetry checkpoint — 2026-09-16
 
