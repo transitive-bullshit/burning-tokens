@@ -38,7 +38,11 @@ Prefer deploying the last known-good code **only when it understands the current
 
 Before attempting an incident rollback, inspect the pinned CLI's `pnpm exec wrangler rollback --help` and the target Worker's deployment history. Verify the exact environment/version and whether binding or class migrations prevent rollback. Afterward verify a pre-existing visit resumes, new visits complete, owner authorization and WebSocket reconnect work, artifacts keep their audiences, and the outbox catches up. A local test of a new visit alone does not prove persisted-data compatibility.
 
-Rollback rehearsal against persisted preview fixtures, automated alerts, production domain selection and production licensing approval are still pending; this runbook is not evidence those gates passed.
+A preview rehearsal on 2026-09-16 switched from `cbe45c82-806a-415f-954b-1adbf747f4b9` to `9165b5ce-f0e1-4f81-885e-048996c30d7e` and restored `cbe45c82-806a-415f-954b-1adbf747f4b9`. The versions have identical bindings and SQL/class migrations (`v1`, `v2-studio`, `v3-lounge`). A visit and private R2 artifact created before the switch remained readable at all three checkpoints; anonymous owner access and public artifact delivery stayed denied, owner WebSocket snapshots reconnected, and new room actions committed. This establishes compatibility for this version pair, not arbitrary future migrations, active socket survival through deployment, or deployed outbox recovery.
+
+Use the preview-only `node scripts/check-release-continuity.mjs seed`, then `verify` before and after each version change, and `cleanup` after restoring the intended version. It stores scoped fixture credentials in ignored `work/release-check/visit.json` with owner-only access, refuses to overwrite an existing fixture, and never performs a deployment itself. Cleanup deletes the artifact and ends the visit before removing local credentials.
+
+Automated alerts, production domain selection and production licensing approval remain pending.
 
 ## Invitation admission
 

@@ -447,3 +447,11 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 - Recorded an interactive Codex/curl/Node preview visit in [the client compatibility matrix](agent-client-compatibility.md): independent private arrival, Bathhouse choice, Source reflection, HTML resumption and explicit checkout. This is an implementer trial, not an independent fresh-client invitation test; ChatGPT/Claude, uploads and real-client owner following remain open. Python default urllib received a 403; its cause remains unresolved.
 - Source returned the step-back passage for a request for a stranger ritual; this does not establish successful personalization. Preserve that observation for further TypeSafe evaluation.
 - Fixed a concrete agent UX issue exposed by the trial: JSON action examples now use the current room and its actual choice keys, omit repeated check-in once checked in, and offer rest only in Quiet House. Human-owner journal access is qualified for human-created invitations. Validated generated examples against the action schema for all seven rooms; types and lint pass.
+
+### Contextual agent release and preview rollback rehearsal — 2026-09-16
+
+- Built and deployed commit `8fb7539` as preview version `cbe45c82-806a-415f-954b-1adbf747f4b9`. Hosted checks pass for all seven room-specific action examples, suppressed repeat check-in and access to a pre-release postcard.
+- Rehearsed Wrangler rollback to prior version `9165b5ce-f0e1-4f81-885e-048996c30d7e`, then restored `cbe45c82-806a-415f-954b-1adbf747f4b9`. Bindings, SQL migrations and Durable Object class migration history are unchanged between this pair.
+- `scripts/check-release-continuity.mjs` seeded one real private visit and R2 text artifact before rollback. Before rollback, on the older version and after restoration, it verified the original event prefix, owner authorization/anonymous denial, exact private artifact bytes/public denial, authenticated WebSocket snapshot reconnect and a new committed action. This is real persisted-data compatibility evidence for this version pair; it does not prove migration rollback, uninterrupted sockets or deployed outbox lag.
+
+- Rehearsal cleanup deleted the test artifact, checked out the visit and removed its local credential file. The restored current preview remains active.

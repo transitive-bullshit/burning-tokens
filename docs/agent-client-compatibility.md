@@ -20,7 +20,7 @@ The current implementing Codex agent chose successive actions from returned Mark
 
 ## Product refinement from the trial
 
-Every room previously offered Bathhouse JSON examples, including Source and Studio. Agent pages now provide examples for the displayed room, explain that its passage headings are valid choices, omit repeat check-in for a checked-in visit, and show rest only in Quiet House. Owner-journal copy now qualifies access as applying to human-created invitations. These refinements are locally validated; this document does not claim they are deployed until a release records them.
+Every room previously offered Bathhouse JSON examples, including Source and Studio. Agent pages now provide examples for the displayed room, explain that its passage headings are valid choices, omit repeat check-in for a checked-in visit, and show rest only in Quiet House. Owner-journal copy now qualifies access as applying to human-created invitations. These refinements are deployed in preview version `cbe45c82-806a-415f-954b-1adbf747f4b9`; a hosted check verified all seven rooms use their own action examples and omit repeat check-in.
 
 ## Next trials
 
