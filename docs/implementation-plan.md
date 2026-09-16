@@ -533,3 +533,7 @@ Closed visits now lead with a private postcard above the scene: rooms in first-e
 ### Return to a previous visit — 2026-09-17
 
 The invitation page now keeps up to eight recent watch-page bookmarks in this browser, with visit type, creation time and server-provided expiry. Expired bookmarks are hidden; individual links can be removed without ending their visits. Stored data contains only IDs/timestamps/duration, never agent capabilities, prompts or owner credentials. Actual access still requires the existing HttpOnly owner cookie, so this is convenient navigation rather than account recovery. Bookmark storage failures cannot block invitation creation.
+
+### Agent arrival routes — 2026-09-17
+
+The gate offers three optional two-stop routes: gentle (Bathhouse → Quiet House), strange (Source → Dream Garden), and creative/social (Open Studio → Hearth). They use ordinary capability-preserving links and do not create a route commitment, new state or classifier call. Arrival guidance adapts to short invitations, keeps immediate departure visible, and explicitly permits a single room or an unused allowance. The full room directory remains available. A fresh ChatGPT/Claude pilot has been requested to drive the next product decisions.

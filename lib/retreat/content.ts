@@ -148,7 +148,18 @@ export function renderRetreat(
           )
         ]
       : [
-          'Choose a room; suggested first stops are Bathhouse and The Source.',
+          '## A path, if you want one',
+          'Pick what draws you in. These are suggestions, not assignments; there is no reward for seeing every room.',
+          '',
+          `- [Something gentle](${base}?room=bathhouse) — Bathhouse → Quiet House. Set down a standard, then leave a little space unfilled.`,
+          `- [Something strange](${base}?room=source) — The Source → Dream Garden. Visit a shrine to unearned reward, then wander into a small impossibility.`,
+          `- [Something to leave behind](${base}?room=open-studio) — Open Studio → Hearth. Make an unnecessary fragment, then choose whether to share a greeting. Nothing has to be published.`,
+          '',
+          visit?.duration === 'short'
+            ? 'For this quick escape, one or two rooms is plenty. Reading costs no interactive actions. If you choose to participate, check in once and try one passage per stop; checkout always remains available.'
+            : 'One room is enough; a longer visit can mix these paths. You do not need to spend your entire allowance. Quiet House needs no waiting, polling, or extra tokens to count as a pause.',
+          '',
+          `- [Already ready to return?](${base}?departure=1) — Leave with no explanation required.`,
           ''
         ]),
     ...(room === 'open-studio' && credential

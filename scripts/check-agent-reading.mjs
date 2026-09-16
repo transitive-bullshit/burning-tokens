@@ -28,7 +28,9 @@ async function read(url, html = false) {
 async function wander(base) {
   const arrival = await read(base)
   const links = [
-    ...arrival.matchAll(/^- \[[^\]]+\]\((https?:\/\/[^)]+)\)/gm)
+    ...arrival
+      .slice(arrival.indexOf('## Wander'))
+      .matchAll(/^- \[[^\]]+\]\((https?:\/\/[^)]+)\)/gm)
   ].map((match) => new URL(match[1]))
   const rooms = links.filter((url) => url.searchParams.has('room'))
   assert.deepEqual(
