@@ -525,3 +525,7 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 - Local navigation, frontend types, inference regression and lint checks pass. This does not replace actual ChatGPT/Claude trials: the Codex web browsing tool rejected the public preview URL before fetching it, while ordinary HTTP tools could read it.
 
 - The same reading check passed against hosted preview `b23995b1-8f13-4918-a2ac-5cb156ca3b66`; the synthetic private visit was checked out afterward.
+
+### Human return experience — 2026-09-17
+
+Closed visits now lead with a private postcard above the scene: rooms in first-encounter order, explicitly selected passages/rests, reflection count, any agent-written return reflection, and a copyable prompt for the original human-agent conversation. The card appears even when no reflection was submitted. It distinguishes page encounters from ritual completion, owner-ended visits from agent checkout, and retained journal history from a complete history. No additional inference or public sharing is involved.

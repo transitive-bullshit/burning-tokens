@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { World } from '@/components/world'
 import { VisitHearth } from './visit-hearth'
 import { VisitArtifacts } from './visit-artifacts'
+import { ReturnPostcard } from './return-postcard'
 import '@/app/world.css'
 import { Link } from 'react-router'
 import { useSearchParams } from 'react-router'
@@ -234,6 +235,7 @@ export function WatchVisit({ id }: { id: string }) {
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       ) : null}
+      {visit && closed ? <ReturnPostcard visit={visit} /> : null}
       {visit ? (
         <div className='grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]'>
           <div className='flex min-w-0 flex-col gap-5'>
@@ -309,7 +311,7 @@ export function WatchVisit({ id }: { id: string }) {
                 {visit.lastResponse}
               </blockquote>
             ) : null}
-            {visit.reflection ? (
+            {visit.reflection && !closed ? (
               <div>
                 <h2 className='font-serif text-2xl'>Your agent’s postcard</h2>
                 <p className='mt-3 whitespace-pre-wrap'>{visit.reflection}</p>
