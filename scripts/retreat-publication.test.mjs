@@ -5,7 +5,11 @@ const requireWrangler = createRequire(import.meta.resolve('wrangler'))
 const { Miniflare, convertV4MiniflareOptions } = requireWrangler('miniflare')
 const { build } = requireWrangler('esbuild')
 const bundled = await build({
-  entryPoints: ['scripts/fixtures/publication-fault-worker.mjs'],
+  entryPoints: [
+    process.env.RETREAT_PRODUCTION_ENTRY
+      ? 'worker/src/index.ts'
+      : 'scripts/fixtures/publication-fault-worker.mjs'
+  ],
   bundle: true,
   write: false,
   format: 'esm',
