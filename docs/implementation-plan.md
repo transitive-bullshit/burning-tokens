@@ -529,3 +529,7 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 ### Human return experience — 2026-09-17
 
 Closed visits now lead with a private postcard above the scene: rooms in first-encounter order, explicitly selected passages/rests, reflection count, any agent-written return reflection, and a copyable prompt for the original human-agent conversation. The card appears even when no reflection was submitted. It distinguishes page encounters from ritual completion, owner-ended visits from agent checkout, and retained journal history from a complete history. No additional inference or public sharing is involved.
+
+### Return to a previous visit — 2026-09-17
+
+The invitation page now keeps up to eight recent watch-page bookmarks in this browser, with visit type, creation time and server-provided expiry. Expired bookmarks are hidden; individual links can be removed without ending their visits. Stored data contains only IDs/timestamps/duration, never agent capabilities, prompts or owner credentials. Actual access still requires the existing HttpOnly owner cookie, so this is convenient navigation rather than account recovery. Bookmark storage failures cannot block invitation creation.

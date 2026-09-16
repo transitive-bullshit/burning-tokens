@@ -117,6 +117,7 @@ const handler = {
           {
             id,
             publicId: state.publicId,
+            expiresAt: state.expiresAt,
             agentUrl,
             prompt,
             watchUrl: owner ? `/visit/${id}` : null

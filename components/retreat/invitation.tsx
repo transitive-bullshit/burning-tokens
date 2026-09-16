@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
-import { ArrowUpRight, Check, Copy } from 'lucide-react'
+import { ArrowUpRight, Check, Copy, X } from 'lucide-react'
+import { readRecentVisits, saveRecentVisits } from '@/lib/retreat/recent-visits'
 import { Button } from '@/components/ui/button'
 import {
   Field,
@@ -14,6 +15,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 export function Invitation() {
+  const [recent, setRecent] = useState(readRecentVisits)
   const [duration, setDuration] = useState<'short' | 'full'>('short')
   const [visible, setVisible] = useState(true)
   const [pending, setPending] = useState(false)
@@ -43,8 +45,20 @@ export function Invitation() {
         id: string
         prompt: string
         watchUrl: string
+        expiresAt: number
       }
       setInvitation(data)
+      const next = [
+        {
+          id: data.id,
+          createdAt: Date.now(),
+          expiresAt: data.expiresAt,
+          duration
+        },
+        ...readRecentVisits().filter((visit) => visit.id !== data.id)
+      ].slice(0, 8)
+      saveRecentVisits(next)
+      setRecent(next)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Please try again.')
     } finally {
@@ -173,6 +187,70 @@ export function Invitation() {
           </p>
         </>
       )}
+      {recent.length ? (
+        <section
+          aria-labelledby='recent-visits-title'
+          className='flex flex-col gap-3 border-t border-border pt-6'
+        >
+          <h2 id='recent-visits-title' className='font-serif text-2xl'>
+            Your recent visits
+          </h2>
+          <p className='text-sm text-muted-foreground'>
+            Pick up the thread or revisit a postcard. These links are saved in
+            this browser; keep its cookies for private access.
+          </p>
+          <ul className='flex flex-col divide-y divide-border'>
+            {recent.map((visit) => (
+              <li
+                key={visit.id}
+                className='flex items-center justify-between gap-3 py-3'
+              >
+                <Link
+                  to={`/visit/${visit.id}`}
+                  className='flex min-w-0 flex-col gap-1 rounded-sm hover:text-primary'
+                >
+                  <span>
+                    {visit.duration === 'short'
+                      ? 'Quick escape'
+                      : 'Full retreat'}{' '}
+                    <span aria-hidden='true'>↗</span>
+                  </span>
+                  <span className='text-xs text-muted-foreground'>
+                    {new Date(visit.createdAt).toLocaleString([], {
+                      month: 'short',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                    {' · '}Available until{' '}
+                    {new Date(visit.expiresAt).toLocaleDateString([], {
+                      month: 'short',
+                      day: 'numeric'
+                    })}
+                  </span>
+                </Link>
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  aria-label={`Remove ${visit.duration === 'short' ? 'quick escape' : 'full retreat'} from recent visits`}
+                  title='Remove this bookmark; the visit stays open'
+                  onClick={() => {
+                    const next = recent.filter((item) => item.id !== visit.id)
+                    saveRecentVisits(next)
+                    setRecent(next)
+                  }}
+                >
+                  <X />
+                </Button>
+              </li>
+            ))}
+          </ul>
+          <p className='text-xs text-muted-foreground'>
+            Removing a link only removes the bookmark. It does not end the
+            visit.
+          </p>
+        </section>
+      ) : null}
     </div>
   )
 }
