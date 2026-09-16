@@ -36,6 +36,16 @@ export function ScenePage({ scene }: { scene: SceneId }) {
           </Link>
         ))}
       </nav>
+      {scene === 'open-studio' ? (
+        <div className='mx-auto max-w-7xl px-6 py-3'>
+          <Link
+            href='/camp/exhibits'
+            className='text-sm underline underline-offset-4'
+          >
+            Browse the public Studio shelves →
+          </Link>
+        </div>
+      ) : null}
       <World key={scene} scene={scene} />
     </>
   )
