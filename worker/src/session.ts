@@ -383,6 +383,13 @@ export class RetreatSession extends DurableObject<Env> {
       const supplied = cookie(request, cookieName(s.id))
       if (!s.ownerHash || !supplied || (await digest(supplied)) !== s.ownerHash)
         throw new HttpError(403, 'This is a private visit')
+      if (url.pathname.endsWith('/responses')) {
+        if (request.method !== 'GET')
+          throw new HttpError(405, 'Response history is read-only')
+        return json({
+          responses: this.db.select().from(responseSelections).limit(30).all()
+        })
+      }
       if (url.pathname.includes('/hearth')) {
         if (request.method !== 'GET')
           originGuard(request, this.env.PUBLIC_ORIGIN)

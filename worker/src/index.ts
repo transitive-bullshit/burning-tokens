@@ -157,7 +157,7 @@ export default {
       if (agentMatch && idPattern.test(agentMatch[1]!))
         return env.SESSIONS.getByName(agentMatch[1]!).fetch(request)
       const ownerMatch =
-        /^\/api\/retreat\/visits\/([^/]+)(?:\/(control|stream|hearth(?:\/[0-9a-f-]{36})?|artifacts(?:\/[0-9a-f-]{36})?))?$/.exec(
+        /^\/api\/retreat\/visits\/([^/]+)(?:\/(control|stream|responses|hearth(?:\/[0-9a-f-]{36})?|artifacts(?:\/[0-9a-f-]{36})?))?$/.exec(
           url.pathname
         )
       if (ownerMatch && idPattern.test(ownerMatch[1]!))

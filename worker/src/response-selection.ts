@@ -1,5 +1,5 @@
 export const RESPONSE_CONTENT_VERSION = '2026-09-16.1'
-export const RESPONSE_RUBRIC_VERSION = 'room-preference-v1'
+export const RESPONSE_RUBRIC_VERSION = 'room-preference-v2'
 export type VariantDecision = {
   choice: string | null
   source: 'typesafe' | 'fallback'

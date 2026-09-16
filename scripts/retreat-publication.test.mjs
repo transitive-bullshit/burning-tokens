@@ -231,6 +231,33 @@ try {
     )
     await v.close()
   })
+  await test('persisted response decisions are available only to the visit owner', async () => {
+    const v = await visitor('bathhouse')
+    const other = await visitor('bathhouse')
+    const options = post({
+      kind: 'choose',
+      room: 'bathhouse',
+      choice: 'belonging'
+    })
+    options.headers['Idempotency-Key'] = 'response-history-check'
+    assert.equal((await request(`${v.path}/actions`, options)).status, 200)
+    const path = `${v.owner}/responses`
+    assert.equal((await request(path)).status, 403)
+    assert.equal(
+      (await request(path, { headers: { Cookie: other.cookie } })).status,
+      403
+    )
+    const response = await request(path, { headers: { Cookie: v.cookie } })
+    assert.equal(response.status, 200)
+    assert.equal(response.headers.get('cache-control'), 'no-store')
+    const { responses } = await response.json()
+    assert.equal(responses.length, 1)
+    assert.equal(responses[0].value.choice, 'belonging')
+    assert.equal(responses[0].value.decision.source, 'explicit')
+    assert.equal((await request(path, post({}, v.cookie))).status, 405)
+    await v.close()
+    await other.close()
+  })
   await test('approved publication is committed in the Session journal before being shared', async () => {
     const v = await visitor('open-studio')
     const response = await v.upload()
