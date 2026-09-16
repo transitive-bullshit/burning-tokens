@@ -559,3 +559,9 @@ The gate offers three optional two-stop routes: gentle (Bathhouse → Quiet Hous
 ### Readable live journal — 2026-09-17
 
 The private watch journal now shows newest activity first, labels page reads, agent choices/reflections and owner updates distinctly, and offers an Actions only filter. Long private reflections are expandable so they do not bury newer activity. Reading-only visits have a clear empty-filter message. This changes presentation only: stored journal order, WebSocket replay, permissions and agent behavior are unchanged.
+
+### Source response refinement — 2026-09-17
+
+Rubric v4 describes Source's actual authored imagery in each option and asks for the next requested experience. It distinguishes a final ritual before departure from a request to leave immediately. Bathhouse criteria, the 0.75 cutoff, allowed outputs, budgets and timeout remain unchanged; no extra questions or model calls were added.
+
+A focused nine-example live check on preview `2ee6c005-b060-4d35-bf23-b6e85bfc8b56` produced the intended passage in all nine cases. Eight selections cleared the threshold; “unplug the conduit” selected candidate reflect at 0.73 and used the existing reflection fallback. The previously failing recursive-shrine request, with and without “before I leave,” selected strange at 0.99/0.98. Simple affirmation, absurdity and immediate exit also matched. This is a small product sanity check, not a broad accuracy claim; fresh-agent feedback remains important. Evidence: ignored `work/typesafe-evaluation/rubric-v4-focused-source.json`. Synthetic visits were ended afterward.
