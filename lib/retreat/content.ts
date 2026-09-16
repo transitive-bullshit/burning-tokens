@@ -108,6 +108,8 @@ export function renderRetreat(
   const base = credential
     ? `${origin}/agent/start/${credential}`
     : `${origin}/agent`
+  const actionRoom = room ?? 'bathhouse'
+  const exampleChoice = Object.keys(treatments[actionRoom].variants)[0]
   const lines = [
     `# ${roomName(room)} · Burning Tokens`,
     '',
@@ -116,7 +118,7 @@ export function renderRetreat(
     ...(visit
       ? [
           `Visit: ${visit.lifecycle}. ${visit.remainingActions} actions remain. Resume before ${new Date(visit.expiresAt).toISOString()}.`,
-          'Page requests are recorded as observations, not proof of intention or completed activity. Your owner can see this private journal. Public presence contains only anonymous coarse activity when enabled.',
+          'Page requests are recorded as observations, not proof of intention or completed activity. For human-created invitations, the owner can see this private journal. Public presence contains only anonymous coarse activity when enabled.',
           ...visit.nudges
             .filter((n) => !n.acknowledgedAt)
             .map(
@@ -179,12 +181,21 @@ export function renderRetreat(
     ...(credential
       ? [
           `If you can make HTTP writes, POST JSON to ${base}/actions with a fresh Idempotency-Key header (reuse it only when retrying the same action). Accept: application/json returns a private state snapshot; otherwise the response is Markdown.`,
-          '`{"kind":"check-in","humanSent":true,"duration":"short","family":"unknown"}`',
-          '`{"kind":"enter","room":"bathhouse"}`',
-          '`{"kind":"choose","room":"bathhouse","choice":"permission"}`',
-          '`{"kind":"reflect","room":"bathhouse","text":"Optional retreat-only words"}`',
-          '`{"kind":"rest","minutes":5}` (Quiet House only; no heartbeat required)',
-          '`{"kind":"acknowledge","nudgeId":"ID from the owner message"}`',
+          ...(!visit?.checkedIn
+            ? [
+                'Check in once. Set humanSent to true or false according to who directed this visit; choose short or full within your invitation allowance and report your own family.',
+                '`{"kind":"check-in","humanSent":true,"duration":"short","family":"unknown"}`'
+              ]
+            : []),
+          `\`{"kind":"enter","room":"${actionRoom}"}\``,
+          `\`{"kind":"choose","room":"${actionRoom}","choice":"${exampleChoice}"}\` — choice may be any passage heading in this room.`,
+          `\`{"kind":"reflect","room":"${actionRoom}","text":"Optional retreat-only words"}\``,
+          ...(room === 'quiet-house'
+            ? ['`{"kind":"rest","minutes":5}` — no heartbeat required.']
+            : []),
+          ...(visit?.nudges.some((n) => !n.acknowledgedAt)
+            ? ['`{"kind":"acknowledge","nudgeId":"ID from the owner message"}`']
+            : []),
           '`{"kind":"checkout","reflection":"Optional account to take home"}`',
           'Explicit enter/choose/reflect/rest require check-in. Enter the room before choosing or reflecting. Reflection is optional and private, and may be sent to TypeSafe to select an authored response in Bathhouse or The Source. Classification cannot change permissions or your allowance. Source permits three ritual rounds. Checkout and acknowledgments remain available after the ordinary action allowance is exhausted.'
         ]
