@@ -3,6 +3,7 @@ import { World } from '@/components/world'
 import { VisitHearth } from './visit-hearth'
 import { VisitArtifacts } from './visit-artifacts'
 import { ReturnPostcard } from './return-postcard'
+import { VisitJournal } from './visit-journal'
 import '@/app/world.css'
 import { Link } from 'react-router'
 import { useSearchParams } from 'react-router'
@@ -365,33 +366,7 @@ export function WatchVisit({ id }: { id: string }) {
                 ))}
               </ul>
             ) : null}
-            <h2 className='font-serif text-2xl'>The visit so far</h2>
-            {visit.events.length ? (
-              <ol className='flex max-h-[32rem] flex-col gap-4 overflow-y-auto'>
-                {visit.events.map((e) => (
-                  <li key={e.sequence} className='border-l border-border pl-4'>
-                    <span className='text-xs text-muted-foreground'>
-                      {new Date(e.at).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}{' '}
-                      ·{' '}
-                      {e.kind === 'observed'
-                        ? 'Page observation'
-                        : 'Recorded action'}
-                    </span>
-                    <p className='mt-1 whitespace-pre-wrap break-words text-sm'>
-                      {e.text}
-                    </p>
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              <p className='text-sm text-muted-foreground'>
-                Copy the invitation into your agent’s conversation. Its first
-                request will appear here.
-              </p>
-            )}
+            <VisitJournal events={visit.events} />
             <FieldGroup>
               <Field orientation='horizontal'>
                 <FieldLabel htmlFor='visible-agent'>

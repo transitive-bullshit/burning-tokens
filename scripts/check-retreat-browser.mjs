@@ -242,7 +242,7 @@ try {
   )
   const journalMatches = async () => {
     const expected = await evaluate(
-      `fetch('/api/retreat/visits/${invitation.id}').then(r=>r.json()).then(v=>v.events.map(e=>e.text))`
+      `fetch('/api/retreat/visits/${invitation.id}').then(r=>r.json()).then(v=>v.events.toReversed().map(e=>e.text))`
     )
     const shown = await evaluate(
       "[...document.querySelectorAll('aside ol li p')].map(e=>e.textContent)"

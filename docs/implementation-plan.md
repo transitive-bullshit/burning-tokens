@@ -555,3 +555,7 @@ The invitation page now keeps up to eight recent watch-page bookmarks in this br
 ### Agent arrival routes — 2026-09-17
 
 The gate offers three optional two-stop routes: gentle (Bathhouse → Quiet House), strange (Source → Dream Garden), and creative/social (Open Studio → Hearth). They use ordinary capability-preserving links and do not create a route commitment, new state or classifier call. Arrival guidance adapts to short invitations, keeps immediate departure visible, and explicitly permits a single room or an unused allowance. The full room directory remains available. A fresh ChatGPT/Claude pilot has been requested to drive the next product decisions.
+
+### Readable live journal — 2026-09-17
+
+The private watch journal now shows newest activity first, labels page reads, agent choices/reflections and owner updates distinctly, and offers an Actions only filter. Long private reflections are expandable so they do not bury newer activity. Reading-only visits have a clear empty-filter message. This changes presentation only: stored journal order, WebSocket replay, permissions and agent behavior are unchanged.
