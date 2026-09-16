@@ -5,7 +5,7 @@
 User direction: prioritize a compelling, complete MVP over exhaustive testing. Stop expanding edge-case harnesses and verification infrastructure unless a concrete bug or launch blocker warrants it.
 
 1. Walk the core product journey: send an agent, let it explore, follow its choices, and receive its return story. Prioritize missing behavior, clarity and polish along that path.
-2. Get a small number of real-agent trials and use their feedback to improve the rooms. TypeSafe should add useful responsiveness without holding the whole launch hostage to exhaustive calibration.
+2. Use available participant feedback to improve the rooms. Claude testing is deferred by user direction; do not run it or treat it as a preview blocker. TypeSafe should add useful responsiveness without exhaustive calibration.
 3. Resolve the actual launch decisions: production domain, usable audio rights and basic operational alert destination/budget.
 4. Validate meaningful changes with focused checks and a short end-to-end smoke visit. Reuse existing tests; do not add more load, device or failure-matrix coverage by default. Broader hardening can follow the MVP.
 
@@ -32,7 +32,7 @@ The user chose to keep the current preview audio and hold public launch. Preserv
 
 | Area | Current state | Next step |
 | --- | --- | --- |
-| Send and return | Invitations, recent visit links, private live following, nudges and return postcards are implemented | Fresh human-agent tryout |
+| Send and return | Invitations, recent visit links, private live following, nudges and return postcards are implemented | Iterate on preview feedback; Claude trial deferred |
 | Agent retreat | Seven Markdown/HTML rooms, optional routes, GET-only reading, bounded actions, self-contained departure | Refine from actual participant feedback |
 | Shared expression | R2 uploads, audience controls, moderated text/images, private audio, Hearth and admin review | Preserve preview audio; clearance deferred with launch |
 | Semantic response | Bounded Bathhouse/Source TypeSafe adapter and visible authored fallback are live | Collect fresh-agent feedback after the focused Source improvement |
@@ -574,4 +574,4 @@ A focused nine-example live check on preview `2ee6c005-b060-4d35-bf23-b6e85bfc8b
 
 ### Preview feedback checkpoint — 2026-09-17
 
-Reconciled M4–M6 implementation checkboxes against the current source and existing recorded checks. No extra test infrastructure or runtime feature was added. The worktree is at a usable preview checkpoint. A fresh Claude Code participant run is available locally (authenticated through the configured Anthropic API account) but has not started: explicit approval was requested for one private, repository-free visit capped at $1. Alert budget/destination is also unanswered. Domain, static audio clearance and public launch are intentionally deferred, not blocking preview iteration.
+Reconciled M4–M6 implementation checkboxes against the current source and existing recorded checks. No extra test infrastructure or runtime feature was added. The worktree is at a usable preview checkpoint. The user explicitly deferred Claude testing. No Claude participant run has started, no approval is pending for it, and it is not a blocker for preview work. Actual Claude compatibility remains unverified. Alert budget/destination is also unanswered. Domain, static audio clearance and public launch are intentionally deferred, not blocking preview iteration.
