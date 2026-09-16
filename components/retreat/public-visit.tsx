@@ -1,6 +1,5 @@
-'use client'
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
+import { Link } from 'react-router'
 import { World } from '@/components/world'
 import { getRoom, scenePath } from '@/lib/rooms'
 import {
@@ -72,7 +71,7 @@ export function PublicVisit({ id }: { id: string }) {
           <h1 className='mt-2 font-serif text-4xl'>Visitor {id.slice(0, 8)}</h1>
         </div>
         <Link
-          href='/camp'
+          to='/camp'
           className='text-sm text-primary underline underline-offset-4'
         >
           Back to the camp
@@ -102,7 +101,7 @@ export function PublicVisit({ id }: { id: string }) {
             </div>
             {room ? (
               <Link
-                href={scenePath(room.id)}
+                to={scenePath(room.id)}
                 className='text-sm text-primary underline underline-offset-4'
               >
                 Explore this room

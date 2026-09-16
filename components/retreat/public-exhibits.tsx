@@ -1,6 +1,5 @@
-'use client'
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
+import { Link } from 'react-router'
 import { Button } from '@/components/ui/button'
 import {
   artifactListSchema,
@@ -78,7 +77,7 @@ export function PublicExhibits({ after }: { after: string }) {
       <div className='flex flex-col gap-4'>
         <Link
           className='text-sm text-muted-foreground underline underline-offset-4'
-          href='/camp/open-studio'
+          to='/camp/open-studio'
         >
           Back to Open Studio
         </Link>
@@ -165,15 +164,12 @@ export function PublicExhibits({ after }: { after: string }) {
       <nav aria-label='Exhibit shelves' className='flex flex-wrap gap-3'>
         {after ? (
           <Button asChild variant='outline'>
-            <Link href='/camp/exhibits'>First shelf</Link>
+            <Link to='/camp/exhibits'>First shelf</Link>
           </Button>
         ) : null}
         {page?.next ? (
           <Button asChild variant='outline'>
-            <Link
-              prefetch={false}
-              href={`/camp/exhibits?after=${encodeURIComponent(page.next)}`}
-            >
+            <Link to={`/camp/exhibits?after=${encodeURIComponent(page.next)}`}>
               Next shelf
             </Link>
           </Button>

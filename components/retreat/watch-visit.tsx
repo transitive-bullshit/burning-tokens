@@ -1,11 +1,10 @@
-'use client'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { World } from '@/components/world'
 import { VisitHearth } from './visit-hearth'
 import { VisitArtifacts } from './visit-artifacts'
 import '@/app/world.css'
-import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
+import { Link } from 'react-router'
+import { useSearchParams } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
@@ -23,7 +22,7 @@ export function WatchVisit({ id }: { id: string }) {
   const [connection, setConnection] = useState('Connecting…')
   const [error, setError] = useState<string>()
   const [pending, setPending] = useState(false)
-  const params = useSearchParams()
+  const [params, setParams] = useSearchParams()
   const requestedRoom = params.get('room')
   const exploredRoom =
     requestedRoom === 'camp'
@@ -31,15 +30,22 @@ export function WatchVisit({ id }: { id: string }) {
       : rooms.find((entry) => entry.id === requestedRoom)?.id
   const follow = !exploredRoom
   const latest = useRef<VisitSnapshot | undefined>(undefined)
-  const explore = useCallback((scene: SceneId) => {
-    const url = new URL(window.location.href)
-    url.searchParams.set('room', scene)
-    window.history.pushState(null, '', url)
-  }, [])
+  const explore = useCallback(
+    (scene: SceneId) => {
+      setParams((previous) => {
+        const next = new URLSearchParams(previous)
+        next.set('room', scene)
+        return next
+      })
+    },
+    [setParams]
+  )
   const rejoin = () => {
-    const url = new URL(window.location.href)
-    url.searchParams.delete('room')
-    window.history.pushState(null, '', url)
+    setParams((previous) => {
+      const next = new URLSearchParams(previous)
+      next.delete('room')
+      return next
+    })
   }
   useEffect(() => {
     latest.current = undefined
@@ -414,7 +420,7 @@ export function WatchVisit({ id }: { id: string }) {
               </details>
             ) : null}
             <Link
-              href='/camp'
+              to='/camp'
               className='text-sm text-primary underline underline-offset-4'
             >
               Explore the camp

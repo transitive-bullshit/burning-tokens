@@ -1,6 +1,4 @@
-import type { Metadata } from 'next'
 import { Invitation } from '@/components/retreat/invitation'
-export const metadata: Metadata = { title: 'Send your agent · Burning Tokens' }
 export default function SendPage() {
   return (
     <section className='mx-auto flex w-full max-w-2xl flex-col gap-8 px-6 py-16'>

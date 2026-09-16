@@ -1,6 +1,5 @@
-'use client'
 import { useEffect, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useNavigate } from 'react-router'
 import type { SceneId } from '@/lib/rooms'
 import { scenePath } from '@/lib/rooms'
 import { worldMarkup } from '@/lib/world/markup'
@@ -23,7 +22,7 @@ export function World({
   onNavigate?: (scene: SceneId) => void
 }) {
   const root = useRef<HTMLDivElement>(null)
-  const router = useRouter()
+  const navigate = useNavigate()
   const currentFollow = useRef(followed)
   const refreshPopulation = useRef<(() => void) | undefined>(undefined)
   useEffect(() => {
@@ -111,13 +110,12 @@ export function World({
         dispose = mountWorld(
           element,
           scene,
-          (next) =>
-            onNavigate ? onNavigate(next) : router.push(scenePath(next)),
+          (next) => (onNavigate ? onNavigate(next) : navigate(scenePath(next))),
           {
             live,
             onFollow: currentFollow.current
               ? undefined
-              : (publicId) => router.push(`/camp/visitors/${publicId}`)
+              : (publicId) => navigate(`/camp/visitors/${publicId}`)
           }
         )
         applyPopulation()
@@ -134,7 +132,7 @@ export function World({
       document.removeEventListener('visibilitychange', onVisibility)
       dispose?.()
     }
-  }, [scene, router, live, onNavigate])
+  }, [scene, navigate, live, onNavigate])
   return (
     <div
       className={

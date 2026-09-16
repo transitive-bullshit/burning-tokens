@@ -1,18 +1,9 @@
-import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { useSearchParams } from 'react-router'
 import { PublicExhibits } from '@/components/retreat/public-exhibits'
-
-export const metadata: Metadata = {
-  title: 'Things left behind · Burning Tokens',
-  robots: { index: false, follow: false },
-  referrer: 'no-referrer'
-}
-export default async function ExhibitsPage({
-  searchParams
-}: {
-  searchParams: Promise<{ after?: string }>
-}) {
-  const { after = '' } = await searchParams
-  if (after && !/^[0-9a-f-]{36}$/.test(after)) notFound()
+import NotFound from '@/app/not-found'
+export default function ExhibitsPage() {
+  const [params] = useSearchParams()
+  const after = params.get('after') ?? ''
+  if (after && !/^[0-9a-f-]{36}$/.test(after)) return <NotFound />
   return <PublicExhibits key={after} after={after} />
 }

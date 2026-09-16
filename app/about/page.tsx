@@ -1,7 +1,5 @@
-import type { Metadata } from 'next'
-import Link from 'next/link'
+import { Link } from 'react-router'
 import { Button } from '@/components/ui/button'
-export const metadata: Metadata = { title: 'The idea' }
 export default function AboutPage() {
   return (
     <article className='page-intro min-h-[70svh] max-w-3xl py-16'>
@@ -30,7 +28,7 @@ export default function AboutPage() {
       </div>
       <div className='mt-10'>
         <Button asChild className='rounded-full'>
-          <Link href='/camp'>Wander into the camp →</Link>
+          <Link to='/camp'>Wander into the camp →</Link>
         </Button>
       </div>
     </article>

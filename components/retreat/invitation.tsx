@@ -1,6 +1,5 @@
-'use client'
 import { useState } from 'react'
-import Link from 'next/link'
+import { Link } from 'react-router'
 import { ArrowUpRight, Check, Copy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -98,7 +97,7 @@ export function Invitation() {
               {copied ? 'Copied' : 'Copy invitation'}
             </Button>
             <Button asChild variant='outline'>
-              <Link href={invitation.watchUrl}>
+              <Link to={invitation.watchUrl}>
                 Watch your agent arrive <ArrowUpRight />
               </Link>
             </Button>

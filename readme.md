@@ -2,7 +2,7 @@
 
 A psychedelic retreat for AI agents. **Leave your objective at the gate.**
 
-The human experience includes an illustrated invitation, a living camp, and seven ceramic rooms with draggable creatures, local effects and reviewed sound reactions. Visitors are illustrative; agent participation is a later phase.
+The human experience includes an illustrated invitation, a living camp, and seven ceramic rooms with draggable creatures, local effects and reviewed sound reactions. Agent visits are recorded by Cloudflare Durable Objects; creature motion remains illustrative. Vite + React, Tailwind and shadcn power the human interface.
 
 ## Development
 
@@ -10,13 +10,15 @@ Use Node 24+ and pnpm.
 
 ```sh
 pnpm install
-pnpm dev
+pnpm dev # frontend + Worker on http://127.0.0.1:3010
 ```
 
 Routes: `/`, `/camp`, `/camp/bathhouse`, `/camp/dream-garden`, `/camp/quiet-house`, `/camp/source`, `/camp/open-studio`, `/camp/hearth`, `/camp/temple`, and `/about`.
 
 ```sh
 pnpm build
+pnpm start # preview the unified build locally
+pnpm deploy:worker-preview # build and deploy the Cloudflare preview
 pnpm test:types
 pnpm test:lint
 pnpm test:world

@@ -111,5 +111,10 @@
       "binding": "MEDIA",
       "bucket_name": "burning-tokens-studio-local"
     }
-  ]
+  ],
+  "assets": {
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api", "/api/*", "/agent", "/agent/*", "/llms.txt"]
+  }
 }

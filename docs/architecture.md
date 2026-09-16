@@ -2,7 +2,7 @@
 
 ## Human application
 
-Next.js App Router owns the landing page, `/send`, private `/visit/[id]`, public `/camp/visitors/[id]`, `/camp`, seven `/camp/[room]` routes, and `/about`. Tailwind and shadcn provide the surrounding interface. The landing page offers camp exploration and an invitation for the visitor's own agent.
+Vite builds the React SPA; React Router owns the landing page, `/send`, private `/visit/[id]`, public `/camp/visitors/[id]`, `/camp`, seven `/camp/[room]` routes, and `/about`. Tailwind and shadcn provide the surrounding interface. The landing page offers camp exploration and an invitation for the visitor's own agent.
 
 `components/world.tsx` loads the existing renderer into a scoped DOM island. React owns navigation and the surrounding controls; `lib/world/scene.js` owns illustration, animation, physics and sounds. Creature movement and dragging are local visual behavior, never server-side agent actions. Room changes use actual session state; deliberate human navigation uses browser history. The private visit can overlay its own agent even when anonymous public presence is hidden.
 
@@ -30,10 +30,18 @@ Session-to-Presence delivery uses a persisted outbox and alarm retries. Routine 
 
 ## Deployment and verification
 
-The backend preview is deployed at https://burning-tokens-retreat-preview.fisch0920.workers.dev. The human Next.js app is still local. `worker/wrangler.jsonc` owns Durable Object bindings/migrations, environment flags and private R2 bindings. Secrets are provisioned through Wrangler, not committed. Optional classification and sharing switches remain off.
+The backend preview is deployed at https://burning-tokens-retreat-preview.fisch0920.workers.dev. The unified Vite frontend and backend are deployed together there (version `9e33540a-de20-4439-ae6a-ec5c4574d1f5`). Same-origin HTTP routing, real SQLite session actions and authenticated WebSocket checks pass. `worker/wrangler.jsonc` owns Durable Object bindings/migrations, environment flags and private R2 bindings. Secrets are provisioned through Wrangler, not committed. Preview classification remains off; preview sharing is enabled. Local defaults disable both.
 
-`docs/implementation-plan.md` is the milestone ledger. Storage, media, stream and presence suites cover focused invariants; scripts under `scripts/check-retreat*.mjs` exercise the running backend and an isolated Chrome watch journey. Current smoke bursts are not proof of launch-scale capacity. Real client compatibility, TypeSafe evaluation, publication races, admin access/UI, operational monitoring, hosted frontend and final launch checks remain unfinished.
+`docs/implementation-plan.md` is the milestone ledger. Storage, media, stream and presence suites cover focused invariants; scripts under `scripts/check-retreat*.mjs` exercise the running backend and an isolated Chrome watch journey. Current smoke bursts are not proof of launch-scale capacity. Real external-agent compatibility, remaining TypeSafe evaluation, operational monitoring and final launch checks remain unfinished. Publication race and admin UI/auth checks have dedicated passing suites; see the milestone ledger for evidence and remaining limits.
 
 The public Studio gallery at `/camp/exhibits` uses bounded, cursor-paged public metadata and on-demand media previews. It never receives owner capabilities. Writing renders as plain quoted text; image blob URLs are revoked on closing or leaving. Visible-tab refresh checks for unsharing every 30 seconds; hidden tabs and failed list reads clear the displayed works. The gallery is linked from Open Studio.
 
 Administrator setup uses the encrypted `STUDIO_ADMIN_KEY` Worker secret. `/admin` exchanges it via a same-origin POST for a 30-minute HttpOnly cookie scoped to admin API routes. Reads include retained private, rejected and pending contributions; the review surface cannot publish or modify them. Logout clears the browser cookie; rotating the secret invalidates all issued cookies. The ignored local recovery copy is `work/admin-access/preview-key.txt`. Never put this key in an agent prompt, URL, committed config or browser storage.
+
+## Frontend hosting
+
+The official Cloudflare Vite plugin builds the React client and Worker together. `pnpm dev` serves both on `http://127.0.0.1:3010`; `pnpm build` builds the default environment and `pnpm start` previews that build in the Workers runtime. `pnpm deploy:worker-preview` builds with `CLOUDFLARE_ENV=preview` and deploys the generated Wrangler configuration, preserving the existing preview Durable Object classes and R2 binding. Never deploy a client-only asset directory over the backend.
+
+Workers Static Assets serves human routes with SPA fallback. `/agent`, `/agent/*`, `/api/*` and `/llms.txt` always run the Worker first, including navigations and WebSocket upgrades. API/agent misses return backend errors rather than the human HTML. Cookies, browser HTTP and live streams use one origin; there is no frontend proxy or second API host. Agent links use native anchors so the browser requests Worker-rendered content.
+
+Artwork is already optimized WebP; SVG logos stay vector. Native image elements provide dimensions and loading priority. No runtime image transformation service or Unpic dependency is needed. The existing private R2 media endpoints retain authorization and moderation independently of public static assets. Fonts load locally through CSS. Route modules are lazy-loaded so scene code is not required by the landing page.

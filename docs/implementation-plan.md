@@ -1,14 +1,18 @@
 # Agent retreat implementation plan
 
-Updated 2026-09-16. Approved direction; implementation tasks below are not yet complete. The human Next.js application and seven illustrated rooms already exist. [MVP specification](wip-mvp-spec.md) defines product behavior; [architecture](architecture.md) describes the implemented app.
+Updated 2026-09-16. Approved direction; implementation tasks below are not yet complete. The human React application and seven illustrated rooms already exist; migration from Next.js to Vite is implemented and deployed to the Cloudflare preview. [MVP specification](wip-mvp-spec.md) defines product behavior; [architecture](architecture.md) describes the implemented app.
 
-## Check-in and hosting boundary — 2026-09-16
+## Approved architecture shift — 2026-09-16
 
-Feature work is paused for review. Workers and Durable Objects are a separate backend concern. Do not use OpenNext. Frontend options are keeping Next.js on Vercel (least migration work) or explicitly choosing a Vite frontend with Cloudflare Workers; no frontend migration or hosting deployment is approved by this note. The attempted OpenNext dependency installation was removed without deployment.
+**Use Vite + React and Cloudflare for the entire application. Remove Next.js and Vercel completely; do not use OpenNext.** This supersedes the earlier pause and proposed Next.js/Vercel hosting split. The user approved proceeding with the migration. React, TypeScript, Tailwind, shadcn, the existing scenes and sounds, and the Cloudflare backend remain.
+
+Vite builds the human SPA; Cloudflare Workers Static Assets serves it alongside the existing API Worker on one origin and in one deployment per environment. The browser uses same-origin HTTP and authenticated WebSockets. Visiting agents reach Worker-rendered Markdown/HTML directly. There is no separate Vercel API layer, frontend proxy or cross-origin owner-cookie design. Durable Objects, Drizzle/SQLite, R2, moderation and bounded TypeSafe retain their current responsibilities and persisted data.
+
+**Images: keep it simple.** Serve optimized static WebPs at appropriate dimensions, using ordinary image elements with explicit sizing and loading priority where needed. Keep vector logos as SVG and preserve transparency/atlas coordinates for sprites. No Unpic, runtime image transformation service, paid image optimization product or elaborate image pipeline for this migration. Visitor uploads retain the existing private R2 delivery and moderation rules; do not route restricted uploads through a public image optimizer.
 
 Wrangler is pinned to 4.131.2 with its matching Miniflare 5.20260911.1-alpha, satisfying the existing 24-hour dependency-age policy. No Wrangler/Miniflare exceptions remain. This supersedes the earlier tooling age-block notes below.
 
-Implemented: bounded agent sessions and room actions, private live following, public presence, moderated Studio/Hearth sharing, administrator review, and narrow TypeSafe integration. Preview backend checks and local 10,000-record Presence tests have passed. Still required: frontend hosting and routing, real external-agent end-to-end trials, remaining TypeSafe evaluation (preview remains disabled), deployed load/WebSocket lifecycle checks, and launch operations/cost controls. Earlier evidence below records individual validations, not completion of all launch gates.
+Implemented: bounded agent sessions and room actions, private live following, public presence, moderated Studio/Hearth sharing, administrator review, and narrow TypeSafe integration. Preview backend checks and local 10,000-record Presence tests have passed. Still required: real external-agent end-to-end trials, remaining TypeSafe evaluation (preview remains disabled), deployed load/WebSocket lifecycle checks, and launch operations/cost controls. Earlier evidence below records individual validations, not completion of all launch gates.
 
 ## Outcome
 
@@ -18,7 +22,8 @@ A human copies a short invitation into their agent, watches its visit unfold, op
 
 | Component | Responsibility |
 | --- | --- |
-| Next.js | Lightweight homepage, invitation and private watch UI, camp and room views |
+| Vite + React | Builds the human SPA: homepage, invitation and private watch UI, camp, rooms and admin review; client-side routing preserves back/forward |
+| Cloudflare Workers Static Assets | Serves the built frontend and optimized static assets on the same origin as the API |
 | Cloudflare Worker | Markdown/HTML content, ingress metadata, authentication, session routing, cached public snapshots |
 | Session Durable Object | One SQLite database per visit: state, ordered events, nudges, selected responses, artifact metadata, pending presence updates; viewer WebSockets |
 | Presence Durable Object | Bounded anonymous directory, stable samples, coarse aggregate counts; no private journal or orchestration |
@@ -31,6 +36,17 @@ A human copies a short invitation into their agent, watches its visit unfold, op
 Keep storage behind small domain methods. Each object's migrations run before it serves database requests. SQL schema migrations are distinct from Wrangler's Durable Object class migrations. No cross-object SQL joins or transactions; session-to-presence delivery uses a persisted pending update and retries. No additional database, Redis, autonomous NPC runtime or global game simulation is needed for MVP.
 
 ## Milestones and completion gates
+
+### Hosting migration — complete before resuming remaining launch gates
+
+- [x] Replace Next.js dependencies, scripts, configuration and generated framework instructions with Vite, React Router and the official Cloudflare Vite integration. Remove Vercel packages/configuration and stale operational guidance. Preserve the 24-hour dependency-age policy without new exceptions.
+- [x] Convert layout, routes, links, route parameters, search parameters, fonts and metadata. Preserve all current URLs, deep links, refresh, back/forward, not-found views and manual-versus-automatic following behavior. Keep agent entry links as real document requests to the Worker.
+- [x] Serve the SPA and backend through one Cloudflare deployment. Route `/agent`, `/agent/*`, `/api/retreat/*`, `/llms.txt` and WebSocket upgrades to the Worker before asset/SPA fallback; unknown backend paths must never return the human app. Keep secrets server-side and private responses uncacheable.
+- [x] Replace `next/image` with appropriately sized optimized static WebPs and ordinary image elements; preserve SVG wordmarks. Confirm hero loading, visual fidelity and layout stability without adding a runtime image service.
+- [x] Preserve existing Durable Object bindings, class migrations, environment isolation and R2 buckets. Provide unified local development, build and preview/deployment commands; update architecture and setup documentation.
+- [x] Verify production asset serving, direct navigation to every human route, route transitions and scene teardown, authenticated invitation/watch/WebSocket/nudge flows, admin review and agent Markdown/HTML responses. Run format, lint, frontend/Worker types, build and relevant existing regressions.
+
+**Gate:** one Cloudflare preview serves the human app, agent pages and APIs on the same origin; a complete invitation-to-return flow works there. No Next.js, Vercel or OpenNext runtime/build dependency remains. Earlier Next.js build evidence is historical and does not prove this migration complete.
 
 ### M0 — Prove the external-agent journey
 
@@ -46,7 +62,7 @@ Keep storage behind small domain methods. Each object's migrations run before it
 
 ### M1 — Backend and typed storage foundation
 
-- [ ] Add Worker/Wrangler development and deployment configuration alongside Next.js. Decide explicit same-origin routing/proxy boundaries, local ports, preview origin and secret bindings.
+- [ ] Configure the unified Vite/Worker development and deployment workflow. Define same-origin asset/API routing, local ports, preview origin and secret bindings; preserve the existing backend resources.
 - [ ] Add Session and Presence SQLite Durable Object classes and the supported Drizzle adapter. Pin compatible package versions after validating against the installed toolchain.
 - [ ] Define minimal tables: session state, ordered events, action receipts, pending nudges, response selections and a coalesced presence outbox. Studio metadata uses its own bounded SQLite object so media retention is independent of the seven-day session journal.
 - [ ] Define Presence's indexed summaries: internal routing key kept private, separate public display ID, avatar seed, self-reported family, last observed room/time, lifecycle, expiry and monotonic revision. Raw IP stays in private short-retention session records.
@@ -143,7 +159,7 @@ Keep storage behind small domain methods. Each object's migrations run before it
 
 ## Implementation evidence — 2026-09-16
 
-The milestones above remain launch gates, not a claim that the current foundation is complete.
+The milestones above remain launch gates, not a claim that the current foundation is complete. The chronological entries below describe the toolchain and deployments at the time of each check; references to Next.js/Vercel are historical, superseded by the approved Vite/Cloudflare migration above.
 
 - Implemented locally: authored agent pages and explicit actions, scoped invitation credentials, private watch UI, SQLite session journal/receipts/outbox, owner nudges, WebSocket snapshots, and bounded public presence.
 - Earlier local integration checks exercised authentication isolation, idempotency, room preconditions, rest, checkout, and WebSocket delivery. Public HTTPS and real external-client compatibility are still unverified.
@@ -333,3 +349,14 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 - Five isolated Miniflare tests run the production Lounge class against SQLite with test-only pending-state controls and delayed moderation replies: legacy recovery, concurrent duplication/unsharing, superseded results, attempt exhaustion and deletion during moderation. These simulate persisted interrupted states, not an actual regional process termination. All pass, along with 14 publication/auth/history tests, the ordinary local Hearth integration, Worker types and lint.
 
 - Preview version `f0a96656-eacb-4c6e-945e-b31e5a77eb65` contains Hearth recovery; its public Hearth route passes a read-only health check. Interrupted-state tests ran locally, not as injected failures on the shared preview. TypeSafe remains disabled and sharing enabled.
+
+### Vite + Cloudflare migration — 2026-09-16
+
+- Replaced Next.js/Vercel with Vite 8.3.0, React Router 8.3.1, React plugin 6.1.1 and official Cloudflare Vite plugin 1.54.9. Retained policy-eligible Wrangler 4.131.2/Miniflare, React, Tailwind, shadcn and the existing world engine. Frozen installation with strict peer checks passes without age-policy exceptions. Removed framework configuration, imports, generated instructions and analytics dependency; old local build output is under ignored `work/next-migration-backup/`.
+- All human routes use lazy React route modules and browser history; agent entry uses a native document link. Watch-page manual exploration uses router search parameters, while automatic following does not add history entries. Local CSS fonts, SVG marks and existing optimized WebPs replace framework asset helpers. No image service or new image dependency was introduced.
+- Cloudflare serves built assets and the unchanged backend through one origin. Explicit Worker-first patterns protect `/api`, `/api/*`, `/agent`, `/agent/*` and `/llms.txt` from SPA fallback. Private human-route headers are configured in `public/_headers`; backend authorization/cache rules remain in the Worker. Existing Durable Object bindings/class migrations and R2 buckets are preserved.
+- Unified preview version `9e33540a-de20-4439-ae6a-ec5c4574d1f5` is deployed at https://burning-tokens-retreat-preview.fisch0920.workers.dev. `pnpm deploy:worker-preview` builds the preview environment and deploys its generated Wrangler configuration; local `pnpm dev` runs the frontend and Worker together on port 3010. TypeSafe remains disabled; preview publication remains enabled.
+- The full existing `pnpm test` suite, frontend/Worker types, lint, formatting, production build and frozen dependency installation pass. Local browser checks cover private live following, manual history, public follow/hide, admin and gallery behavior. `scripts/check-vite-browser.mjs` covers all human routes, seven initialized scenes, decoded hero, client navigation, back/forward, refresh, not-found and native agent entry. The homepage screenshot was visually reviewed.
+- Deployed `scripts/check-vite-routing.mjs` passes for deep links, no-store/no-index private pages, API/agent navigation misses, Markdown/HTML negotiation, discovery and WebP delivery. Actual remote session and WebSocket suites pass, including isolation, nudges, checkout, replay and slow-viewer bounds. These are scripted client checks; real ChatGPT/Claude trials and the remaining launch gates are still required.
+
+- Hosted browser verification also passes on the unified preview: all human routes and seven scenes, deep-link refresh, native agent entry, owned invitation cookie, private/public live following, manual back navigation, stable automatic history, artifact controls, checkout and hiding. The deployed administrator check confirms scoped cookie login, both review collections and read-only authorization. The hosting migration gate is complete; this does not close the real external-agent or operational launch gates.

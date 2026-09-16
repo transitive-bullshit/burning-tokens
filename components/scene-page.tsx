@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from 'react-router'
 import { rooms, getRoom, scenePath, type SceneId } from '@/lib/rooms'
 import { World } from './world'
 import '@/app/world.css'
@@ -22,14 +22,14 @@ export function ScenePage({ scene }: { scene: SceneId }) {
         </p>
       </section>
       <nav className='room-navigation' aria-label='Retreat spaces'>
-        <Link href='/camp' aria-current={scene === 'camp' ? 'page' : undefined}>
+        <Link to='/camp' aria-current={scene === 'camp' ? 'page' : undefined}>
           The camp
         </Link>
         {rooms.map((item) => (
           <Link
             key={item.id}
-            href={scenePath(item.id)}
-            prefetch={false}
+            to={scenePath(item.id)}
+
             aria-current={scene === item.id ? 'page' : undefined}
           >
             {item.name}
@@ -39,7 +39,7 @@ export function ScenePage({ scene }: { scene: SceneId }) {
       {scene === 'open-studio' ? (
         <div className='mx-auto max-w-7xl px-6 py-3'>
           <Link
-            href='/camp/exhibits'
+            to='/camp/exhibits'
             className='text-sm underline underline-offset-4'
           >
             Browse the public Studio shelves →

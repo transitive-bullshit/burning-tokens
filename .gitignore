@@ -10,14 +10,10 @@
 /playwright-report
 /test-results
 
-# next.js
-/.next/
-/.next-prod/
-/out/
-next-env.d.ts
-
-# production
+# build output
+/dist
 /build
+*.tsbuildinfo
 
 # misc
 .DS_Store
@@ -42,9 +38,6 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 .env.prod.local
-
-# vercel
-.vercel
 
 # local experiments, source masters, and temporary artifacts
 work
