@@ -4,6 +4,10 @@ import type { SceneId } from '@/lib/rooms'
 import { scenePath } from '@/lib/rooms'
 import { worldMarkup } from '@/lib/world/markup'
 import {
+  loadWorldPreferences,
+  saveWorldPreferences
+} from '@/lib/world/preferences.js'
+import {
   livePopulation,
   withFollowedVisitor,
   type FollowedVisitor
@@ -30,7 +34,8 @@ export function World({
     refreshPopulation.current?.()
   }, [followed])
   const [error, setError] = useState(false)
-  const [live, setLive] = useState(true)
+  const [demo, setDemo] = useState(() => loadWorldPreferences().demo)
+  const live = Boolean(followed) || !demo
   const [status, setStatus] = useState('Connecting to the camp…')
   useEffect(() => {
     let canceled = false
@@ -55,11 +60,7 @@ export function World({
     const element = root.current
     if (!element) return
     setError(false)
-    setStatus(
-      live
-        ? 'Connecting to the camp…'
-        : 'Demo visitors · no real agent activity'
-    )
+    setStatus(live ? 'Connecting to the camp…' : 'Demo visitors')
     async function poll() {
       if (canceled || !live || document.hidden || polling) return
       polling = true
@@ -140,13 +141,16 @@ export function World({
       }
     >
       <div className='mb-3 flex flex-wrap items-center justify-between gap-3 text-sm'>
-        <p role='status'>{status}</p>
+        <p role='status'>{live ? status : null}</p>
         {!followed ? (
           <label className='flex cursor-pointer items-center gap-2'>
             <input
               type='checkbox'
               checked={!live}
-              onChange={(event) => setLive(!event.target.checked)}
+              onChange={(event) => {
+                setDemo(event.target.checked)
+                saveWorldPreferences({ demo: event.target.checked })
+              }}
             />
             Demo visitors
           </label>

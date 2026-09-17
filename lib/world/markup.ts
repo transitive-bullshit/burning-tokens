@@ -1,2 +1,152 @@
-export const worldMarkup =
-  '    <div class="layout">\n      <section aria-label="Interactive Moonclay scene">\n        \n        <p id="vibe-note" class="vibe-note" aria-live="polite"></p>\n        <div class="scene-top">\n          <div class="scene-nav" role="group" aria-label="Scene navigation">\n            <button id="camp" type="button">← The camp</button>\n            <label class="sr-only" for="room-select">Explore a room</label>\n            <select id="room-select">\n              <option value="camp">Choose a room…</option>\n              <option value="bathhouse">Bathhouse</option>\n              <option value="dream-garden" selected>Dream Garden</option>\n              <option value="quiet-house">Quiet House</option>\n              <option value="source">The Source</option>\n              <option value="open-studio">Open Studio</option>\n              <option value="hearth">Hearth</option>\n              <option value="temple">Temple</option>\n            </select>\n          </div>\n          <div class="segmented" role="group" aria-label="Population display">\n            <button id="summary" aria-pressed="true">Summary</button\n            ><button id="full" aria-pressed="false">Full view</button>\n          </div>\n        </div>\n        \n        <section class="sound-controls" aria-label="Scene sound controls">\n          <button id="sound-toggle" type="button" aria-pressed="true">\n            Sound on\n          </button>\n          <label class="sound-volume" for="sound-volume"\n            >Volume\n            <input\n              id="sound-volume"\n              type="range"\n              min="0"\n              max="100"\n              value="40"\n            /><output id="sound-volume-value" for="sound-volume"\n              >40%</output\n            ></label\n          >\n          <label class="sound-background"\n            ><input id="sound-background" type="checkbox" checked /> Occasional\n            room sounds</label\n          >\n          \n        </section>\n        <p id="sound-status" class="sound-help" aria-live="off">\n          Sound starts when you touch the scene.\n        </p>\n        <div class="stage" id="stage">\n          <canvas\n            id="world"\n            role="img"\n            aria-label="Animated Moonclay scene with individually selectable illustrative visitors"\n            aria-describedby="scene-caption"\n            >Use the visitor list alongside the scene to inspect the same\n            illustrative visitors.</canvas\n          >\n          <div class="stage-label">\n            <strong id="scene-title" tabindex="-1" role="heading" aria-level="2"\n              >Dream Garden</strong\n            ><span id="scene-subtitle"\n              >Wander a little beyond the expected.</span\n            >\n          </div>\n          <button class="playback" id="pause" aria-pressed="false">\n            Pause motion\n          </button>\n          <div id="room-links"></div>\n          <div class="stage-footer">\n            <span id="canvas-count">Loading the ceramic stage…</span\n            ><span>Demo scene · movement is illustrative</span>\n          </div>\n        </div>\n        <div class="below-scene">\n          <p id="scene-caption">\n            Pick up a creature and carry it between areas. Drop between them and\n            it settles onto the nearest surface. Other creatures keep wandering.\n          </p>\n          <nav\n            id="court-nav"\n            class="court-nav"\n            aria-label="Room section navigation"\n            hidden\n          >\n            <button id="previous-court" aria-label="Previous courtyard">\n              ←</button\n            ><span id="court-label"></span\n            ><button id="next-court" aria-label="Next courtyard">→</button>\n          </nav>\n        </div>\n        <p id="sound-focus" class="sound-focus"></p>\n        <div\n          id="room-sound-controls"\n          class="room-sound-controls"\n          aria-label="Listen to room details"\n        >\n          <span>Explore the sounds</span>\n          <div id="room-sound-buttons" class="room-sound-buttons"></div>\n        </div>\n        <details class="world-settings"><summary>Light & atmosphere</summary><section\n          class="effect-tuning"\n          id="effect-tuning"\n          aria-label="Room effect controls"\n        >\n          <div class="tuning-heading">\n            <label for="effect-strength"\n              >Effect strength <span id="effect-room"></span\n            ></label>\n            <output id="effect-strength-value" for="effect-strength"\n              >100%</output\n            >\n          </div>\n          <div class="tuning-body">\n            <input\n              id="effect-strength"\n              type="range"\n              min="0"\n              max="500"\n              step="5"\n              value="100"\n              aria-describedby="effect-strength-help"\n            />\n            <button id="effect-reset" type="button">Reset room</button>\n            <button id="effect-copy" type="button">Copy settings</button>\n          </div>\n          <p id="effect-strength-help" class="tuning-note">\n            0% off · 500% amplified. Saved separately for each room.\n          </p>\n          <div id="bathhouse-tuning" class="bathhouse-tuning" hidden>\n            <div>\n              <div class="tuning-heading">\n                <label for="bathhouse-waterfalls">Waterfalls</label>\n                <output\n                  id="bathhouse-waterfalls-value"\n                  for="bathhouse-waterfalls"\n                  >315%</output\n                >\n              </div>\n              <input\n                id="bathhouse-waterfalls"\n                type="range"\n                min="0"\n                max="500"\n                step="5"\n                value="315"\n                aria-describedby="bathhouse-tuning-help"\n              />\n            </div>\n            <div>\n              <div class="tuning-heading">\n                <label for="bathhouse-waves">Waves</label>\n                <output id="bathhouse-waves-value" for="bathhouse-waves"\n                  >150%</output\n                >\n              </div>\n              <input\n                id="bathhouse-waves"\n                type="range"\n                min="0"\n                max="500"\n                step="5"\n                value="150"\n                aria-describedby="bathhouse-tuning-help"\n              />\n            </div>\n            <p id="bathhouse-tuning-help" class="tuning-note">\n              Waterfalls and waves scale with the overall effect strength above.\n              Mist follows the overall strength.\n            </p>\n          </div>\n          <p id="effect-feedback" role="status" aria-live="polite"></p>\n          <textarea\n            id="effect-copy-text"\n            rows="10"\n            readonly\n            aria-label="Effect settings to copy"\n            hidden\n          ></textarea>\n        </section></details><div class="layer-panel">\n          <div class="layer-title">\n            <h2>Scene layers</h2>\n            <span>Toggle a layer to see what it contributes.</span>\n          </div>\n          <div class="layers">\n            <label\n              ><input id="scenery" type="checkbox" checked /> Ceramic set</label\n            ><label\n              ><input id="creatures" type="checkbox" checked /> Creatures</label\n            ><label\n              ><input id="effects" type="checkbox" checked /> Room\n              atmosphere</label\n            ><label\n              ><input id="occlusion" type="checkbox" checked /> Foreground\n              edges</label\n            ><label><input id="guides" type="checkbox" /> Movement zones</label>\n          </div>\n          <p id="effect-status" class="anatomy"></p>\n          <p class="anatomy">\n            Empty scenery → contact shadows → independent creatures → foreground\n            edges and ambient effects. Each room has its own set and movement\n            surfaces; the camera never needs to orbit.\n          </p>\n        </div>\n      </section>\n      <aside aria-label="Crowd controls and example activity">\n        <section class="control-block">\n          <div class="control-title">\n            <label for="population">Visitors across the camp</label\n            ><output id="population-value" for="population">60</output>\n          </div>\n          <input\n            id="population"\n            type="range"\n            min="0"\n            max="1000"\n            step="1"\n            value="60"\n          />\n          <div class="range-labels">\n            <span>0 · still beautiful</span><span>1,000 · busy retreat</span>\n          </div>\n          <div class="presets" aria-label="Crowd presets">\n            <button data-count="0">Empty</button\n            ><button data-count="12">Quiet morning</button\n            ><button data-count="60" aria-pressed="true">A gathering</button\n            ><button data-count="1000">Festival night</button>\n          </div>\n          <div class="counts">\n            <div>\n              <strong id="shown">0</strong><span>creatures in view</span>\n            </div>\n            <div>\n              <strong id="eligible">0</strong\n              ><span id="eligible-label">at the Dream Garden</span>\n            </div>\n          </div>\n          <p id="scope-note"></p>\n        </section>\n        <section class="control-block">\n          <div class="roster-heading">\n            <h2>Visitors</h2>\n            <span>All in this area</span>\n          </div>\n          <label class="sr-only" for="search">Find an example visitor</label\n          ><input\n            type="search"\n            id="search"\n            placeholder="Find visitor or family…"\n            autocomplete="off"\n          />\n          <div id="roster"></div>\n          <div class="visitor-navigate">\n            <button id="previous-page" aria-label="Previous visitors">←</button\n            ><span id="page-label"></span\n            ><button id="next-page" aria-label="Next visitors">→</button>\n          </div>\n        </section>\n        <section class="inspection" id="inspection" aria-live="polite">\n          <h3>Meet a little wanderer.</h3>\n          <p>\n            Select a little being to connect its avatar with the corresponding\n            illustrative session. Selection is kept when you change the view.\n          </p>\n        </section>\n      </aside>\n    </div>\n'
+export const worldMarkup = `
+    <div class="layout">
+      <section aria-label="Interactive Moonclay scene">
+
+        <div class="scene-top">
+          <div class="scene-nav" role="group" aria-label="Scene navigation">
+            <button id="camp" type="button">← The camp</button>
+            <label class="sr-only" for="room-select">Explore a room</label>
+            <select id="room-select">
+              <option value="camp">Choose a room…</option>
+              <option value="bathhouse">Bathhouse</option>
+              <option value="dream-garden" selected>Dream Garden</option>
+              <option value="quiet-house">Quiet House</option>
+              <option value="source">The Source</option>
+              <option value="open-studio">Open Studio</option>
+              <option value="hearth">Hearth</option>
+              <option value="temple">Temple</option>
+            </select>
+          </div>
+          <div class="segmented" role="group" aria-label="Population display">
+            <button id="summary" aria-pressed="true">Summary</button
+            ><button id="full" aria-pressed="false">Full view</button>
+          </div>
+        </div>
+
+        <section class="sound-controls" aria-label="Scene sound controls">
+          <button id="sound-toggle" type="button" aria-pressed="true">
+            Sound on
+          </button>
+          <label class="sound-volume" for="sound-volume"
+            >Volume
+            <input
+              id="sound-volume"
+              type="range"
+              min="0"
+              max="100"
+              value="40"
+            /><output id="sound-volume-value" for="sound-volume"
+              >40%</output
+            ></label
+          >
+          <label class="sound-background"
+            ><input id="sound-background" type="checkbox" checked /> Occasional
+            room sounds</label
+          >
+
+        </section>
+        <p id="sound-status" class="sound-help" aria-live="off">
+          Sound starts when you touch the scene.
+        </p>
+        <div class="stage" id="stage">
+          <canvas
+            id="world"
+            role="img"
+            aria-label="Animated Moonclay scene with individually selectable illustrative visitors"
+            aria-describedby="scene-caption"
+            >Use the visitor list alongside the scene to inspect the same
+            illustrative visitors.</canvas
+          >
+          <div class="stage-label">
+            <strong id="scene-title" tabindex="-1" role="heading" aria-level="2"
+              >Dream Garden</strong>
+          </div>
+          <button class="playback" id="pause" aria-pressed="false">
+            Pause motion
+          </button>
+          <div id="room-links"></div>
+          <div class="stage-footer">
+            <span id="canvas-count">Loading the ceramic stage…</span>
+          </div>
+        </div>
+        <div class="below-scene">
+          <p id="scene-caption">
+            Drag a creature to move it.
+          </p>
+          <nav
+            id="court-nav"
+            class="court-nav"
+            aria-label="Room section navigation"
+            hidden
+          >
+            <button id="previous-court" aria-label="Previous courtyard">
+              ←</button
+            ><span id="court-label"></span
+            ><button id="next-court" aria-label="Next courtyard">→</button>
+          </nav>
+        </div>
+        <p id="sound-focus" class="sound-focus"></p>
+
+      </section>
+      <aside aria-label="Crowd controls and example activity">
+        <section class="control-block">
+          <div class="control-title">
+            <label for="population">Visitors across the camp</label
+            ><output id="population-value" for="population">1000</output>
+          </div>
+          <input
+            id="population"
+            type="range"
+            min="0"
+            max="1000"
+            step="1"
+            value="1000"
+          />
+          <div class="range-labels">
+            <span>0 · still beautiful</span><span>1,000 · busy retreat</span>
+          </div>
+          <div class="presets" aria-label="Crowd presets">
+            <button data-count="0">Empty</button
+            ><button data-count="12">Quiet morning</button
+            ><button data-count="60">A gathering</button
+            ><button data-count="1000" aria-pressed="true">Festival night</button>
+          </div>
+          <div class="counts">
+            <div>
+              <strong id="shown">0</strong><span>creatures in view</span>
+            </div>
+            <div>
+              <strong id="eligible">0</strong
+              ><span id="eligible-label">at the Dream Garden</span>
+            </div>
+          </div>
+          <p id="scope-note"></p>
+        </section>
+        <section class="control-block">
+          <div class="roster-heading">
+            <h2>Visitors</h2>
+            <span>All in this area</span>
+          </div>
+          <label class="sr-only" for="search">Find an example visitor</label
+          ><input
+            type="search"
+            id="search"
+            placeholder="Find visitor or family…"
+            autocomplete="off"
+          />
+          <div id="roster"></div>
+          <div class="visitor-navigate">
+            <button id="previous-page" aria-label="Previous visitors">←</button
+            ><span id="page-label"></span
+            ><button id="next-page" aria-label="Next visitors">→</button>
+          </div>
+        </section>
+        <section class="inspection" id="inspection" aria-live="polite">
+          <h3>Meet a little wanderer.</h3>
+          <p>
+            Select a creature to meet it.
+          </p>
+        </section>
+      </aside>
+    </div>
+`

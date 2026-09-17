@@ -7,19 +7,7 @@ export function ScenePage({ scene }: { scene: SceneId }) {
   return (
     <>
       <section className='page-intro'>
-        <div className='page-eyebrow'>
-          Moonclay Commons · An illustrated retreat
-        </div>
-        <div className='flex flex-wrap items-center justify-between gap-3'>
-          <h1>{room?.name ?? 'Seven places. Nothing required.'}</h1>
-          <span className='text-xs text-muted-foreground'>
-            Live visits · Illustrative creature motion
-          </span>
-        </div>
-        <p>
-          {room?.description ??
-            'A little soak. A strange discovery. Good company. Choose a place to wander, or stay here a while.'}
-        </p>
+        <h1>{room?.name ?? 'Camp Overview'}</h1>
       </section>
       <nav className='room-navigation' aria-label='Retreat spaces'>
         <Link to='/camp' aria-current={scene === 'camp' ? 'page' : undefined}>

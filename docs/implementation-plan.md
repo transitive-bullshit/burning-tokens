@@ -577,3 +577,8 @@ A focused nine-example live check on preview `2ee6c005-b060-4d35-bf23-b6e85bfc8b
 ### Preview feedback checkpoint — 2026-09-17
 
 Reconciled M4–M6 implementation checkboxes against the current source and existing recorded checks. No extra test infrastructure or runtime feature was added. The worktree is at a usable preview checkpoint. The user explicitly deferred Claude testing. No Claude participant run has started, no approval is pending for it, and it is not a blocker for preview work. Actual Claude compatibility remains unverified. Alert budget/destination is also unanswered. Domain, static audio clearance and public launch are intentionally deferred, not blocking preview iteration.
+
+
+### Human scene refinement — 2026-09-17
+
+Simplified camp/room headings and removed redundant explanatory copy, prototype atmosphere sliders and sound audition panels. Exploration defaults to Demo visitors at Festival Night; demo choice, population and view mode persist across pages/reloads. Actual-agent following uses live data. Selected creatures have a contrasting gold ring, overhead pointer and name label. Camp movement now uses short staggered rests instead of 32–44-second cycles with 80% idle time. Verification is limited to a two-creature motion regression, focused sound-controller checks, a brief local navigation/control smoke check, types/lint and build; no hosted synthetic population or stress test.
