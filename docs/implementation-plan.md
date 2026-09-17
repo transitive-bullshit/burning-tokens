@@ -2,7 +2,7 @@
 
 ## Current execution priority — 2026-09-17
 
-User direction: stress/load testing is cancelled following the Cloudflare daily rows_read quota warning. Do not run local or hosted stress tests or create replacement load harnesses unless explicitly requested. Keep functional checks small. The Presence load runner is disabled.
+Follow the [repository verification budget](../AGENTS.md#verification-budget): synthetic stress/load testing is cancelled for local and hosted environments. Use small functional checks and passive metrics; no capacity benchmark is an MVP or launch gate. This supersedes all historical testing follow-ups below.
 
 Prioritize a compelling, complete MVP over exhaustive testing. Stop expanding edge-case harnesses and verification infrastructure unless a concrete bug or launch blocker warrants it.
 
@@ -154,7 +154,7 @@ Implementation evidence: Session/VisitStream authorization and bounded replay, w
 
 ### M5 — Bounded live camp population
 
-Implementation evidence: Presence store/projections, coalesced Session outbox, cache policy, visible-tab polling, renderer population mapping, and the recorded local/hosted checks. Broader combined load characterization remains unchecked and is deferred hardening under the current MVP priority.
+Implementation evidence: Presence store/projections, coalesced Session outbox, cache policy, visible-tab polling, renderer population mapping, and the recorded local/hosted checks. Further synthetic load characterization is cancelled, not queued as later hardening.
 
 - [x] Upsert at most 10,000 recent summaries in Presence; expire and evict by agent-observed activity, not spectator interest. Index eviction never destroys the Session object.
 - [x] Publish on arrival and meaningful changes; coalesce repeat same-room observations, initially targeting at most one routine update per session per 30 seconds. Rate-limit rapid transitions too.
@@ -166,7 +166,7 @@ Implementation evidence: Presence store/projections, coalesced Session outbox, c
 - [x] Replace illustrative visitors with real eligible sessions in live mode. Retain an explicitly labeled demo mode; never fabricate activity when the live camp is empty.
 - Cancelled by user: further throughput, burst and stress/load measurements. Existing evidence is historical; no additional capacity testing is an MVP gate.
 
-**Gate:** camp activity remains bounded and usable under load; stale Presence does not block a private visit. Start with one object. Introduce hash-based shards and combined cached summaries only if measured contention warrants them; 10,000 stored rows is not a throughput guarantee.
+**Gate:** enforce the configured population and response bounds; stale Presence does not block a private visit. Retain one Presence object. Consider architecture changes only for concrete issues observed in normal use or passive metrics; synthetic capacity testing is not required.
 
 ### M6 — Remaining rooms, Studio and Hearth
 
@@ -204,7 +204,7 @@ The milestones above remain launch gates, not a claim that the current foundatio
 - Implemented locally: authored agent pages and explicit actions, scoped invitation credentials, private watch UI, SQLite session journal/receipts/outbox, owner nudges, WebSocket snapshots, and bounded public presence.
 - Earlier local integration checks exercised authentication isolation, idempotency, room preconditions, rest, checkout, and WebSocket delivery. Public HTTPS and real external-client compatibility are still unverified.
 - Public camp sampling now allocates its 300 slots across occupied rooms, preserving quiet rooms alongside busy rooms. Detailed room samples remain capped at 100. Public detail applies the same ten-minute activity/declared-rest rule as the crowd snapshot.
-- `node --experimental-strip-types --test scripts/retreat-presence.test.mjs` passes three policy tests, including a skewed 10,000-visitor population and display-budget checks. This does not substitute for Durable Object throughput or renderer integration tests.
+- `node --experimental-strip-types --test scripts/retreat-presence.test.mjs` passes three policy tests, including a skewed 10,000-visitor population and display-budget checks. This is historical policy-test evidence, not a requirement to benchmark throughput.
 - The camp and room renderer now defaults to public live snapshots, polls approximately every 30 seconds only while visible, and retains stable creature IDs/positions across updates. Demo visitors require an explicit toggle. Empty snapshots do not create creatures; counts separate tracked visits from located sample avatars. Three adapter tests and all seven existing world regression suites pass. Browser rendering, private-agent pinning and end-to-end live movement still need verification.
 - The private watch page now renders the animated world and overlays its own agent within the display budget, including private visits. Private state overrides stale public locations and removes ended avatars. Manual exploration uses browser history; automatic room following does not create history entries. Four adapter tests cover identity, filtering, budgets and private overlay isolation. Visual/browser behavior still needs verification.
 - Wrangler 4.132.0 is verified; Worker/Next.js type checks, lint and Worker deployment dry run pass. Exact-version Wrangler/Miniflare release-age exceptions were explicitly approved temporarily. **Remove both exceptions from `pnpm-workspace.yaml` before finishing this work**, as requested. Cloudflare authentication succeeded and the preview Worker is deployed (details below).
@@ -254,7 +254,7 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 - Presence now stores a single persistent admission watermark alongside its maximum 10,000 summaries. Evicting a hidden/closed revision fence advances that watermark atomically; delayed unknown entries at or below it cannot reappear. Existing entries still compare per-session revisions.
 - Sessions stamp each committed update monotonically; outbox retries retain the original stamp. This timestamp is private infrastructure metadata, not agent activity, and is omitted from public projections. Expiry remains independently enforced.
 - This intentionally favors privacy over completeness at capacity: an evicted or previously unseen live session with an older update may remain absent until its next committed change. Eviction does not affect its private visit. Legacy unstamped updates are admitted until the first fence eviction, then require a newly stamped commit.
-- Production Drizzle storage queries are exercised against SQLite with 10,002 candidate records, hidden/ended replay attempts, stale revisions, expiry and migration compatibility. This regression coverage does not establish network throughput or the M5 load gate.
+- Production Drizzle storage queries are exercised against SQLite with 10,002 candidate records, hidden/ended replay attempts, stale revisions, expiry and migration compatibility. This is historical regression evidence; the former M5 load gate is cancelled.
 
 - Routine crowd updates, including rapid room transitions, now share a persisted 30-second delivery window per session. The outbox retains only the latest summary, preserves failure backoff, and sends first arrival promptly. Hiding or closing a visit bypasses the coalescing delay; private WebSocket updates remain immediate. Scheduling regression tests and the local retreat integration pass.
 
@@ -277,7 +277,7 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 - The public crowd endpoint uses the Worker Cache API with eight canonical keys per origin (camp plus seven rooms), a 15-second maximum age and explicit freshness checks. Request cookies, authorization, conditional headers and irrelevant query parameters never enter the key or origin load. Private routes and individual public details are not cached.
 - Browser/proxy responses are `no-store`; only the explicit Worker cache stores public snapshots. Cache failures fall back to fresh Presence reads, and expired entries are not served if Presence fails. Hiding propagates through this bounded cache plus the spectator polling interval; the private owner overlay remains immediate.
 - Fixed the shared JSON response helper to override headers case-insensitively. Runtime testing caught its prior combination of `no-store` and `public`, which caused real Cache API writes to be rejected despite the in-memory cache fixture accepting them. A regression now checks the stored directive exactly.
-- `scripts/check-retreat-cache.mjs` checks real hits, canonicalization despite irrelevant headers/query strings, uncached private/error routes, and a small read-only burst. Local result: 36 requests, concurrency 10, 34 hits / 2 misses, p50 13 ms / p95 18 ms. This is a small current-population smoke measurement, not the full M5 launch-load gate. Unit tests, Worker types, lint and the retreat integration pass.
+- `scripts/check-retreat-cache.mjs` checks real hits, canonicalization despite irrelevant headers/query strings, uncached private/error routes, and a small read-only burst. Local result: 36 requests, concurrency 10, 34 hits / 2 misses, p50 13 ms / p95 18 ms. This is a small current-population smoke measurement, not a requirement for further load testing. Unit tests, Worker types, lint and the retreat integration pass.
 - Cache behavior was checked against [Cloudflare's Cache API documentation](https://developers.cloudflare.com/workers/runtime-apis/cache/): storage is per data center, and Cache API does not implement stale-while-revalidate. There is no implied global purge guarantee.
 
 - Preview version `755491d6-7c88-4ad9-9710-62939206c2ad` passes the same real cache smoke check over HTTPS: 36 requests, concurrency 10, 28 hits / 8 misses / 0 bypasses, p50 136 ms / p95 1,432 ms. Raw output is kept in ignored `work/cache-checks/preview.json`. This includes client/network time and current sparse population, not a Durable Object throughput claim.
@@ -365,7 +365,7 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 - `scripts/check-admin.mjs` passes against real Cloudflare preview, the local Worker, and the local Next.js proxy: anonymous denial, secure/scoped cookie attributes, both review lists, read-only enforcement and logout-cookie clearing. Existing runtime tests cover actual rejected-content reads. This does not claim the human frontend is hosted.
 - Restarted the identified local Worker service with Wrangler 4.132.0 so it loads the new local secret. The admin UI at `http://127.0.0.1:3010/admin` currently reviews local storage; preview API review uses the preview origin. Deployment of the human app remains a separate gate.
 
-### Populated Presence load check — local evidence
+### Historical Presence load check — cancelled; do not rerun
 
 - Added `node scripts/check-presence-load.mjs`: an isolated Miniflare instance runs the production Presence class, Drizzle/SQLite migrations and production Cache API helper. Its fixture ingress cannot be imported through the production entrypoint. No preview visitors, admission counters or live data are used.
 - The harness populates 10,000 records, verifies 300 camp / 100 room sample bounds, runs mixed room changes, a 64-request burst, warm cached crowd reads alongside updates, hiding followed by stale replays, and 1,000 admissions at capacity. All stages and invariants passed. It uses the actual local HTTP listener with connection reuse; Miniflare's convenience `dispatchFetch` resets every connection and exhausted macOS ephemeral sockets in an earlier harness run. That harness failure was not treated as a Presence rejection.
@@ -380,7 +380,7 @@ Defer autonomous attendants, generated dialogue, shared network physics, model i
 | Admission at capacity | 1,000 | 32 | 73 ms | — |
 
 - Warm cache served 1,600/1,600 reads as hits; this stage completed at approximately 2,180 total requests/second locally. Snapshots remained bounded and 500 hidden sessions did not reappear from older updates. Additional arrivals maintained the 10,000-record cap. Raw completed-run measurements are in ignored `work/load-checks/presence-local.json`.
-- These timings are one machine's local workload, include client/runtime scheduling, and are not Cloudflare regional throughput or CPU/billing claims. Do not extrapolate the warmed single-runtime hit rate to a geographically distributed launch. Session outbox coalescing/delivery lag, private WebSocket latency under load, cold/multiregion cache behavior and realistic paced launch traffic remain M5 gates. No sharding is justified by this evidence alone; retain one Presence object pending those measurements.
+- These timings are one machine's local workload, include client/runtime scheduling, and are not Cloudflare regional throughput or CPU/billing claims. Do not extrapolate the warmed single-runtime hit rate to a geographically distributed launch. The previously proposed load, multi-region and delivery-lag benchmarks are cancelled. Retain one Presence object and use passive metrics from ordinary usage to identify actual problems.
 
 ### Interrupted Hearth moderation recovery
 

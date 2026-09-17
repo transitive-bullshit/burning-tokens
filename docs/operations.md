@@ -1,4 +1,6 @@
-> Stress/load testing is cancelled by user direction after a Cloudflare daily rows_read quota warning. The Presence load runner is disabled. Do not rerun or redeploy the historical load fixture without explicit user direction. Its completed hosted runs are a suspected source of the quota exhaustion, not verified account-level attribution.
+> Follow the [repository verification budget](../AGENTS.md#verification-budget). Synthetic stress/load testing is prohibited locally and on Cloudflare unless the user explicitly reverses that decision. Use small functional checks and passive metrics. Historical fixtures and reports below must not be rerun or redeployed.
+
+The user reported exhaustion of Cloudflare's 5,000,000 daily Durable Objects rows_read allowance. Hosted synthetic Presence testing is a suspected cause; account-level attribution was not verified. The temporary Worker was deleted, no stress-test process was running when checked, and the Presence load runner is disabled. Local Miniflare execution itself does not consume the hosted allowance. Stopping tests does not restore already consumed quota.
 
 # Retreat operations
 
@@ -68,9 +70,9 @@ The checker opens one socket, acknowledges the initial snapshot, then leaves it 
 
 Passed on 2026-09-16 after the first idle interval, fixture version `a316c410-10be-4b1b-8fe6-27fa3251c2e4`. The fixture visit ended and the Worker was deleted afterward. Wrangler reported a KV-list authorization error after deletion; authoritative Worker settings returned 404/code 10007 for the fixture and 200 for the application preview. The complete Durable Object namespace listing contained only five entries and none attached to the fixture. Do not recreate a resource merely because the CLI's later cleanup step failed.
 
-### Hosted Presence load checkpoint — 2026-09-16
+### Historical hosted Presence load checkpoint — do not rerun
 
-An isolated `burning-tokens-presence-load-check` Worker exercised production Presence code with synthetic summaries, without app sessions, R2 or provider calls. The successful run populated 10,000 records, mixed room changes and reads, replayed stale updates after hiding records, and applied capacity pressure. Bounds and stale-update protection passed. Cached crowd reads hit 97.5%; their p95 was 426 ms, including client/network latency. Uncached mixed workloads achieved 98–123 operations/sec; these results do not establish sustained capacity for 10,000 fully active agents. Session outbox lag, private sockets and multi-region load remain unmeasured.
+An isolated `burning-tokens-presence-load-check` Worker exercised production Presence code with synthetic summaries, without app sessions, R2 or provider calls. The successful run populated 10,000 records, mixed room changes and reads, replayed stale updates after hiding records, and applied capacity pressure. Bounds and stale-update protection passed. Cached crowd reads hit 97.5%; their p95 was 426 ms, including client/network latency. Uncached mixed workloads achieved 98–123 operations/sec; these results do not establish sustained capacity for 10,000 fully active agents. Session outbox lag, private sockets and multi-region load were not measured; further synthetic measurements are cancelled.
 
 The first run stopped on a client ECONNRESET. The harness now retries that transport failure once (same idempotent payload), records retries and isolates each run's object and cache keys. The successful rerun needed zero retries. Results: ignored `work/load-checks/presence-cloudflare.json`. The temporary Worker was successfully deleted afterward; its temporary local key was removed.
 
