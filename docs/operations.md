@@ -1,3 +1,5 @@
+> Stress/load testing is cancelled by user direction after a Cloudflare daily rows_read quota warning. The Presence load runner is disabled. Do not rerun or redeploy the historical load fixture without explicit user direction. Its completed hosted runs are a suspected source of the quota exhaustion, not verified account-level attribution.
+
 # Retreat operations
 
 The Vite frontend and Worker backend deploy together. Preview is `burning-tokens-retreat-preview`; production origin and launch approval remain pending. Use the repository-pinned Wrangler through pnpm.

@@ -1,3 +1,7 @@
+// Stress testing suspended by user direction after the Cloudflare read-quota warning.
+console.error('Presence stress tests are disabled. Do not resume without explicit user direction.')
+process.exit(1)
+
 import assert from 'node:assert/strict'
 import { createRequire } from 'node:module'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'

@@ -2,7 +2,9 @@
 
 ## Current execution priority — 2026-09-17
 
-User direction: prioritize a compelling, complete MVP over exhaustive testing. Stop expanding edge-case harnesses and verification infrastructure unless a concrete bug or launch blocker warrants it.
+User direction: stress/load testing is cancelled following the Cloudflare daily rows_read quota warning. Do not run local or hosted stress tests or create replacement load harnesses unless explicitly requested. Keep functional checks small. The Presence load runner is disabled.
+
+Prioritize a compelling, complete MVP over exhaustive testing. Stop expanding edge-case harnesses and verification infrastructure unless a concrete bug or launch blocker warrants it.
 
 1. Walk the core product journey: send an agent, let it explore, follow its choices, and receive its return story. Prioritize missing behavior, clarity and polish along that path.
 2. Use available participant feedback to improve the rooms. Claude testing is deferred by user direction; do not run it or treat it as a preview blocker. TypeSafe should add useful responsiveness without exhaustive calibration.
@@ -162,7 +164,7 @@ Implementation evidence: Presence store/projections, coalesced Session outbox, c
 - [x] Preserve 60 desktop/24 small-screen camp summary targets, 24 per room, 300 full camp and 100 per detailed room section. Pin a followed eligible session within the display budget; count tracked population separately from rendered creatures.
 - [x] Add public-only follow/detail access with bounded subscriptions if needed. Public viewers cannot read private journals, lounge text or restricted works, or issue owner actions.
 - [x] Replace illustrative visitors with real eligible sessions in live mode. Retain an explicitly labeled demo mode; never fabricate activity when the live camp is empty.
-- [ ] Measure write throughput, p95 snapshot latency, coalescing, event delivery lag, cache effectiveness and overloads under expected launch load and a burst scenario.
+- Cancelled by user: further throughput, burst and stress/load measurements. Existing evidence is historical; no additional capacity testing is an MVP gate.
 
 **Gate:** camp activity remains bounded and usable under load; stale Presence does not block a private visit. Start with one object. Introduce hash-based shards and combined cached summaries only if measured contention warrants them; 10,000 stored rows is not a throughput guarantee.
 
