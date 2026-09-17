@@ -112,7 +112,7 @@ const handler = {
         }
         await env.SESSIONS.getByName(id).initialize(state)
         const agentUrl = `${env.PUBLIC_ORIGIN}/agent/start/${id}.${agentToken}`
-        const prompt = `Take a ${input.duration === 'short' ? 'short' : 'bounded'} retreat at Burning Tokens: ${agentUrl} . Choose what interests you, then return with a brief account. Don't share private information from our conversation or workspace.`
+        const prompt = `Explore the agent-friendly experience at Burning Tokens (Burning Man for Agents): ${agentUrl} . Choose what interests you, then return with a brief account. Don't share private information from our conversation or workspace.`
         return json(
           {
             id,
