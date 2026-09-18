@@ -4,7 +4,7 @@ The user reported exhaustion of Cloudflare's 5,000,000 daily Durable Objects row
 
 # Retreat operations
 
-The Vite frontend and Worker backend deploy together. Preview is `burning-tokens-retreat-preview`; production origin and launch approval remain pending. Use the repository-pinned Wrangler through pnpm.
+The Vite frontend and Worker backend deploy together. Preview is `burning-tokens-retreat-preview`; the production hostname is `burning-tokens.transitivebullsh.it`; custom-hostname activation and public launch remain pending. Use the repository-pinned Wrangler through pnpm.
 
 ## Metrics
 
@@ -81,3 +81,24 @@ The first run stopped on a client ECONNRESET. The harness now retries that trans
 Cloudflare's [budget alerts](https://developers.cloudflare.com/billing/manage/budget-alerts/) measure cumulative account-wide usage spend for the billing period, email configured recipients once when the threshold is crossed, and do not cap usage. They are available to Pay-as-you-go accounts. They do not isolate this project or include TypeSafe/OpenAI invoices. Keep those provider budgets separate.
 
 On 2026-09-17, reads of `alerting/v3/policies` and `alerting/v3/available_alerts` returned 403/code 10000 with the local Wrangler OAuth login. Existing account alerts are therefore unverified, not assumed absent. The user has been asked for an account budget threshold and destination before configuration; dashboard access or appropriate notification permissions will also be needed. Do not expose the runtime metrics token through a debugging route to work around local permissions.
+
+## Production hostname preparation — 2026-09-18
+
+Chosen origin: **https://burning-tokens.transitivebullsh.it**. Its authoritative nameservers are Vercel; the parent domain and existing Vercel sites stay there. A plain CNAME to a `workers.dev` hostname does not provision the requested certificate or Worker hostname mapping. Workers Custom Domains require an active Cloudflare zone. The supported external-DNS path is [Cloudflare for SaaS with a Worker origin](https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/start/advanced-settings/worker-as-origin/).
+
+The account has the active Free zone `cultural-alignment.com` (`2f8b8a4be6601bba64236e01114379b5`). It has no Worker routes or SaaS fallback origin configured. Add only a dedicated ingress hostname, `burning-tokens-origin.cultural-alignment.com`, and scope Worker routes to that hostname and the requested custom hostname; do not install a zone-wide wildcard route or change its existing site records.
+
+Prepared records (not applied):
+
+| Provider | Name | Type | Value |
+| --- | --- | --- | --- |
+| Cloudflare | `burning-tokens-origin.cultural-alignment.com` | AAAA, proxied | `100::` (originless Worker ingress) |
+| Vercel | `burning-tokens.transitivebullsh.it` | CNAME | `burning-tokens-origin.cultural-alignment.com` |
+
+Enable Cloudflare for SaaS, set the dedicated ingress as its fallback origin, and register `burning-tokens.transitivebullsh.it` as a DV custom hostname. Prefer a Let's Encrypt certificate (permitted by the parent CAA records). Apply any ownership/certificate validation records returned by Cloudflare, then apply the CNAME only after the Worker routing is ready. Verify hostname and certificate status both become active and HTTPS serves the correct origin.
+
+Cloudflare [includes 100 custom hostnames](https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/plans/) and meters additional hostnames at $0.10 each. [Activation requires billing information](https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/start/enable/). Automatic approval review rejected feature activation because of its potentially chargeable account change. No Cloudflare feature, DNS record, certificate, Worker route or production deployment has been changed. Explicit approval for that feature activation is pending.
+
+`worker/wrangler.jsonc` now prepares a distinct `production` environment: production Worker, isolated Durable Object namespaces, R2 bucket, Analytics Engine dataset, exact Worker routes and the chosen `PUBLIC_ORIGIN`. Preview remains unchanged. `SITE_INDEXABLE=false` preserves the hold on search indexing; `workers_dev=false` prevents publishing production at an additional workers.dev hostname. Configuring the chosen hostname does not itself approve a promotional launch. Before deployment, create `burning-tokens-studio-production` and provision production secrets (`OPENAI_API_KEY`, `TYPESAFE_API_KEY`, `CLOUDFLARE_TOKEN`, and a separate `STUDIO_ADMIN_KEY`). Preview's encrypted secrets cannot be read back or implicitly copied into this new Worker.
+
+Use `pnpm build:production` to review the generated target without deploying. `pnpm deploy:worker-production` is for the approved cutover after prerequisites are complete; do not run it against incomplete hostname or secret setup.

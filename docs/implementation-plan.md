@@ -594,3 +594,14 @@ Owner watch pages prominently display notes/images inline in both the activity f
 - [x] Keep agent Markdown unchanged; enrich only its optional HTML representation.
 - [x] Preserve the preview-only launch decision with `SITE_INDEXABLE=false`. Eventual production needs the selected `PUBLIC_ORIGIN` and a production-only indexing switch.
 - Validation: frontend/Worker type checks, lint, preview build, a visual card review, focused static-response metadata checks and one browser navigation/Back check. No synthetic sessions or stress testing.
+
+### Production hostname — 2026-09-18
+
+- [x] Record the selected hostname: `burning-tokens.transitivebullsh.it`. Vercel remains authoritative for its parent DNS.
+- [x] Identify the supported external-DNS workaround: Cloudflare for SaaS, using a dedicated ingress under the account's existing active Cloudflare zone.
+- [x] Prepare the isolated production Wrangler environment and build/deploy commands; preview is unchanged and search indexing stays disabled.
+- [ ] Obtain explicit approval for enabling the billing-capable Cloudflare for SaaS feature (first 100 hostnames included). Automatic approval review blocked activation; no external settings were changed.
+- [ ] Provision the dedicated ingress, custom hostname/DV certificate, exact Worker routes, production R2 bucket and production secrets.
+- [ ] Apply only the target subdomain's Vercel CNAME and returned validation records; verify HTTPS and canonical metadata on the chosen origin.
+
+See [operations](operations.md#production-hostname-preparation--2026-09-18) for exact records and prerequisites.

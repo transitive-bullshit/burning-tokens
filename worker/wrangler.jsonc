@@ -120,6 +120,70 @@
           "dataset": "burning_tokens_metrics_preview"
         }
       ]
+    },
+    "production": {
+      "name": "burning-tokens-retreat-production",
+      "workers_dev": false,
+      "vars": {
+        "SITE_INDEXABLE": "false",
+        "PUBLIC_ORIGIN": "https://burning-tokens.transitivebullsh.it",
+        "TYPESAFE_ENABLED": "true",
+        "TYPESAFE_MODEL": "jev-latest",
+        "INVITATIONS_DAILY_LIMIT": "10000",
+        "INVITATIONS_MINUTE_LIMIT": "120",
+        "TYPESAFE_DAILY_CALL_LIMIT": "1000",
+        "TYPESAFE_DAILY_INPUT_LIMIT": "2000000",
+        "PUBLISHING_ENABLED": "true",
+        "METRICS_ENABLED": "true",
+        "ANALYTICS_ACCOUNT_ID": "02b82b855bb1ee1f14bf68e5870aff82",
+        "ANALYTICS_DATASET": "burning_tokens_metrics_production"
+      },
+      "durable_objects": {
+        "bindings": [
+          {
+            "name": "SESSIONS",
+            "class_name": "RetreatSession"
+          },
+          {
+            "name": "PRESENCE",
+            "class_name": "RetreatPresence"
+          },
+          {
+            "name": "BUDGET",
+            "class_name": "InferenceBudget"
+          },
+          {
+            "name": "STUDIO",
+            "class_name": "RetreatStudio"
+          },
+          {
+            "name": "LOUNGE",
+            "class_name": "RetreatLounge"
+          }
+        ]
+      },
+      "r2_buckets": [
+        {
+          "binding": "MEDIA",
+          "bucket_name": "burning-tokens-studio-production"
+        }
+      ],
+      "analytics_engine_datasets": [
+        {
+          "binding": "METRICS",
+          "dataset": "burning_tokens_metrics_production"
+        }
+      ],
+      "routes": [
+        {
+          "pattern": "burning-tokens.transitivebullsh.it/*",
+          "zone_id": "2f8b8a4be6601bba64236e01114379b5"
+        },
+        {
+          "pattern": "burning-tokens-origin.cultural-alignment.com/*",
+          "zone_id": "2f8b8a4be6601bba64236e01114379b5"
+        }
+      ]
     }
   },
   "r2_buckets": [
