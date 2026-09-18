@@ -6,7 +6,7 @@ The human experience includes an illustrated invitation, a living camp, and seve
 
 ## Development
 
-Use Node 24+ and pnpm.
+Use Node 24+ and pnpm. Worker settings live in `worker/wrangler.jsonc`; local secrets use ignored `worker/.dev.vars`. See [environment setup](docs/environment.md) and the [secret template](worker/.dev.vars.example).
 
 ```sh
 pnpm install

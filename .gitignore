@@ -47,4 +47,5 @@ work
 .wrangler
 .dev.vars
 .dev.vars.*
+!.dev.vars.example
 worker/worker-configuration.d.ts

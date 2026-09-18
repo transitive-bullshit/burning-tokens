@@ -4,7 +4,9 @@ The user reported exhaustion of Cloudflare's 5,000,000 daily Durable Objects row
 
 # Retreat operations
 
-The Vite frontend and Worker backend deploy together. Preview is `burning-tokens-retreat-preview`; the production hostname is `burning-tokens.transitivebullsh.it`; custom-hostname activation and public launch remain pending. Use the repository-pinned Wrangler through pnpm.
+The Vite frontend and Worker backend deploy together. Preview is `burning-tokens-retreat-preview`; the production hostname is `burning-tokens.transitivebullsh.it`; the custom hostname and HTTPS are active. Public promotion and search indexing remain on hold. Use the repository-pinned Wrangler through pnpm.
+
+See [environment configuration](environment.md) for the full variable inventory, local secret template, hosted secret inspection and the missing token recovery procedure.
 
 ## Metrics
 
@@ -48,7 +50,7 @@ A preview rehearsal on 2026-09-16 switched from `cbe45c82-806a-415f-954b-1adbf74
 
 Use the preview-only `node scripts/check-release-continuity.mjs seed`, then `verify` before and after each version change, and `cleanup` after restoring the intended version. It stores scoped fixture credentials in ignored `work/release-check/visit.json` with owner-only access, refuses to overwrite an existing fixture, and never performs a deployment itself. Cleanup deletes the artifact and ends the visit before removing local credentials.
 
-Automated alerts, production domain selection and production licensing approval remain pending.
+Automated alerts and the held public launch remain open; the production domain is configured below.
 
 ## Invitation admission
 
@@ -82,23 +84,27 @@ Cloudflare's [budget alerts](https://developers.cloudflare.com/billing/manage/bu
 
 On 2026-09-17, reads of `alerting/v3/policies` and `alerting/v3/available_alerts` returned 403/code 10000 with the local Wrangler OAuth login. Existing account alerts are therefore unverified, not assumed absent. The user has been asked for an account budget threshold and destination before configuration; dashboard access or appropriate notification permissions will also be needed. Do not expose the runtime metrics token through a debugging route to work around local permissions.
 
-## Production hostname preparation — 2026-09-18
+## Production hostname — 2026-09-18
 
-Chosen origin: **https://burning-tokens.transitivebullsh.it**. Its authoritative nameservers are Vercel; the parent domain and existing Vercel sites stay there. A plain CNAME to a `workers.dev` hostname does not provision the requested certificate or Worker hostname mapping. Workers Custom Domains require an active Cloudflare zone. The supported external-DNS path is [Cloudflare for SaaS with a Worker origin](https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/start/advanced-settings/worker-as-origin/).
+Live origin: **https://burning-tokens.transitivebullsh.it**. Vercel remains authoritative for `transitivebullsh.it`; its nameservers, parent CAA policy and existing sites are unchanged. [Cloudflare for SaaS with a Worker origin](https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/start/advanced-settings/worker-as-origin/) provides the custom hostname and managed certificate through the account's existing active Free zone `cultural-alignment.com` (`2f8b8a4be6601bba64236e01114379b5`).
 
-The account has the active Free zone `cultural-alignment.com` (`2f8b8a4be6601bba64236e01114379b5`). It has no Worker routes or SaaS fallback origin configured. Add only a dedicated ingress hostname, `burning-tokens-origin.cultural-alignment.com`, and scope Worker routes to that hostname and the requested custom hostname; do not install a zone-wide wildcard route or change its existing site records.
+Cloudflare for SaaS was enabled after explicit user approval. It [includes 100 custom hostnames](https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/plans/), with additional hostnames metered at $0.10 each. No zone plan upgrade was made. The dedicated ingress is the active SaaS fallback origin; the custom hostname and its SSL.com certificate both report **active**, with HTTP validation and minimum TLS 1.2.
 
-Prepared records (not applied):
+Applied records:
 
 | Provider | Name | Type | Value |
 | --- | --- | --- | --- |
 | Cloudflare | `burning-tokens-origin.cultural-alignment.com` | AAAA, proxied | `100::` (originless Worker ingress) |
+| Cloudflare | `burning-tokens-origin.cultural-alignment.com` | CAA | `0 issue "ssl.com"` |
 | Vercel | `burning-tokens.transitivebullsh.it` | CNAME | `burning-tokens-origin.cultural-alignment.com` |
+| Vercel | `_cf-custom-hostname.burning-tokens.transitivebullsh.it` | TXT | `7a79b436-782f-4a30-a2d9-d128d09e9db2` |
 
-Enable Cloudflare for SaaS, set the dedicated ingress as its fallback origin, and register `burning-tokens.transitivebullsh.it` as a DV custom hostname. Prefer a Let's Encrypt certificate (permitted by the parent CAA records). Apply any ownership/certificate validation records returned by Cloudflare, then apply the CNAME only after the Worker routing is ready. Verify hostname and certificate status both become active and HTTPS serves the correct origin.
+The parent Vercel CAA policy initially blocked Cloudflare's selected issuer. Explicit CAA authorization at the dedicated ingress resolved alias-based lookup without changing the parent policy. Do not add a CAA record alongside the Vercel CNAME: the same DNS name cannot contain both. Retain the ownership TXT and ingress CAA for ongoing hostname management and certificate renewal. Record IDs and a pre-change scoped Vercel snapshot are backed up in ignored `work/domain-setup/`.
 
-Cloudflare [includes 100 custom hostnames](https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/plans/) and meters additional hostnames at $0.10 each. [Activation requires billing information](https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/start/enable/). Automatic approval review rejected feature activation because of its potentially chargeable account change. No Cloudflare feature, DNS record, certificate, Worker route or production deployment has been changed. Explicit approval for that feature activation is pending.
+`worker/wrangler.jsonc` declares the isolated `production` environment: Worker `burning-tokens-retreat-production`, separate Durable Object namespaces, private R2 bucket `burning-tokens-studio-production`, Analytics Engine dataset `burning_tokens_metrics_production`, and the chosen `PUBLIC_ORIGIN`. Exact Worker routes cover only `burning-tokens.transitivebullsh.it/*` and `burning-tokens-origin.cultural-alignment.com/*`; no zone-wide wildcard was installed. Preview is unchanged.
 
-`worker/wrangler.jsonc` now prepares a distinct `production` environment: production Worker, isolated Durable Object namespaces, R2 bucket, Analytics Engine dataset, exact Worker routes and the chosen `PUBLIC_ORIGIN`. Preview remains unchanged. `SITE_INDEXABLE=false` preserves the hold on search indexing; `workers_dev=false` prevents publishing production at an additional workers.dev hostname. Configuring the chosen hostname does not itself approve a promotional launch. Before deployment, create `burning-tokens-studio-production` and provision production secrets (`OPENAI_API_KEY`, `TYPESAFE_API_KEY`, `CLOUDFLARE_TOKEN`, and a separate `STUDIO_ADMIN_KEY`). Preview's encrypted secrets cannot be read back or implicitly copied into this new Worker.
+Production OpenAI and TypeSafe keys are installed by the user; its separate administrator key is installed with an ignored mode-0600 recovery copy. TypeSafe and moderated publication are enabled. `CLOUDFLARE_TOKEN` is absent in production, so telemetry ingestion remains disabled until metrics query access is provisioned. Preview's encrypted secrets cannot be read back or implicitly copied; see [environment configuration](environment.md).
 
-Use `pnpm build:production` to review the generated target without deploying. `pnpm deploy:worker-production` is for the approved cutover after prerequisites are complete; do not run it against incomplete hostname or secret setup.
+`SITE_INDEXABLE=false` preserves the hold on search indexing; `workers_dev=false` prevents an additional production workers.dev hostname. Domain setup does not approve public promotion. Current production deployment: `b923bf62-910a-4507-ada9-b9cb37ea2cdc` (2026-09-18). Use `pnpm build:production` to inspect the generated target and `pnpm deploy:worker-production` to build/deploy it. Verify the generated target before deploying, especially after a preview build.
+
+Read-only verification passed for HTTPS, canonical/social metadata and JSON-LD on the homepage, camp and Bathhouse, plus agent Markdown and the optimized social JPEG. No sessions or synthetic load were generated. A separate ordinary Python `urllib` GET returned 403/Cloudflare error 1010: inherited Browser Integrity Check blocks that client. A Configuration Rule is prepared with expression `(http.host eq "burning-tokens.transitivebullsh.it")` and only `browser_integrity_check=false`; **it has not been deployed**. Automatic approval review rejected this production security-setting change without explicit user approval. Keep other hostnames and the zone-wide setting unchanged.

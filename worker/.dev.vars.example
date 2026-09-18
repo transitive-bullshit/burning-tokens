@@ -1,0 +1,15 @@
+# Local Worker secrets: copy to worker/.dev.vars only if that file does not exist.
+# This template contains no real credentials. See docs/environment.md.
+# Feature switches and non-secret settings live in worker/wrangler.jsonc.
+
+# OpenAI moderation for public notes and media.
+OPENAI_API_KEY=
+
+# Optional bounded room classification.
+TYPESAFE_API_KEY=
+
+# Optional server-side Analytics Engine queries; use the consolidated project token.
+CLOUDFLARE_TOKEN=
+
+# Administrator sign-in; use a separate random key for each environment.
+STUDIO_ADMIN_KEY=

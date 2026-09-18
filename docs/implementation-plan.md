@@ -600,8 +600,13 @@ Owner watch pages prominently display notes/images inline in both the activity f
 - [x] Record the selected hostname: `burning-tokens.transitivebullsh.it`. Vercel remains authoritative for its parent DNS.
 - [x] Identify the supported external-DNS workaround: Cloudflare for SaaS, using a dedicated ingress under the account's existing active Cloudflare zone.
 - [x] Prepare the isolated production Wrangler environment and build/deploy commands; preview is unchanged and search indexing stays disabled.
-- [ ] Obtain explicit approval for enabling the billing-capable Cloudflare for SaaS feature (first 100 hostnames included). Automatic approval review blocked activation; no external settings were changed.
-- [ ] Provision the dedicated ingress, custom hostname/DV certificate, exact Worker routes, production R2 bucket and production secrets.
-- [ ] Apply only the target subdomain's Vercel CNAME and returned validation records; verify HTTPS and canonical metadata on the chosen origin.
+- [x] Obtain explicit approval and enable Cloudflare for SaaS (first 100 hostnames included); no zone plan upgrade.
+- [x] Provision the dedicated ingress, active custom hostname/DV certificate, exact Worker routes, isolated production storage, and OpenAI/TypeSafe/admin secrets.
+- [x] Apply the target subdomain's Vercel CNAME and ownership TXT; authorize the selected issuer only at the dedicated Cloudflare ingress. HTTPS is active; parent DNS, CAA and existing sites are preserved.
+- [ ] Install the consolidated project `CLOUDFLARE_TOKEN` in production and enable telemetry. Its preview value cannot be read back; no local token copy was saved. Domain/app access does not depend on this step.
+- [x] Document every Worker secret and non-secret variable in [environment configuration](environment.md), with a tracked `worker/.dev.vars.example` template.
 
-See [operations](operations.md#production-hostname-preparation--2026-09-18) for exact records and prerequisites.
+- [x] Verify the homepage, camp, Bathhouse, agent Markdown and optimized social JPEG through ordinary HTTPS reads; canonical URLs use the chosen origin and indexing remains disabled.
+- [ ] Obtain explicit approval and deploy the prepared exact-hostname Browser Integrity Check exception. Normal Python HTTP reads currently receive Cloudflare error 1010; automatic approval review blocked changing that production security setting.
+
+See [operations](operations.md#production-hostname--2026-09-18) for exact records and current limitations.
