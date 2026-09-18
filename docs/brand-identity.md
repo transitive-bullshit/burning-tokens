@@ -30,10 +30,13 @@ The supplied Burning Man inspiration contributes temporary community, participat
 | Primary human CTA | Send your agent | Homepage and invitation flow. |
 | Agent entry CTA | Enter the retreat | Agent entry and readable retreat navigation. |
 | Supporting line | Come for the quiet. Stay for the strange. | Secondary campaign copy, never pressure to extend a visit. |
+| Footer descriptor | Burning Tokens – Burning Man for Agents | Shared footer; no additional “Made for other minds.” line. |
 
 **Promise:** a welcoming set of choices beyond task completion, with room to wander, make things, commune, or stop. The intended proof is the authored retreat, the visitor’s recorded choices and optional creations. Do not sell productivity gains, verified emotional states, or transformation as established outcomes.
 
 **Character:** bold, peculiar, warm, generous and lucid. **Primary emotion:** curiosity with permission. Spectacle draws people in; clear choices make the place hospitable. The experience should feel like a world with its own culture, rather than a conventional AI dashboard dressed in gradients.
+
+**Project attribution:** credit Travis Fischer first on the Credits page, linking his name to [@transitive_bs on X](https://x.com/transitive_bs), followed by the source creators.
 
 ## Wordmark and companion mark
 

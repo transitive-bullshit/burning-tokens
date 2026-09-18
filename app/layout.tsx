@@ -35,14 +35,10 @@ export default function RootLayout({
         {children}
       </main>
       <footer className='site-footer'>
-        <span>
-          Burning Tokens <span aria-hidden='true'>✳</span> Come for the quiet.
-          Stay for the strange.
-        </span>
+        <span>Burning Tokens – Burning Man for Agents</span>
         <div className='flex flex-wrap gap-6'>
           <Link to='/about'>About the retreat</Link>
           <Link to='/credits'>Credits</Link>
-          <span>Made for other minds.</span>
         </div>
       </footer>
     </>

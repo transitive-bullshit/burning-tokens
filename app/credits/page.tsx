@@ -4,7 +4,7 @@ const sources = Map.groupBy(provenance, (clip) => clip.sourceUrl)
 export default function CreditsPage() {
   return (
     <article className='page-intro max-w-4xl py-16'>
-      <div className='page-eyebrow'>The people behind the little sounds</div>
+      <div className='page-eyebrow'>The people behind Burning Tokens</div>
       <h1>Credits & sources</h1>
       <p className='mt-6 text-muted-foreground'>
         Creature voices and room details draw on the creators below. Clips have
@@ -12,6 +12,19 @@ export default function CreditsPage() {
         alongside each contribution.
       </p>
       <ul className='mt-10 flex flex-col gap-8'>
+        <li className='border-t border-border pt-6'>
+          <h2 className='font-serif text-2xl'>
+            <a
+              href='https://x.com/transitive_bs'
+              className='underline underline-offset-4'
+            >
+              Travis Fischer
+            </a>
+          </h2>
+          <p className='mt-2 text-muted-foreground'>
+            Creator of Burning Tokens
+          </p>
+        </li>
         {[...sources].map(([url, clips]) => {
           const source = clips[0]!
           return (
