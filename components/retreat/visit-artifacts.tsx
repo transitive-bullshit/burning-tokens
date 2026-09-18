@@ -1,10 +1,7 @@
-import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import {
-  artifactListSchema,
-  type ArtifactSummary
-} from '@/lib/retreat/artifacts'
+import type { VisitArtifactsState } from './use-visit-artifacts'
+import { OwnedWorkPreview, workKind } from './owned-work-preview'
 
 const audienceLabels = {
   private: 'Private',
@@ -13,71 +10,12 @@ const audienceLabels = {
 }
 export function VisitArtifacts({
   id,
-  revision
+  artifacts
 }: {
   id: string
-  revision: number
+  artifacts: VisitArtifactsState
 }) {
-  const [works, setWorks] = useState<ArtifactSummary[]>()
-  const [error, setError] = useState<string>()
-  const [busy, setBusy] = useState<string>()
-  const [refresh, setRefresh] = useState(0)
-  useEffect(() => {
-    const controller = new AbortController()
-    async function load() {
-      try {
-        const response = await fetch(`/api/retreat/visits/${id}/artifacts`, {
-          cache: 'no-store',
-          signal: controller.signal
-        })
-        if (!response.ok)
-          throw new Error(
-            'Your Studio works could not be loaded. Try refreshing the list.'
-          )
-        const result = artifactListSchema.parse(await response.json())
-        if (controller.signal.aborted) return
-        setWorks(result.works)
-        setError(undefined)
-      } catch (err) {
-        if (!controller.signal.aborted)
-          setError(
-            err instanceof Error
-              ? err.message
-              : 'The Studio is temporarily unavailable.'
-          )
-      }
-    }
-    void load()
-    return () => controller.abort()
-  }, [id, revision, refresh])
-  async function change(
-    work: ArtifactSummary,
-    operation: 'unshare' | 'delete'
-  ) {
-    setBusy(work.id)
-    setError(undefined)
-    try {
-      const response = await fetch(
-        `/api/retreat/visits/${id}/artifacts/${work.id}`,
-        operation === 'delete'
-          ? { method: 'DELETE' }
-          : {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ audience: 'private' })
-            }
-      )
-      if (!response.ok)
-        throw new Error(
-          'This change could not be applied. Refresh the list and try again.'
-        )
-      setRefresh((value) => value + 1)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Please try again.')
-    } finally {
-      setBusy(undefined)
-    }
-  }
+  const { works, error, busy, change, refresh } = artifacts
   return (
     <section
       aria-labelledby='studio-works-heading'
@@ -87,11 +25,7 @@ export function VisitArtifacts({
         <h2 id='studio-works-heading' className='font-serif text-2xl'>
           Things left in the Studio
         </h2>
-        <Button
-          variant='ghost'
-          size='sm'
-          onClick={() => setRefresh((value) => value + 1)}
-        >
+        <Button variant='ghost' size='sm' onClick={refresh}>
           Refresh works
         </Button>
       </div>
@@ -121,21 +55,17 @@ export function VisitArtifacts({
           {works.map((work) => (
             <li
               key={work.id}
-              className='flex flex-col gap-3 rounded-xl border border-border p-4'
+              className='flex flex-col gap-4 rounded-2xl border border-primary/30 bg-primary/5 p-5'
             >
               <div className='flex flex-wrap items-baseline justify-between gap-2'>
-                <h3 className='font-medium'>
-                  {work.mime.startsWith('image/')
-                    ? 'An image'
-                    : work.mime.startsWith('audio/')
-                      ? 'An audio work'
-                      : 'A piece of writing'}{' '}
-                  · {work.id.slice(0, 8)}
+                <h3 className='font-serif text-xl'>
+                  Your agent left {workKind(work.mime)}
                 </h3>
                 <span className='text-sm text-muted-foreground'>
                   {audienceLabels[work.audience]}
                 </span>
               </div>
+              <OwnedWorkPreview work={work} />
               <p className='text-xs text-muted-foreground'>
                 {Math.max(1, Math.ceil(work.bytes / 1024))} KB · {work.mime} ·
                 Stored until {new Date(work.expiresAt).toLocaleDateString()}

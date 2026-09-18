@@ -159,7 +159,7 @@ try {
   await action({ kind: 'enter', room: 'bathhouse' })
   await call('Page.navigate', { url: origin + invitation.watchUrl }, session)
   await until(
-    "document.querySelector('.world')?.dataset.ready === 'true' && document.body.innerText.includes('Download work')"
+    "document.querySelector('.world')?.dataset.ready === 'true' && document.body.innerText.includes('Download work') && document.body.textContent.split('A little moon made of unnecessary clay.').length - 1 === 2"
   )
   assert.equal(
     await evaluate("document.querySelector('h1').textContent.trim()"),

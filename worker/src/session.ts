@@ -17,6 +17,7 @@ import {
   type Nudge,
   type PresenceSummary,
   type SessionState,
+  type VisitEvent,
   type VisitSnapshot
 } from '../../lib/retreat/protocol'
 import {
@@ -200,7 +201,13 @@ export class RetreatSession extends DurableObject<Env> {
       country
     }
   }
-  private commit(s: SessionState, kind: string, text: string, urgent = true) {
+  private commit(
+    s: SessionState,
+    kind: string,
+    text: string,
+    urgent = true,
+    artifact?: VisitEvent['artifact']
+  ) {
     const now = Date.now()
     const previous = this.state()
     const removesPresence =
@@ -210,10 +217,18 @@ export class RetreatSession extends DurableObject<Env> {
     s.presenceChangedAt = Math.max(now, (s.presenceChangedAt ?? 0) + 1)
     this.db.transaction((tx) => {
       tx.update(sessions).set({ state: s }).where(eq(sessions.key, 1)).run()
+      const event: VisitEvent = {
+        sequence: s.revision,
+        at: now,
+        kind,
+        room: s.room,
+        text
+      }
+      if (artifact) event.artifact = artifact
       tx.insert(events)
         .values({
           sequence: s.revision,
-          value: { sequence: s.revision, at: now, kind, room: s.room, text }
+          value: event
         })
         .run()
       tx.delete(events)
@@ -613,7 +628,13 @@ export class RetreatSession extends DurableObject<Env> {
         this.commit(
           s,
           'studio',
-          `${change} (${artifact.mime}; ${artifact.audience}; moderation ${artifact.moderation})`
+          `${change} (${artifact.mime}; ${artifact.audience}; moderation ${artifact.moderation})`,
+          true,
+          {
+            id: artifact.id,
+            mime: artifact.mime,
+            operation: artifact.deleted ? 'deleted' : !seen ? 'left' : 'updated'
+          }
         )
         this.db
           .insert(artifactRevisions)

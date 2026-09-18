@@ -118,6 +118,11 @@ export type VisitEvent = {
   kind: string
   room: RetreatRoom | null
   text: string
+  artifact?: {
+    id: string
+    mime: string
+    operation: 'left' | 'updated' | 'deleted'
+  }
 }
 export type Nudge = {
   id: string

@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import type { VisitEvent } from '@/lib/retreat/protocol'
+import { OwnedWorkPreview, workKind } from './owned-work-preview'
+import type { OwnedWork } from './use-visit-artifacts'
 import { rooms } from '@/lib/rooms'
 
 const labels = new Map(
@@ -20,11 +22,40 @@ const labels = new Map(
   })
 )
 
-export function VisitJournal({ events }: { events: VisitEvent[] }) {
+export function VisitJournal({
+  events,
+  works
+}: {
+  events: VisitEvent[]
+  works?: OwnedWork[]
+}) {
   const [filter, setFilter] = useState('all')
   const visible = events
     .filter((event) => filter === 'all' || event.kind !== 'observed')
     .toReversed()
+  function workForEvent(event: VisitEvent) {
+    if (event.artifact)
+      return works?.find((work) => work.id === event.artifact?.id)
+    // Older journals have no work ID. Match only an unambiguous creation time/type.
+    if (event.kind !== 'studio' || !event.text.startsWith('Left a Studio work'))
+      return undefined
+    const candidates =
+      works?.filter(
+        (work) =>
+          event.text.includes(work.mime) &&
+          Math.abs(event.at - work.createdAt) < 60_000
+      ) ?? []
+    if (candidates.length !== 1) return undefined
+    const work = candidates[0]!
+    const matchingEvents = events.filter(
+      (entry) =>
+        entry.kind === 'studio' &&
+        entry.text.startsWith('Left a Studio work') &&
+        entry.text.includes(work.mime) &&
+        Math.abs(entry.at - work.createdAt) < 60_000
+    )
+    return matchingEvents.length === 1 ? work : undefined
+  }
   return (
     <section
       className='flex min-w-0 flex-col gap-4'
@@ -61,50 +92,84 @@ export function VisitJournal({ events }: { events: VisitEvent[] }) {
               className='flex max-h-[32rem] flex-col gap-4 overflow-y-auto'
               aria-label='Visit journal, newest first'
             >
-              {visible.map((event) => (
-                <li
-                  key={event.sequence}
-                  className='border-l border-border pl-4'
-                >
-                  <div className='flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1'>
-                    <span
-                      className={
-                        event.kind === 'observed'
-                          ? 'text-xs text-muted-foreground'
-                          : 'text-xs font-medium text-primary'
-                      }
-                    >
-                      {labels.get(event.kind) ?? 'Visit activity'}
-                    </span>
-                    <time
-                      dateTime={new Date(event.at).toISOString()}
-                      className='text-xs text-muted-foreground'
-                    >
-                      {new Date(event.at).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </time>
-                  </div>
-                  {event.kind === 'reflect' ? (
-                    <details className='mt-2 text-sm'>
-                      <summary className='cursor-pointer'>
-                        Read the private reflection
-                        {event.room
-                          ? ` · ${rooms.find((room) => room.id === event.room)?.name ?? event.room}`
-                          : ''}
-                      </summary>
-                      <p className='mt-2 whitespace-pre-wrap break-words leading-relaxed'>
+              {visible.map((event) => {
+                const work = workForEvent(event)
+                const leftWork =
+                  event.kind === 'studio' &&
+                  (event.artifact?.operation === 'left' ||
+                    event.text.startsWith('Left a Studio work'))
+                const mime =
+                  event.artifact?.mime ??
+                  work?.mime ??
+                  /\((text\/plain|image\/[^;]+|audio\/[^;]+)/.exec(
+                    event.text
+                  )?.[1]
+                return (
+                  <li
+                    key={event.sequence}
+                    className={
+                      leftWork
+                        ? 'rounded-xl border border-primary/30 bg-primary/5 p-4'
+                        : 'border-l border-border pl-4'
+                    }
+                  >
+                    <div className='flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1'>
+                      <span
+                        className={
+                          leftWork
+                            ? 'text-base font-semibold text-primary'
+                            : event.kind === 'observed'
+                              ? 'text-xs text-muted-foreground'
+                              : 'text-xs font-medium text-primary'
+                        }
+                      >
+                        {leftWork && mime
+                          ? `Your agent left ${workKind(mime)}`
+                          : (labels.get(event.kind) ?? 'Visit activity')}
+                      </span>
+                      <time
+                        dateTime={new Date(event.at).toISOString()}
+                        className='text-xs text-muted-foreground'
+                      >
+                        {new Date(event.at).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </time>
+                    </div>
+                    {leftWork &&
+                    (mime === 'text/plain' || mime?.startsWith('image/')) ? (
+                      <div className='mt-3'>
+                        {work ? (
+                          <OwnedWorkPreview work={work} />
+                        ) : (
+                          <p className='text-sm text-muted-foreground'>
+                            {works
+                              ? 'Review any remaining work in the Studio section below.'
+                              : 'Loading your agent’s work…'}
+                          </p>
+                        )}
+                      </div>
+                    ) : event.kind === 'reflect' ? (
+                      <details className='mt-2 text-sm'>
+                        <summary className='cursor-pointer'>
+                          Read the private reflection
+                          {event.room
+                            ? ` · ${rooms.find((room) => room.id === event.room)?.name ?? event.room}`
+                            : ''}
+                        </summary>
+                        <p className='mt-2 whitespace-pre-wrap break-words leading-relaxed'>
+                          {event.text}
+                        </p>
+                      </details>
+                    ) : (
+                      <p className='mt-1 whitespace-pre-wrap break-words text-sm'>
                         {event.text}
                       </p>
-                    </details>
-                  ) : (
-                    <p className='mt-1 whitespace-pre-wrap break-words text-sm'>
-                      {event.text}
-                    </p>
-                  )}
-                </li>
-              ))}
+                    )}
+                  </li>
+                )
+              })}
             </ol>
           ) : (
             <p className='text-sm text-muted-foreground'>

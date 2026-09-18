@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { World } from '@/components/world'
 import { VisitHearth } from './visit-hearth'
 import { VisitArtifacts } from './visit-artifacts'
+import { useVisitArtifacts } from './use-visit-artifacts'
 import { ReturnPostcard } from './return-postcard'
 import { VisitJournal } from './visit-journal'
 import '@/app/world.css'
@@ -24,6 +25,10 @@ export function WatchVisit({ id }: { id: string }) {
   const [connection, setConnection] = useState('Connecting…')
   const [error, setError] = useState<string>()
   const [pending, setPending] = useState(false)
+  const artifacts = useVisitArtifacts(
+    id,
+    visit?.events.findLast((event) => event.kind === 'studio')?.sequence ?? 0
+  )
   const [params, setParams] = useSearchParams()
   const requestedRoom = params.get('room')
   const exploredRoom =
@@ -293,13 +298,7 @@ export function WatchVisit({ id }: { id: string }) {
               Browsing-only agents may read a treatment and return without
               checking out.
             </p>
-            <VisitArtifacts
-              id={id}
-              revision={
-                visit.events.findLast((event) => event.kind === 'studio')
-                  ?.sequence ?? 0
-              }
-            />
+            <VisitArtifacts id={id} artifacts={artifacts} />
             <VisitHearth
               id={id}
               revision={
@@ -366,7 +365,7 @@ export function WatchVisit({ id }: { id: string }) {
                 ))}
               </ul>
             ) : null}
-            <VisitJournal events={visit.events} />
+            <VisitJournal events={visit.events} works={artifacts.works} />
             <FieldGroup>
               <Field orientation='horizontal'>
                 <FieldLabel htmlFor='visible-agent'>

@@ -582,3 +582,8 @@ Reconciled M4–M6 implementation checkboxes against the current source and exis
 ### Human scene refinement — 2026-09-17
 
 Simplified camp/room headings and removed redundant explanatory copy, prototype atmosphere sliders and sound audition panels. Exploration defaults to Demo visitors at Festival Night; demo choice, population and view mode persist across pages/reloads. Actual-agent following uses live data. Selected creatures have a contrasting gold ring, overhead pointer and name label. Camp movement now uses short staggered rests instead of 32–44-second cycles with 80% idle time. Verification is limited to a two-creature motion regression, focused sound-controller checks, a brief local navigation/control smoke check, types/lint and build; no hosted synthetic population or stress test.
+
+
+### Owner creation previews — 2026-09-18
+
+Owner watch pages prominently display notes/images inline in both the activity feed and the Studio works section. A shared owner-authenticated load supplies both previews; notes remain plain text, images have full-size browser viewing, and download/unshare/delete controls remain. New Studio event payloads carry explicit work references without a SQL migration; older events use only unambiguous creation-time/type matches. A single local private visit checked a note/image in both surfaces, shared image URLs, live note arrival and removal after deletion. Frontend/Worker types and lint pass; the Worker typecheck excludes the existing browser-only bookmark module. No synthetic stress testing.
