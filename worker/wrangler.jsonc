@@ -134,7 +134,7 @@
         "TYPESAFE_DAILY_CALL_LIMIT": "1000",
         "TYPESAFE_DAILY_INPUT_LIMIT": "2000000",
         "PUBLISHING_ENABLED": "true",
-        "METRICS_ENABLED": "false",
+        "METRICS_ENABLED": "true",
         "ANALYTICS_ACCOUNT_ID": "02b82b855bb1ee1f14bf68e5870aff82",
         "ANALYTICS_DATASET": "burning_tokens_metrics_production"
       },

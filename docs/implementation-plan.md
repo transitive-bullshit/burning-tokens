@@ -603,7 +603,7 @@ Owner watch pages prominently display notes/images inline in both the activity f
 - [x] Obtain explicit approval and enable Cloudflare for SaaS (first 100 hostnames included); no zone plan upgrade.
 - [x] Provision the dedicated ingress, active custom hostname/DV certificate, exact Worker routes, isolated production storage, and OpenAI/TypeSafe/admin secrets.
 - [x] Apply the target subdomain's Vercel CNAME and ownership TXT; authorize the selected issuer only at the dedicated Cloudflare ingress. HTTPS is active; parent DNS, CAA and existing sites are preserved.
-- [ ] Install the consolidated project `CLOUDFLARE_TOKEN` in production and enable telemetry. Its preview value cannot be read back; no local token copy was saved. Domain/app access does not depend on this step.
+- [x] User installs the replacement consolidated `CLOUDFLARE_TOKEN` in both preview and production; enable/deploy production telemetry. Authenticated metrics queries, anonymous denial and administrator logout pass in both environments. Query windows were empty; no synthetic visits or load were generated, and no credential value was read back or saved locally.
 - [x] Document every Worker secret and non-secret variable in [environment configuration](environment.md), with a tracked `worker/.dev.vars.example` template.
 
 - [x] Verify the homepage, camp, Bathhouse, agent Markdown and optimized social JPEG through ordinary HTTPS reads; canonical URLs use the chosen origin and indexing remains disabled.

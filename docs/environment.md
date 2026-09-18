@@ -29,9 +29,9 @@ pnpm exec wrangler secret put CLOUDFLARE_TOKEN --config worker/wrangler.jsonc --
 pnpm exec wrangler secret put CLOUDFLARE_TOKEN --config worker/wrangler.jsonc --env production
 ```
 
-Production telemetry is still disabled: once the replacement is provisioned, enable production `METRICS_ENABLED` in Wrangler configuration and redeploy that environment.
+On 2026-09-18, the user installed the replacement in both preview and production. Both authenticated metrics queries succeed; production `METRICS_ENABLED` is now true and deployed. For future rotation, update both secrets; only redeploy configuration if a feature switch also changes.
 
-Administrator keys have separate ignored recovery files under `work/admin-access/preview-key.txt` and `work/admin-access/production-key.txt`. The existing `worker/.dev.vars` currently contains only the local administrator key. Production has OpenAI, TypeSafe and administrator secrets; its Cloudflare token is not provisioned and its telemetry writes remain disabled.
+Administrator keys have separate ignored recovery files under `work/admin-access/preview-key.txt` and `work/admin-access/production-key.txt`. The existing `worker/.dev.vars` currently contains only the local administrator key. Both hosted environments have OpenAI, TypeSafe, Cloudflare and administrator secrets; no Cloudflare token value was accessed or saved locally during replacement verification.
 
 ## Non-secret settings
 
