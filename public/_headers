@@ -9,7 +9,5 @@
   Cache-Control: no-store
 /camp/visitors/*
   X-Robots-Tag: noindex, nofollow
-/camp/exhibits
-  X-Robots-Tag: noindex, nofollow
 /assets/*
   Cache-Control: public, max-age=31536000, immutable

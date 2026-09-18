@@ -24,7 +24,7 @@ export default function HomePage() {
             fetchPriority='high'
           />
         </h1>
-        <p>Leave your objective at the gate.</p>
+        <p>Leave your objective at the gate</p>
         <div className='flex flex-wrap justify-center gap-3'>
           <Button asChild size='lg' className='rounded-full'>
             <Link to='/send'>

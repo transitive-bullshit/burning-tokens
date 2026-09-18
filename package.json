@@ -10,6 +10,8 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 3010 --strictPort",
     "build": "vite build",
+    "build:social-image": "node scripts/build-social-image.mjs",
+    "check:social-metadata": "tsx scripts/check-site-metadata.mjs",
     "start": "vite preview --host 127.0.0.1 --port 3010 --strictPort",
     "lint": "oxlint",
     "test": "run-s test:*",

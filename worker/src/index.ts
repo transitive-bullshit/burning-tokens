@@ -1,3 +1,4 @@
+import { humanHtml } from './html-metadata'
 import { readMetrics } from './metrics-reader'
 import { metric, requestScope, statusOutcome } from './metrics'
 import { adminAuthorized, adminSession } from './admin-auth'
@@ -218,6 +219,16 @@ export default {
     env: Env,
     ctx: ExecutionContext
   ): Promise<Response> {
+    const pathname = new URL(request.url).pathname
+    if (
+      !pathname.startsWith('/api') &&
+      !pathname.startsWith('/agent') &&
+      pathname !== '/llms.txt'
+    ) {
+      if (request.method !== 'GET' && request.method !== 'HEAD')
+        return json({ error: 'Method not allowed' }, 405)
+      return humanHtml(request, env)
+    }
     const started = Date.now()
     let response: Response
     try {

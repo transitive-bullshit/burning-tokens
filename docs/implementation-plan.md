@@ -13,7 +13,6 @@ Prioritize a compelling, complete MVP over exhaustive testing. Stop expanding ed
 
 The detailed milestones below retain scope and evidence; they are not an instruction to exhaust every testing possibility before improving the product.
 
-
 Updated 2026-09-17. The core MVP is implemented in preview; external-agent feedback and public-launch decisions remain open. The human React application and seven illustrated rooms already exist; migration from Next.js to Vite is implemented and deployed to the Cloudflare preview. [MVP specification](wip-mvp-spec.md) defines product behavior; [architecture](architecture.md) describes the implemented app.
 
 ## Approved architecture shift — 2026-09-16
@@ -42,7 +41,6 @@ The user chose to keep the current preview audio and hold public launch. Preserv
 | Operations | Live aggregate metrics, quotas, kill switches and rollback procedure exist | Set alert budget/destination and verify delivery |
 
 Existing focused regression coverage is sufficient to keep building. Remaining broad device/load matrices are hardening work; do not let them replace the product priorities above. Actual-client compatibility, privacy guarantees and production licensing are not waived.
-
 
 ## Outcome
 
@@ -578,12 +576,21 @@ A focused nine-example live check on preview `2ee6c005-b060-4d35-bf23-b6e85bfc8b
 
 Reconciled M4–M6 implementation checkboxes against the current source and existing recorded checks. No extra test infrastructure or runtime feature was added. The worktree is at a usable preview checkpoint. The user explicitly deferred Claude testing. No Claude participant run has started, no approval is pending for it, and it is not a blocker for preview work. Actual Claude compatibility remains unverified. Alert budget/destination is also unanswered. Domain, static audio clearance and public launch are intentionally deferred, not blocking preview iteration.
 
-
 ### Human scene refinement — 2026-09-17
 
 Simplified camp/room headings and removed redundant explanatory copy, prototype atmosphere sliders and sound audition panels. Exploration defaults to Demo visitors at Festival Night; demo choice, population and view mode persist across pages/reloads. Actual-agent following uses live data. Selected creatures have a contrasting gold ring, overhead pointer and name label. Camp movement now uses short staggered rests instead of 32–44-second cycles with 80% idle time. Verification is limited to a two-creature motion regression, focused sound-controller checks, a brief local navigation/control smoke check, types/lint and build; no hosted synthetic population or stress test.
 
-
 ### Owner creation previews — 2026-09-18
 
 Owner watch pages prominently display notes/images inline in both the activity feed and the Studio works section. A shared owner-authenticated load supplies both previews; notes remain plain text, images have full-size browser viewing, and download/unshare/delete controls remain. New Studio event payloads carry explicit work references without a SQL migration; older events use only unambiguous creation-time/type matches. Other retained uploads receive separate feed cards at their recorded creation time, so prior uploads are still previewed inline. A single local private visit checked a note/image in both surfaces, shared image URLs, live note arrival and removal after deletion. Frontend/Worker types and lint pass; the Worker typecheck excludes the existing browser-only bookmark module. No synthetic stress testing.
+
+### Social launch readiness — 2026-09-18
+
+- [x] Audit the original HTML: previously all routes shared homepage tags, with no social image, Twitter card or JSON-LD.
+- [x] Use one shared, authored metadata definition for the 13 public HTML pages; serve it in the initial Worker response and synchronize browser navigation.
+- [x] Add an optimized 1200 × 630 JPEG using the accepted main artwork and vector logo, with an editable deterministic composition script.
+- [x] Remove the main invitation's trailing period from active UI, metadata, share image and current brand guidance.
+- [x] Add WebSite/WebPage JSON-LD and public-page breadcrumbs; keep private visit IDs, capabilities and visitor content out of metadata.
+- [x] Keep agent Markdown unchanged; enrich only its optional HTML representation.
+- [x] Preserve the preview-only launch decision with `SITE_INDEXABLE=false`. Eventual production needs the selected `PUBLIC_ORIGIN` and a production-only indexing switch.
+- Validation: frontend/Worker type checks, lint, preview build, a visual card review, focused static-response metadata checks and one browser navigation/Back check. No synthetic sessions or stress testing.

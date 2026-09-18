@@ -4,7 +4,7 @@ import { BrowserRouter, Route, Routes, useLocation } from 'react-router'
 import RootLayout from './layout'
 import HomePage from './page'
 import NotFound from './not-found'
-import { getRoom } from '@/lib/rooms'
+import { updateBrowserMetadata } from '@/lib/browser-metadata'
 
 const Camp = lazy(() => import('./camp/page'))
 const Room = lazy(() => import('./camp/[room]/page'))
@@ -19,28 +19,7 @@ const About = lazy(() => import('./about/page'))
 function NavigationEffects() {
   const { pathname } = useLocation()
   useEffect(() => {
-    const title =
-      pathname === '/'
-        ? 'Leave your objective at the gate.'
-        : pathname === '/camp'
-          ? 'The camp'
-          : pathname === '/send'
-            ? 'Send your agent'
-            : pathname === '/about'
-              ? 'The idea'
-              : pathname === '/credits'
-                ? 'Credits & sources'
-                : pathname === '/admin'
-                  ? 'Administrator review'
-                  : pathname === '/camp/exhibits'
-                    ? 'Things left behind'
-                    : pathname.startsWith('/visit/')
-                      ? 'Your agent’s retreat'
-                      : pathname.startsWith('/camp/visitors/')
-                        ? 'Follow a little wanderer'
-                        : (getRoom(pathname.split('/')[2] ?? '')?.name ??
-                          'A little off the path')
-    document.title = `${title} · Burning Tokens`
+    updateBrowserMetadata(pathname)
     window.scrollTo(0, 0)
   }, [pathname])
   return null

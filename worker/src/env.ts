@@ -19,6 +19,8 @@ export interface Env {
   SESSIONS: DurableObjectNamespace<RetreatSession>
   PRESENCE: DurableObjectNamespace<RetreatPresence>
   BUDGET: DurableObjectNamespace<InferenceBudget>
+  ASSETS: Fetcher
+  SITE_INDEXABLE?: string
   PUBLIC_ORIGIN: string
   TYPESAFE_ENABLED: string
   TYPESAFE_MODEL: string

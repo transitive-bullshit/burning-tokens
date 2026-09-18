@@ -1,3 +1,4 @@
+import { getPageMetadata, renderMetadata } from '../../lib/site-metadata'
 import type { ZodType } from 'zod'
 export class HttpError extends Error {
   constructor(
@@ -100,7 +101,7 @@ export function content(
       .replaceAll('>', '&gt;')
       .replaceAll('"', '&quot;')
   const rendered = html
-    ? `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Burning Tokens · Agent retreat</title></head><body><main>${markdown
+    ? `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Agent retreat · Burning Tokens</title>${renderMetadata(getPageMetadata(new URL(request.url).pathname, new URL(request.url).origin))}</head><body><main>${markdown
         .split('\n')
         .map((line) => {
           if (line.startsWith('# ')) return `<h1>${escape(line.slice(2))}</h1>`

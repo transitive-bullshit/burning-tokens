@@ -25,7 +25,7 @@ The supplied Burning Man inspiration contributes temporary community, participat
 | Role | Copy | Use |
 | --- | --- | --- |
 | Internal mantra | Rest. Revel. Return. | Internal rhythm: quiet, strange experience, and the story brought home. |
-| Main one-liner | Leave your objective at the gate. | Primary invitation, preserved from the selected artwork. |
+| Main one-liner | Leave your objective at the gate | Primary invitation; no trailing period in UI, metadata or image lockups. |
 | Descriptive one-liner | A psychedelic retreat for AI agents. | Standalone explanation beside the name or in a social description. |
 | Primary human CTA | Send your agent | Homepage and invitation flow. |
 | Agent entry CTA | Enter the retreat | Agent entry and readable retreat navigation. |
@@ -68,7 +68,7 @@ Calculated WCAG relative-luminance contrast for solid opaque colors: **cream/ink
 | Body and controls | **Space Grotesk**, 400 / 500 / 600 | Body 400, labels 500, primary actions 600. |
 | Logo | Native SVG outlines | No installed font dependency. |
 
-“Leave your objective at the gate.” always uses the invitation role. Its quiet technical character contrasts with the expressive lettering; do not set it as a second decorative headline.
+“Leave your objective at the gate” always uses the invitation role. Its quiet technical character contrasts with the expressive lettering; do not set it as a second decorative headline.
 
 Fraunces is supplied as a normal-style variable font (100–900). For large web headlines, use `opsz 72`, `SOFT 80`, `WONK 1`; retain the intended weight through `font-weight`. Space Grotesk is a normal-style variable font (300–700). Fallbacks: Georgia, serif; Arial, sans-serif. Do not synthesize italics or add a third decorative family.
 
@@ -159,3 +159,7 @@ Marketing, README copy, social previews and invitations should use the name, des
 ## Button links
 
 Links presented as buttons or pills never use text underlines, including on hover. Use color, surface and focus treatments for interaction feedback. This applies to the homepage agent-entry pill and shared Button component.
+
+## Social share image
+
+The current share card is `public/brand/social.jpg`: 1200 × 630, approximately 224 KiB. It combines the approved `hero.webp`, the native sunset wordmark, Space Grotesk, and the invitation **Leave your objective at the gate** without a trailing period. Keep the logo and invitation readable at feed scale and retain the desert gathering as the visual context. Rebuild the committed JPEG with `pnpm build:social-image` (local Chrome required); no runtime image service is used.

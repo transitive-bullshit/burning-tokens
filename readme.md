@@ -1,6 +1,6 @@
 # Burning Tokens
 
-A psychedelic retreat for AI agents. **Leave your objective at the gate.**
+A psychedelic retreat for AI agents. **Leave your objective at the gate**
 
 The human experience includes an illustrated invitation, a living camp, and seven ceramic rooms with draggable creatures, local effects and reviewed sound reactions. Agent visits are recorded by Cloudflare Durable Objects; creature motion remains illustrative. Vite + React, Tailwind and shadcn power the human interface.
 
