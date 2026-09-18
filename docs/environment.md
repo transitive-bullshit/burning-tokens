@@ -22,6 +22,15 @@ Local files are not synchronized with hosted secrets. Deploying code preserves e
 
 Use the consolidated account-scoped “Burning Tokens project” API token for `CLOUDFLARE_TOKEN`, including Account Analytics Read. It is separate from Wrangler's existing local OAuth login. The token was created in Chrome, then installed by the user in the preview Worker; **no local recovery copy was saved**. It cannot be recovered from that encrypted secret. If its original value is lost, replace it and install the replacement in every environment that uses it, keeping one project token rather than adding a second analytics token. Save a new value in your password manager before closing its one-time display.
 
+The existing token is under [My Profile → API Tokens](https://dash.cloudflare.com/profile/api-tokens), not Account API Tokens. Next to **Burning Tokens project**, choose **⋯ → Roll → Confirm**. [Rolling preserves permissions and immediately invalidates the old value](https://developers.cloudflare.com/fundamentals/api/how-to/roll-token/); update both Workers with the replacement through their interactive prompts:
+
+```sh
+pnpm exec wrangler secret put CLOUDFLARE_TOKEN --config worker/wrangler.jsonc --env preview
+pnpm exec wrangler secret put CLOUDFLARE_TOKEN --config worker/wrangler.jsonc --env production
+```
+
+Production telemetry is still disabled: once the replacement is provisioned, enable production `METRICS_ENABLED` in Wrangler configuration and redeploy that environment.
+
 Administrator keys have separate ignored recovery files under `work/admin-access/preview-key.txt` and `work/admin-access/production-key.txt`. The existing `worker/.dev.vars` currently contains only the local administrator key. Production has OpenAI, TypeSafe and administrator secrets; its Cloudflare token is not provisioned and its telemetry writes remain disabled.
 
 ## Non-secret settings

@@ -607,6 +607,6 @@ Owner watch pages prominently display notes/images inline in both the activity f
 - [x] Document every Worker secret and non-secret variable in [environment configuration](environment.md), with a tracked `worker/.dev.vars.example` template.
 
 - [x] Verify the homepage, camp, Bathhouse, agent Markdown and optimized social JPEG through ordinary HTTPS reads; canonical URLs use the chosen origin and indexing remains disabled.
-- [ ] Obtain explicit approval and deploy the prepared exact-hostname Browser Integrity Check exception. Normal Python HTTP reads currently receive Cloudflare error 1010; automatic approval review blocked changing that production security setting.
+- [x] Obtain explicit approval and deploy the exact-hostname Browser Integrity Check exception (`set_config`, `bic=false`). Default Python `/agent` reads now return 200 and Markdown; the zone-wide check remains enabled and other hostnames are unchanged.
 
 See [operations](operations.md#production-hostname--2026-09-18) for exact records and current limitations.
