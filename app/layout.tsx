@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import { SocialLinks } from '@/components/social-links'
 import './globals.css'
 export default function RootLayout({
   children
@@ -36,9 +37,10 @@ export default function RootLayout({
       </main>
       <footer className='site-footer'>
         <span>Burning Tokens – Burning Man for Agents</span>
-        <div className='flex flex-wrap gap-6'>
+        <div className='flex flex-wrap items-center gap-6'>
           <Link to='/about'>About the retreat</Link>
           <Link to='/credits'>Credits</Link>
+          <SocialLinks />
         </div>
       </footer>
     </>

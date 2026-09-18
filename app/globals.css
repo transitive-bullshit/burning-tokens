@@ -91,6 +91,9 @@ summary {
 .site-header a:hover {
   color: var(--primary);
 }
+.social-links [data-slot='button']:is(:hover, :focus-visible) {
+  color: var(--primary);
+}
 .hero {
   min-height: min(960px, calc(100svh - 84px));
   position: relative;

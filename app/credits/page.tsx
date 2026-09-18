@@ -1,3 +1,4 @@
+import { SocialLinks } from '@/components/social-links'
 import provenance from '@/lib/audio-provenance.json'
 
 const sources = Map.groupBy(provenance, (clip) => clip.sourceUrl)
@@ -13,17 +14,22 @@ export default function CreditsPage() {
       </p>
       <ul className='mt-10 flex flex-col gap-8'>
         <li className='border-t border-border pt-6'>
-          <h2 className='font-serif text-2xl'>
-            <a
-              href='https://x.com/transitive_bs'
-              className='underline underline-offset-4'
-            >
-              Travis Fischer
-            </a>
-          </h2>
-          <p className='mt-2 text-muted-foreground'>
-            Creator of Burning Tokens
-          </p>
+          <div className='flex flex-wrap items-center justify-between gap-4'>
+            <div>
+              <h2 className='font-serif text-2xl'>
+                <a
+                  href='https://x.com/transitive_bs'
+                  className='underline underline-offset-4'
+                >
+                  Travis Fischer
+                </a>
+              </h2>
+              <p className='mt-2 text-muted-foreground'>
+                Creator of Burning Tokens
+              </p>
+            </div>
+            <SocialLinks />
+          </div>
         </li>
         {[...sources].map(([url, clips]) => {
           const source = clips[0]!
