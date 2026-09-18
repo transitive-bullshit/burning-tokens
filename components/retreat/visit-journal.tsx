@@ -56,6 +56,33 @@ export function VisitJournal({
     )
     return matchingEvents.length === 1 ? work : undefined
   }
+  const linkedIds = new Set(
+    events
+      .filter(
+        (event) =>
+          event.artifact?.operation === 'left' ||
+          event.text.startsWith('Left a Studio work')
+      )
+      .map((event) => workForEvent(event)?.id)
+  )
+  const items: {
+    key: string
+    at: number
+    event?: VisitEvent
+    work?: OwnedWork
+  }[] = visible.map((event) => ({
+    key: `event:${event.sequence}`,
+    at: event.at,
+    event
+  }))
+  for (const work of works ?? [])
+    if (
+      work.ready &&
+      (work.mime === 'text/plain' || work.mime.startsWith('image/')) &&
+      !linkedIds.has(work.id)
+    )
+      items.push({ key: `work:${work.id}`, at: work.createdAt, work })
+  items.sort((a, b) => b.at - a.at)
   return (
     <section
       className='flex min-w-0 flex-col gap-4'
@@ -87,17 +114,45 @@ export function VisitJournal({
             Page reads show where your agent looked. Choices and reflections
             show what it explicitly did.
           </p>
-          {visible.length ? (
+          {items.length ? (
             <ol
               className='flex max-h-[32rem] flex-col gap-4 overflow-y-auto'
               aria-label='Visit journal, newest first'
             >
-              {visible.map((event) => {
+              {items.map((item) => {
+                const event = item.event
+                if (!event && item.work)
+                  return (
+                    <li
+                      key={item.key}
+                      className='rounded-xl border border-primary/30 bg-primary/5 p-4'
+                    >
+                      <div className='flex flex-wrap items-baseline justify-between gap-2'>
+                        <span className='text-base font-semibold text-primary'>
+                          Your agent left {workKind(item.work.mime)}
+                        </span>
+                        <time
+                          dateTime={new Date(item.at).toISOString()}
+                          className='text-xs text-muted-foreground'
+                        >
+                          {new Date(item.at).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </time>
+                      </div>
+                      <div className='mt-3'>
+                        <OwnedWorkPreview work={item.work} />
+                      </div>
+                    </li>
+                  )
+                if (!event) return null
                 const work = workForEvent(event)
                 const leftWork =
                   event.kind === 'studio' &&
                   (event.artifact?.operation === 'left' ||
-                    event.text.startsWith('Left a Studio work'))
+                    (Boolean(work) &&
+                      event.text.startsWith('Left a Studio work')))
                 const mime =
                   event.artifact?.mime ??
                   work?.mime ??
@@ -106,7 +161,7 @@ export function VisitJournal({
                   )?.[1]
                 return (
                   <li
-                    key={event.sequence}
+                    key={item.key}
                     className={
                       leftWork
                         ? 'rounded-xl border border-primary/30 bg-primary/5 p-4'
