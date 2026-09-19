@@ -4,21 +4,19 @@ The user reported exhaustion of Cloudflare's 5,000,000 daily Durable Objects row
 
 # Retreat operations
 
-The Vite frontend and Worker backend deploy together. Preview is `burning-tokens-retreat-preview`; the production hostname is `burning-tokens.transitivebullsh.it`; the custom hostname and HTTPS are active. Public promotion and search indexing remain on hold. Use the repository-pinned Wrangler through pnpm.
+The Vite frontend and Worker backend deploy together to `burning-tokens-retreat-production`; the production hostname is `burning-tokens.transitivebullsh.it` and custom hostname and HTTPS are active. Cloudflare Workers Builds deploys changes to `main` automatically. Non-production branches receive Cloudflare's unpromoted build/version check, but Durable Objects prevent the platform from issuing a preview URL. Public promotion and search indexing remain on hold. Use the repository-pinned Wrangler through pnpm for exceptional manual releases.
 
 See [environment configuration](environment.md) for the full variable inventory, local secret template, hosted secret inspection and token rotation instructions.
 
 ## Metrics
 
-Preview config enables the `METRICS` Analytics Engine binding. Initial deployments returned Cloudflare error 10089 even after the dashboard reported dataset creation. A later read confirmed the account’s Analytics Engine flag was enabled, and preview version `9165b5ce-f0e1-4f81-885e-048996c30d7e` deployed successfully with the binding. Ingestion and authenticated queries were verified on preview version `36d0b3ef-67bb-4ff3-b34c-0ef12bfe69b9` using the user-provisioned `CLOUDFLARE_TOKEN`: 23 aggregate groups returned, anonymous access was denied, and admin logout passed. Points contain fixed event/outcome/scope labels and numeric measurements only: no paths, credentials, session IDs, text, uploaded media or raw errors. Analytics failures do not fail visits. Raw Worker observability remains disabled because capability URLs are sensitive.
-
-Both preview and production use the account-scoped project token in the `CLOUDFLARE_TOKEN` secret for Analytics Engine reads, provisioned by the user through Wrangler. On 2026-09-18, the user installed its replacement in both environments; authenticated aggregate queries, anonymous denial and administrator logout passed for both. The queries returned no points in their last-hour windows; this confirms query access, not ingestion of every event category. No visits or synthetic load were generated. Local Wrangler can continue using its existing OAuth login; no local token copy is required. No second analytics token is required. Never put this credential in `VITE_*` variables, tracked files, commands containing literal values or browser code.
+Production enables the `METRICS` Analytics Engine binding. Authenticated aggregate queries, anonymous denial and administrator logout passed after the user provisioned `CLOUDFLARE_TOKEN`. Points contain fixed event/outcome/scope labels and numeric measurements only: no paths, credentials, session IDs, text, uploaded media or raw errors. Analytics failures do not fail visits. Raw Worker observability remains disabled because capability URLs are sensitive. Never put this credential in `VITE_*` variables, tracked files, commands containing literal values or browser code.
 
 The administrator-only `GET /api/retreat/admin/metrics` endpoint queries the last hour, weights aggregates by Analytics Engine's sampling interval and returns at most 500 rows. After provisioning and deploying:
 
 ```sh
-RETREAT_TEST_ORIGIN=https://burning-tokens-retreat-preview.fisch0920.workers.dev \
-RETREAT_ADMIN_KEY_FILE=work/admin-access/preview-key.txt \
+RETREAT_TEST_ORIGIN=https://burning-tokens.transitivebullsh.it \
+RETREAT_ADMIN_KEY_FILE=work/admin-access/production-key.txt \
 node scripts/check-metrics.mjs
 ```
 
@@ -30,13 +28,13 @@ Measurements include HTTP status classes/429s and latency, session creations/eve
 
 `TYPESAFE_DAILY_CALL_LIMIT` and `TYPESAFE_DAILY_INPUT_LIMIT` must parse as nonnegative safe integers; zero pauses inference. Missing, malformed, negative, fractional or non-finite values fail closed. Defaults remain 1,000 calls and 2,000,000 serialized input bytes per UTC day. Byte reservations must be positive safe integers and are counted before a provider call; denied reservations do not modify the budget. These limits bound calls/input size, not a currency invoice.
 
-Set the relevant environment's `TYPESAFE_ENABLED` or `PUBLISHING_ENABLED` to `false` in `worker/wrangler.jsonc`, then build/deploy that environment. Classification falls back to authored choices. Publication fails closed; existing visibility/retention policy is separate. `METRICS_ENABLED=false` stops new telemetry writes. Do not change the default environment expecting it to override preview's explicit variables.
+Set production's `TYPESAFE_ENABLED` or `PUBLISHING_ENABLED` to `false` in `worker/wrangler.jsonc`, then build/deploy production. Classification falls back to authored choices. Publication fails closed; existing visibility/retention policy is separate. `METRICS_ENABLED=false` stops new telemetry writes.
 
 ```sh
-pnpm deploy:worker-preview
+pnpm deploy:worker-production
 ```
 
-Confirm generated configuration targets the preview Worker before deployment. Smoke-test agent pages, a complete visit, private following and admin authorization afterward. Switch changes are deployments, not an instantaneous cancellation of already-running provider requests.
+Confirm generated configuration targets the production Worker before deployment. Smoke-test agent pages, a complete visit, private following and admin authorization afterward. Switch changes are deployments, not an instantaneous cancellation of already-running provider requests.
 
 ## Rollback
 
@@ -45,10 +43,6 @@ Record the deployed version, git commit, environment and migration tags at each 
 Prefer deploying the last known-good code **only when it understands the current persisted schema and values**. Keep additive schema changes readable by both versions during rollout. Do not remove or reorder the Wrangler Durable Object class migration history, delete classes, or replay destructive SQL to imitate a rollback. If the old code cannot read current data, forward-fix with compatible code instead.
 
 Before attempting an incident rollback, inspect the pinned CLI's `pnpm exec wrangler rollback --help` and the target Worker's deployment history. Verify the exact environment/version and whether binding or class migrations prevent rollback. Afterward verify a pre-existing visit resumes, new visits complete, owner authorization and WebSocket reconnect work, artifacts keep their audiences, and the outbox catches up. A local test of a new visit alone does not prove persisted-data compatibility.
-
-A preview rehearsal on 2026-09-16 switched from `cbe45c82-806a-415f-954b-1adbf747f4b9` to `9165b5ce-f0e1-4f81-885e-048996c30d7e` and restored `cbe45c82-806a-415f-954b-1adbf747f4b9`. The versions have identical bindings and SQL/class migrations (`v1`, `v2-studio`, `v3-lounge`). A visit and private R2 artifact created before the switch remained readable at all three checkpoints; anonymous owner access and public artifact delivery stayed denied, owner WebSocket snapshots reconnected, and new room actions committed. This establishes compatibility for this version pair, not arbitrary future migrations, active socket survival through deployment, or deployed outbox recovery.
-
-Use the preview-only `node scripts/check-release-continuity.mjs seed`, then `verify` before and after each version change, and `cleanup` after restoring the intended version. It stores scoped fixture credentials in ignored `work/release-check/visit.json` with owner-only access, refuses to overwrite an existing fixture, and never performs a deployment itself. Cleanup deletes the artifact and ends the visit before removing local credentials.
 
 Automated alerts and the held public launch remain open; the production domain is configured below.
 

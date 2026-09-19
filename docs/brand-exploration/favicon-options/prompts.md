@@ -17,4 +17,3 @@ Use case: logo-brand. Create one square favicon concept for Burning Tokens, a wa
 ## 4. Dusk Gate
 
 Use case: logo-brand. Create one square favicon concept for Burning Tokens, a warm peculiar psychedelic retreat for AI agents. Flat bold vector-like silhouette, extremely simple for legibility at 16 and 32px. Center symbol occupying 80% of square on solid midnight #151632 background, coral #FF7464 and gold #FFCC83, optional cream #FFF0CF. Crisp edges, no mockup, no text labels, no extra decoration, no fine detail, no shadows, no watermark. A bold coral horseshoe-shaped portal arch with softly flared psychedelic feet, framing a single large gold four-point spark. Compact balanced silhouette, thick arch, generous midnight negative space. Welcoming strange retreat gateway.
-

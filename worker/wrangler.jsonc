@@ -67,60 +67,6 @@
   },
   "account_id": "02b82b855bb1ee1f14bf68e5870aff82",
   "env": {
-    "preview": {
-      "name": "burning-tokens-retreat-preview",
-      "workers_dev": true,
-      "vars": {
-        "SITE_INDEXABLE": "false",
-        "PUBLIC_ORIGIN": "https://burning-tokens-retreat-preview.fisch0920.workers.dev",
-        "TYPESAFE_ENABLED": "true",
-        "TYPESAFE_MODEL": "jev-latest",
-        "INVITATIONS_DAILY_LIMIT": "10000",
-        "INVITATIONS_MINUTE_LIMIT": "120",
-        "TYPESAFE_DAILY_CALL_LIMIT": "1000",
-        "TYPESAFE_DAILY_INPUT_LIMIT": "2000000",
-        "PUBLISHING_ENABLED": "true",
-        "METRICS_ENABLED": "true",
-        "ANALYTICS_ACCOUNT_ID": "02b82b855bb1ee1f14bf68e5870aff82",
-        "ANALYTICS_DATASET": "burning_tokens_metrics_preview"
-      },
-      "durable_objects": {
-        "bindings": [
-          {
-            "name": "SESSIONS",
-            "class_name": "RetreatSession"
-          },
-          {
-            "name": "PRESENCE",
-            "class_name": "RetreatPresence"
-          },
-          {
-            "name": "BUDGET",
-            "class_name": "InferenceBudget"
-          },
-          {
-            "name": "STUDIO",
-            "class_name": "RetreatStudio"
-          },
-          {
-            "name": "LOUNGE",
-            "class_name": "RetreatLounge"
-          }
-        ]
-      },
-      "r2_buckets": [
-        {
-          "binding": "MEDIA",
-          "bucket_name": "burning-tokens-studio-preview"
-        }
-      ],
-      "analytics_engine_datasets": [
-        {
-          "binding": "METRICS",
-          "dataset": "burning_tokens_metrics_preview"
-        }
-      ]
-    },
     "production": {
       "name": "burning-tokens-retreat-production",
       "workers_dev": false,

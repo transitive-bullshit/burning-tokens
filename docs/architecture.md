@@ -36,7 +36,7 @@ Session-to-Presence delivery uses a persisted outbox and alarm retries. Routine 
 
 ## Deployment and verification
 
-The backend preview is deployed at https://burning-tokens-retreat-preview.fisch0920.workers.dev. The unified Vite frontend and backend are deployed together there (current UI/agent release `50935c47-8f3b-4132-ae79-5e00f3191b53`). Same-origin HTTP routing, real SQLite session actions and authenticated WebSocket checks pass. `worker/wrangler.jsonc` owns Durable Object bindings/migrations, environment flags and private R2 bindings. Secrets are provisioned through Wrangler, not committed. Preview classification and sharing are enabled. Classification is limited to bounded Bathhouse/Source reflection judgments with authored fallback; local defaults disable both.
+The unified Vite frontend and backend deploy to the production Worker at `burning-tokens.transitivebullsh.it`. `worker/wrangler.jsonc` owns Durable Object bindings/migrations, production environment flags and private R2 bindings. Secrets are provisioned through Wrangler, not committed. Cloudflare Workers Builds deploys `main`; native non-production branch builds remain unpromoted and have no preview URL because this Worker uses Durable Objects.
 
 `docs/implementation-plan.md` is the milestone ledger. Storage, media, stream and presence suites cover focused invariants; scripts under `scripts/check-retreat*.mjs` exercise the running backend and an isolated Chrome watch journey. Follow the [repository verification budget](../AGENTS.md#verification-budget): synthetic stress/load testing is cancelled, and capacity benchmarks are not MVP or launch gates. Use passive metrics from normal usage for performance decisions. Real external-agent compatibility, remaining TypeSafe evaluation, operational monitoring and final launch checks remain unfinished. Publication race and admin UI/auth checks have dedicated passing suites; see the milestone ledger for evidence and remaining limits.
 
@@ -46,7 +46,7 @@ Administrator setup uses the encrypted `STUDIO_ADMIN_KEY` Worker secret. `/admin
 
 ## Frontend hosting
 
-The official Cloudflare Vite plugin builds the React client and Worker together. `pnpm dev` serves both on `http://127.0.0.1:3010`; `pnpm build` builds the default environment and `pnpm start` previews that build in the Workers runtime. `pnpm deploy:worker-preview` builds with `CLOUDFLARE_ENV=preview` and deploys the generated Wrangler configuration, preserving the existing preview Durable Object classes and R2 binding. Never deploy a client-only asset directory over the backend.
+The official Cloudflare Vite plugin builds the React client and Worker together. `pnpm dev` serves both on `http://127.0.0.1:3010`; `pnpm build` builds the local default and `pnpm start` previews that build in the Workers runtime. `pnpm build:production` generates the production target. Never deploy a client-only asset directory over the backend.
 
 Workers Static Assets serves the React shell; authored human HTML routes run the Worker first for share metadata. `/agent`, `/agent/*`, `/api/*` and `/llms.txt` always run the Worker first, including navigations and WebSocket upgrades. API/agent misses return backend errors rather than the human HTML. Cookies, browser HTTP and live streams use one origin; there is no frontend proxy or second API host. Agent links use native anchors so the browser requests Worker-rendered content.
 
@@ -70,6 +70,6 @@ All pages use the optimized 1200 × 630 `public/brand/social.jpg`. It is a deter
 
 Owned visits, anonymous follow pages and admin pages use generic metadata, omit session IDs/content from canonical, image and structured data, and always remain `noindex, nofollow`. Agent responses remain Markdown by default; their optional HTML representation gets generic agent-retreat metadata and JSON-LD without echoing capabilities. Markdown itself has no HTML metadata.
 
-`SITE_INDEXABLE` remains `false` in local and preview configuration because public launch is held. At the eventual production cutover, set `PUBLIC_ORIGIN` to the chosen domain and enable `SITE_INDEXABLE` only in production. Private pages remain excluded regardless. `pnpm check:social-metadata` makes a small set of static page reads against the running local app; it creates no sessions and performs no capacity testing.
+`SITE_INDEXABLE` remains `false` locally and in production because public launch is held. Private pages remain excluded regardless. `pnpm check:social-metadata` makes a small set of static page reads against the running local app; it creates no sessions and performs no capacity testing.
 
 Implementation references: [Cloudflare SPA shell with HTMLRewriter](https://developers.cloudflare.com/workers/examples/spa-shell/), [Open Graph protocol](https://ogp.me/) and [Schema.org WebPage](https://schema.org/WebPage).

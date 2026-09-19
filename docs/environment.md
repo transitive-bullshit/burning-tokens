@@ -4,12 +4,12 @@ The frontend and backend deploy as one Cloudflare Worker. There are no applicati
 
 | Configuration | Where to edit or inspect |
 | --- | --- |
-| Non-secret settings, feature switches and bindings | `worker/wrangler.jsonc`: top-level settings for local development; `env.preview` and `env.production` for deployments |
+| Non-secret settings, feature switches and bindings | `worker/wrangler.jsonc`: top-level settings for local development and `env.production` for deployment |
 | Local secret values | Ignored `worker/.dev.vars`; copy the tracked `worker/.dev.vars.example` if the local file does not already exist |
 | Hosted secret names | Wrangler commands below, or Cloudflare → Workers & Pages → select Worker → Settings → Variables and Secrets |
 | Hosted secret values | Encrypted in Cloudflare; cannot be read back through Wrangler or the dashboard |
 
-Local files are not synchronized with hosted secrets. Deploying code preserves existing hosted secrets; it does not upload `worker/.dev.vars`. Preview and production secrets must be provisioned separately. If using an environment-specific local file such as `worker/.dev.vars.preview`, put all that environment's local secrets there: it replaces the generic file.
+Local files are not synchronized with hosted secrets. Deploying code preserves existing hosted secrets; it does not upload `worker/.dev.vars`.
 
 ## Secret inventory
 
@@ -20,18 +20,17 @@ Local files are not synchronized with hosted secrets. Deploying code preserves e
 | `CLOUDFLARE_TOKEN` | Reads aggregate Analytics Engine metrics on the server | Using the administrator metrics view |
 | `STUDIO_ADMIN_KEY` | Administrator sign-in and review of private works | Using administrator tools |
 
-Use the consolidated account-scoped “Burning Tokens project” API token for `CLOUDFLARE_TOKEN`, including Account Analytics Read. It is separate from Wrangler's existing local OAuth login. The token was created in Chrome, then installed by the user in the preview Worker; **no local recovery copy was saved**. It cannot be recovered from that encrypted secret. If its original value is lost, replace it and install the replacement in every environment that uses it, keeping one project token rather than adding a second analytics token. Save a new value in your password manager before closing its one-time display.
+Use the consolidated account-scoped “Burning Tokens project” API token for `CLOUDFLARE_TOKEN`, including Account Analytics Read. It is separate from Wrangler's existing local OAuth login. If its original value is lost, replace it and install the replacement in production. Save a new value in your password manager before closing its one-time display.
 
 The existing token is under [My Profile → API Tokens](https://dash.cloudflare.com/profile/api-tokens), not Account API Tokens. Next to **Burning Tokens project**, choose **⋯ → Roll → Confirm**. [Rolling preserves permissions and immediately invalidates the old value](https://developers.cloudflare.com/fundamentals/api/how-to/roll-token/); update both Workers with the replacement through their interactive prompts:
 
 ```sh
-pnpm exec wrangler secret put CLOUDFLARE_TOKEN --config worker/wrangler.jsonc --env preview
 pnpm exec wrangler secret put CLOUDFLARE_TOKEN --config worker/wrangler.jsonc --env production
 ```
 
-On 2026-09-18, the user installed the replacement in both preview and production. Both authenticated metrics queries succeed; production `METRICS_ENABLED` is now true and deployed. For future rotation, update both secrets; only redeploy configuration if a feature switch also changes.
+Production `METRICS_ENABLED` is true and deployed. For future rotation, update the production secret; only redeploy configuration if a feature switch also changes.
 
-Administrator keys have separate ignored recovery files under `work/admin-access/preview-key.txt` and `work/admin-access/production-key.txt`. The existing `worker/.dev.vars` currently contains only the local administrator key. Both hosted environments have OpenAI, TypeSafe, Cloudflare and administrator secrets; no Cloudflare token value was accessed or saved locally during replacement verification.
+The production administrator key has an ignored recovery file under `work/admin-access/production-key.txt`. The existing `worker/.dev.vars` currently contains only the local administrator key. Production has OpenAI, TypeSafe, Cloudflare and administrator secrets; no Cloudflare token value is stored locally.
 
 ## Non-secret settings
 
@@ -40,7 +39,7 @@ Use Wrangler configuration as the single source rather than duplicating these in
 | Names | Purpose |
 | --- | --- |
 | `PUBLIC_ORIGIN` | Canonical origin for agent links and social metadata |
-| `SITE_INDEXABLE` | Search indexing switch; currently false for preview and production |
+| `SITE_INDEXABLE` | Search indexing switch; currently false in production |
 | `TYPESAFE_ENABLED`, `TYPESAFE_MODEL` | Optional room classification switch and model |
 | `TYPESAFE_DAILY_CALL_LIMIT`, `TYPESAFE_DAILY_INPUT_LIMIT` | Per-UTC-day call and serialized input-byte ceilings |
 | `PUBLISHING_ENABLED` | Moderated public sharing switch |
@@ -48,14 +47,13 @@ Use Wrangler configuration as the single source rather than duplicating these in
 | `ANALYTICS_ACCOUNT_ID`, `ANALYTICS_DATASET` | Server-side metrics query target |
 | `INVITATIONS_DAILY_LIMIT`, `INVITATIONS_MINUTE_LIMIT` | Shared admission ceilings for human invitations and independent agents |
 
-Durable Object namespaces, private R2 buckets, Analytics Engine datasets, static assets, routes and the account ID are also declared in `worker/wrangler.jsonc`; these are Cloudflare bindings/configuration, not secrets. Build scripts select the environment with `CLOUDFLARE_ENV=preview` or `production`; `pnpm dev` uses the local defaults.
+Durable Object namespaces, private R2 buckets, Analytics Engine datasets, static assets, routes and the account ID are also declared in `worker/wrangler.jsonc`; these are Cloudflare bindings/configuration, not secrets. `pnpm build:production` selects the production environment; `pnpm dev` uses the local defaults.
 
 ## Inspect and update hosted secrets
 
 List names only:
 
 ```sh
-pnpm exec wrangler secret list --config worker/wrangler.jsonc --env preview
 pnpm exec wrangler secret list --config worker/wrangler.jsonc --env production
 ```
 
@@ -65,4 +63,4 @@ Set or replace a secret interactively, using its name instead of `<NAME>`:
 pnpm exec wrangler secret put <NAME> --config worker/wrangler.jsonc --env production
 ```
 
-Use `--env preview` to update preview. The prompt accepts the value without putting it in the command; `secret put` creates and deploys a new Worker version. Edit non-secret settings in Wrangler configuration and deploy with `pnpm deploy:worker-preview` or `pnpm deploy:worker-production`. Never place keys in `VITE_*`, tracked files or frontend code.
+The prompt accepts the value without putting it in the command; `secret put` creates and deploys a new Worker version. Edit non-secret settings in Wrangler configuration and deploy with `pnpm deploy:worker-production`. Never place keys in `VITE_*`, tracked files or frontend code.

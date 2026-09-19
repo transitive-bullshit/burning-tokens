@@ -18,7 +18,7 @@ Routes: `/`, `/camp`, `/camp/bathhouse`, `/camp/dream-garden`, `/camp/quiet-hous
 ```sh
 pnpm build
 pnpm start # preview the unified build locally
-pnpm deploy:worker-preview # build and deploy the Cloudflare preview
+pnpm deploy:worker-production # build and deploy production
 pnpm test:types
 pnpm test:lint
 pnpm test:world
