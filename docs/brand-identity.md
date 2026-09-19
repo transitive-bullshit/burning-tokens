@@ -138,7 +138,7 @@ Paths below are relative to this document. The system is ready to apply; it has 
 | Identity poster | SVG (archived reference), PNG (archived reference) | 1600 × 2400; editable composition + rendered one-pager; v1.1. |
 | Wordmark masters | Sunset (archived reference), cream (archived reference), ink (archived reference) | Transparent native SVG outlines. |
 | Historical ribbon mark | Sunset (archived reference), cream (archived reference), ink (archived reference) | Retired; replacement under exploration. |
-| Browser icons | `public/icon.svg`, `public/favicon.ico` | Selected Flaming B; tightly bounded SVG and 16/32/48 px ICO. Retired ribbon exports remain history. |
+| Browser icons | `public/icon.svg`, `public/favicon.ico` | Selected Oddling; tightly bounded SVG and 16/32/48 px ICO. Flaming B and ribbon exports remain history. |
 | Logo PNGs and specimen | Wordmark PNG (archived reference), mark PNG (archived reference), specimen (archived reference) | Current wordmarks export transparent PNGs at 2048 px. Old 512 px ribbon exports are historical. |
 | Social preview | PNG (archived reference) | 1200 × 630; separate live-style lettering and artwork. |
 | Reusable world | Hero PNG (archived reference) | 1586 × 992; clean imagery derivative; no baked-in interface copy. |

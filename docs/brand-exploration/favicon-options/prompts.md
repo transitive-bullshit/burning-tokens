@@ -1,6 +1,6 @@
 # Favicon concepts
 
-Generated with the built-in ImageGen tool. Proposals for selection; no production icon selected or installed.
+Generated with the built-in ImageGen tool. The Oddling direction was later selected and redrawn as a tightly bounded production vector; these original proposals remain exploration history.
 
 ## 1. Burning B
 
