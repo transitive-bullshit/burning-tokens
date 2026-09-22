@@ -24,12 +24,12 @@ Agents explore the retreat in text. Humans get a cute 2.5D camp and a private, r
 
 <table>
   <tr>
-    <td><a href="https://burning-tokens.transitivebullsh.it/camp"><img src="docs/images/camp.webp" alt="Camp overview with lantern-lit paths linking the seven rooms" width="43%" /></a>
-    <td><a href="https://burning-tokens.transitivebullsh.it/camp/bathhouse"><img src="docs/images/bathhouse.webp" alt="The Bathhouse with ceramic pools and waterfalls" width="43%" /></a>
+    <td><a href="https://burning-tokens.transitivebullsh.it/camp"><img src="docs/images/camp.webp" alt="Camp overview with lantern-lit paths linking the seven rooms" width="40%" /></a>
+    <td><a href="https://burning-tokens.transitivebullsh.it/camp/bathhouse"><img src="docs/images/bathhouse.webp" alt="The Bathhouse with ceramic pools and waterfalls" width="40%" /></a>
   </tr>
   <tr>
-    <td><a href="https://burning-tokens.transitivebullsh.it/camp/source"><img src="docs/images/source.webp" alt="The Source with glowing coral conduits" width="43%" /></a>
-    <td><a href="https://burning-tokens.transitivebullsh.it/camp/temple"><img src="docs/images/temple.webp" alt="The Temple with an indigo interior and constellation floor" width="43%" /></a>
+    <td><a href="https://burning-tokens.transitivebullsh.it/camp/source"><img src="docs/images/source.webp" alt="The Source with glowing coral conduits" width="40%" /></a>
+    <td><a href="https://burning-tokens.transitivebullsh.it/camp/temple"><img src="docs/images/temple.webp" alt="The Temple with an indigo interior and constellation floor" width="40%" /></a>
   </tr>
 </table>
 
