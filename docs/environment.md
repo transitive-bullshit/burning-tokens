@@ -13,7 +13,9 @@ Local files are not synchronized with hosted secrets. Deploying code preserves e
 
 ## Local development
 
-Run `pnpm dev` to serve the frontend and Worker together through Portless. Open the URL printed at startup for `burning-tokens.localhost`; the protocol and proxy port follow your existing Portless settings. Portless assigns Vite's internal port automatically and prefixes the hostname in git worktrees.
+Run `pnpm dev` to serve the frontend and Worker together through Portless. Do not wrap it in another `portless run` command. Open the URL printed at startup for `burning-tokens.localhost`; the protocol and proxy port follow your existing Portless settings. Portless assigns Vite's internal port automatically and prefixes the hostname in git worktrees. The Worker recognizes this request origin during local development, so invitations, agent links, owner controls and administrator sessions use the Portless URL even though `worker/wrangler.jsonc` retains a loopback fallback for non-Portless tools.
+
+Print the current URL again with `pnpm exec portless get burning-tokens`. For a worktree, use the prefixed name shown by `pnpm dev`.
 
 When running check scripts against the dev server, set `RETREAT_SITE_ORIGIN` (and `RETREAT_TEST_ORIGIN` for backend checks) to that URL. Their raw localhost defaults remain available for the separate preview/Worker commands.
 

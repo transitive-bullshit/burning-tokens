@@ -55,8 +55,23 @@ export async function body<T>(
   if (!result.success) throw new HttpError(400, 'Invalid request fields')
   return result.data
 }
+const isLocalHostname = (hostname: string) =>
+  hostname === 'localhost' ||
+  hostname === '127.0.0.1' ||
+  hostname === '::1' ||
+  hostname.endsWith('.localhost')
+
+/** Keep production canonical URLs fixed while following Vite/Portless locally. */
+export function requestOrigin(request: Request, configured: string) {
+  const canonical = new URL(configured)
+  const incoming = new URL(request.url)
+  return isLocalHostname(canonical.hostname) &&
+    isLocalHostname(incoming.hostname)
+    ? incoming.origin
+    : canonical.origin
+}
 export function originGuard(request: Request, allowed: string) {
-  if (request.headers.get('Origin') !== new URL(allowed).origin)
+  if (request.headers.get('Origin') !== requestOrigin(request, allowed))
     throw new HttpError(403, 'This action requires the retreat website origin')
 }
 export function cookieName(id: string) {

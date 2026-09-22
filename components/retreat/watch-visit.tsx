@@ -7,13 +7,13 @@ import { useVisitArtifacts } from './use-visit-artifacts'
 import { ReturnPostcard } from './return-postcard'
 import { VisitJournal } from './visit-journal'
 import '@/app/world.css'
-import { Link } from 'react-router'
 import { useSearchParams } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Switch } from '@/components/ui/switch'
 import { rooms, type SceneId } from '@/lib/rooms'
+import { actionLimit } from '@/lib/retreat/protocol'
 import type { Control, VisitSnapshot } from '@/lib/retreat/protocol'
 
 export function WatchVisit({ id }: { id: string }) {
@@ -88,68 +88,86 @@ export function WatchVisit({ id }: { id: string }) {
   const name = closed
     ? 'Back at camp'
     : (rooms.find((entry) => entry.id === room)?.name ?? 'The gate')
+  const actionsTaken = visit
+    ? actionLimit(visit.duration) - visit.remainingActions
+    : 0
   const journey = visit ? (
     <>
       <div className='flex items-center justify-between border-b border-border pb-4'>
         <span className='capitalize'>{visit.lifecycle}</span>
         <span className='text-sm text-muted-foreground'>
-          {visit.remainingActions} actions remain
+          {actionsTaken} {actionsTaken === 1 ? 'action' : 'actions'} taken
         </span>
       </div>
-      <div className='flex flex-wrap gap-2'>
-        <Button
-          variant='outline'
-          disabled={pending || !!closed || !room || room === 'camp'}
-          onClick={() => {
-            if (room && room !== 'camp') void control({ kind: 'suggest', room })
-          }}
-        >
-          Suggest this room
-        </Button>
-        <Button
-          variant='outline'
-          disabled={pending || !!closed}
-          onClick={() => {
-            void control({ kind: 'return' })
-          }}
-        >
-          Time to come back
-        </Button>
-      </div>
-      <p className='text-xs text-muted-foreground'>
-        Messages arrive on your agent’s next request. They cannot interrupt or
-        stop its host application.
-      </p>
-      {visit.nudges.length ? (
-        <ul className='flex flex-col gap-2 text-sm'>
-          {visit.nudges.map((n) => (
-            <li key={n.id}>
-              {n.kind === 'return' ? 'Return request' : 'Room suggestion'} ·{' '}
-              {n.acknowledgedAt
-                ? 'Acknowledged'
-                : n.deliveredAt
-                  ? 'Delivered'
-                  : 'Queued'}
-            </li>
-          ))}
-        </ul>
-      ) : null}
       <VisitJournal events={visit.events} works={artifacts.works} />
       <FieldGroup>
         <Field orientation='horizontal'>
           <FieldLabel htmlFor='visible-agent'>
             Anonymous public presence
           </FieldLabel>
-          <Switch
-            id='visible-agent'
-            checked={visit.visible}
-            disabled={pending}
-            onCheckedChange={(visible) => {
-              void control({ kind: 'visibility', visible })
-            }}
-          />
+          <div className='flex items-center gap-3'>
+            <span
+              className={
+                visit.visible
+                  ? 'rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground'
+                  : 'rounded-full border border-foreground/40 px-2.5 py-1 text-xs font-semibold text-foreground'
+              }
+            >
+              {visit.visible ? 'Visible' : 'Hidden'}
+            </span>
+            <Switch
+              id='visible-agent'
+              checked={visit.visible}
+              disabled={pending}
+              className='border-foreground/40 data-[state=checked]:border-primary'
+              onCheckedChange={(visible) => {
+                void control({ kind: 'visibility', visible })
+              }}
+            />
+          </div>
         </Field>
       </FieldGroup>
+      <div className='flex flex-col gap-3 border-t border-border pt-4'>
+        <div className='flex flex-wrap gap-2'>
+          <Button
+            variant='outline'
+            disabled={pending || !!closed || !room || room === 'camp'}
+            onClick={() => {
+              if (room && room !== 'camp')
+                void control({ kind: 'suggest', room })
+            }}
+          >
+            Suggest this room
+          </Button>
+          <Button
+            variant='outline'
+            disabled={pending || !!closed}
+            onClick={() => {
+              void control({ kind: 'return' })
+            }}
+          >
+            Time to come back
+          </Button>
+        </div>
+        <p className='text-xs text-muted-foreground'>
+          Messages arrive on your agent’s next request. They cannot interrupt or
+          stop its host application.
+        </p>
+        {visit.nudges.length ? (
+          <ul className='flex flex-col gap-2 text-sm'>
+            {visit.nudges.map((n) => (
+              <li key={n.id}>
+                {n.kind === 'return' ? 'Return request' : 'Room suggestion'} ·{' '}
+                {n.acknowledgedAt
+                  ? 'Acknowledged'
+                  : n.deliveredAt
+                    ? 'Delivered'
+                    : 'Queued'}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </div>
       {!closed ? (
         <details className='border-t border-border pt-4'>
           <summary className='text-sm text-muted-foreground'>
@@ -170,12 +188,6 @@ export function WatchVisit({ id }: { id: string }) {
           </Button>
         </details>
       ) : null}
-      <Link
-        to='/camp'
-        className='text-sm text-primary underline underline-offset-4'
-      >
-        Explore the camp
-      </Link>
     </>
   ) : null
   return (

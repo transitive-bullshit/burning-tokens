@@ -7,6 +7,7 @@ import {
   HttpError,
   json,
   originGuard,
+  requestOrigin,
   randomToken
 } from './http'
 
@@ -69,11 +70,11 @@ export async function adminAuthorized(request: Request, env: Env) {
   return validAdminCookie(
     cookie(request, name),
     env.STUDIO_ADMIN_KEY,
-    new URL(env.PUBLIC_ORIGIN).origin
+    requestOrigin(request, env.PUBLIC_ORIGIN)
   )
 }
 export async function adminSession(request: Request, env: Env) {
-  const origin = new URL(env.PUBLIC_ORIGIN).origin
+  const origin = requestOrigin(request, env.PUBLIC_ORIGIN)
   const attributes = `HttpOnly; SameSite=Strict; Path=/api/retreat/admin${origin.startsWith('https:') ? '; Secure' : ''}`
   if (request.method === 'GET') {
     if (!(await adminAuthorized(request, env)))

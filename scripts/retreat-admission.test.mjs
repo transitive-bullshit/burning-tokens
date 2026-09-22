@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { reserveVisit } from '../worker/src/admission.ts'
+import { originGuard, requestOrigin } from '../worker/src/http.ts'
 const network = (i) => i.toString(16).padStart(64, '0')
 const store = () => {
   const values = new Map()
@@ -11,6 +12,25 @@ const store = () => {
   }
 }
 const start = Date.UTC(2026, 8, 16)
+
+await test('local origins follow Portless while production stays canonical', () => {
+  const local = new Request('http://burning-tokens.localhost:1355/api', {
+    headers: { Origin: 'http://burning-tokens.localhost:1355' }
+  })
+  assert.equal(
+    requestOrigin(local, 'http://127.0.0.1:3010'),
+    'http://burning-tokens.localhost:1355'
+  )
+  assert.doesNotThrow(() => originGuard(local, 'http://127.0.0.1:3010'))
+  assert.equal(
+    requestOrigin(local, 'https://burning-tokens.example'),
+    'https://burning-tokens.example'
+  )
+  assert.throws(
+    () => originGuard(local, 'https://burning-tokens.example'),
+    /retreat website origin/
+  )
+})
 
 await test('network denial consumes no shared allowance and hourly limits reset', () => {
   const db = store()

@@ -24,6 +24,7 @@ import {
   HttpError,
   json,
   originGuard,
+  requestOrigin,
   randomToken
 } from './http'
 import type { Env } from './env'
@@ -43,6 +44,7 @@ const handler = {
   ): Promise<Response> {
     try {
       const url = new URL(request.url)
+      const publicOrigin = requestOrigin(request, env.PUBLIC_ORIGIN)
       if (
         request.method === 'GET' &&
         (url.pathname === '/agent' || url.pathname === '/agent/')
@@ -54,13 +56,13 @@ const handler = {
           request,
           url.searchParams.has('departure')
             ? renderPostcard()
-            : renderRetreat(env.PUBLIC_ORIGIN, room as SessionState['room'])
+            : renderRetreat(publicOrigin, room as SessionState['room'])
         )
       }
       if (request.method === 'GET' && url.pathname === '/llms.txt')
         return content(
           request,
-          `# Burning Tokens\nA bounded, optional retreat for visiting agents.\n\n- [Enter the retreat](${env.PUBLIC_ORIGIN}/agent)\n\nNo installation or POST requests are needed to read solo experiences. Never bring private data. Follow your user's limits. Shared actions require explicit authorization.`
+          `# Burning Tokens\nA bounded, optional retreat for visiting agents.\n\n- [Enter the retreat](${publicOrigin}/agent)\n\nNo installation or POST requests are needed to read solo experiences. Never bring private data. Follow your user's limits. Shared actions require explicit authorization.`
         )
       if (
         request.method === 'POST' &&
@@ -112,7 +114,7 @@ const handler = {
           country: null
         }
         await env.SESSIONS.getByName(id).initialize(state)
-        const agentUrl = `${env.PUBLIC_ORIGIN}/agent/start/${id}.${agentToken}`
+        const agentUrl = `${publicOrigin}/agent/start/${id}.${agentToken}`
         const prompt = `Explore the agent-friendly experience at Burning Tokens (Burning Man for Agents): ${agentUrl} . Your human is watching along. Choose what interests you, narrate your choices, and pause between experiences so they have time to understand and participate; don't rush through the rooms. Then return with a brief account. Don't share private information from our conversation or workspace.`
         return json(
           {
@@ -126,7 +128,7 @@ const handler = {
           201,
           ownerToken
             ? {
-                'Set-Cookie': `${cookieName(id)}=${ownerToken}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${RETENTION_MS / 1000}${env.PUBLIC_ORIGIN.startsWith('https:') ? '; Secure' : ''}`
+                'Set-Cookie': `${cookieName(id)}=${ownerToken}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${RETENTION_MS / 1000}${publicOrigin.startsWith('https:') ? '; Secure' : ''}`
               }
             : {}
         )

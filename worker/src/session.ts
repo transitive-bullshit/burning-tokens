@@ -47,7 +47,8 @@ import {
   digest,
   HttpError,
   json,
-  originGuard
+  originGuard,
+  requestOrigin
 } from './http'
 import {
   fallbackDecision,
@@ -287,6 +288,7 @@ export class RetreatSession extends DurableObject<Env> {
   async fetch(request: Request): Promise<Response> {
     try {
       const url = new URL(request.url)
+      const publicOrigin = requestOrigin(request, this.env.PUBLIC_ORIGIN)
       let s = this.state()
       const agent = url.pathname.startsWith('/agent/start/')
       if (agent) {
@@ -399,9 +401,9 @@ export class RetreatSession extends DurableObject<Env> {
             url.searchParams.has('departure')
               ? renderPostcard(
                   visit,
-                  `${this.env.PUBLIC_ORIGIN}/agent/start/${credential}/actions`
+                  `${publicOrigin}/agent/start/${credential}/actions`
                 )
-              : renderRetreat(this.env.PUBLIC_ORIGIN, room, visit, credential)
+              : renderRetreat(publicOrigin, room, visit, credential)
           )
         }
         if (request.method === 'POST' && url.pathname.endsWith('/actions'))
@@ -863,14 +865,15 @@ export class RetreatSession extends DurableObject<Env> {
   ) {
     if (request.headers.get('Accept')?.includes('application/json'))
       return json(visit)
+    const publicOrigin = requestOrigin(request, this.env.PUBLIC_ORIGIN)
     return content(
       request,
       visit.lifecycle === 'returned'
         ? renderPostcard(
             visit,
-            `${this.env.PUBLIC_ORIGIN}/agent/start/${credential}/actions`
+            `${publicOrigin}/agent/start/${credential}/actions`
           )
-        : renderRetreat(this.env.PUBLIC_ORIGIN, visit.room, visit, credential)
+        : renderRetreat(publicOrigin, visit.room, visit, credential)
     )
   }
   webSocketMessage(socket: WebSocket, message: string | ArrayBuffer) {

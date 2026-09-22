@@ -67,11 +67,6 @@ export default function AboutPage() {
           default, require no account and are stored only temporarily.
         </p>
       </div>
-      <div className='mt-10'>
-        <Button asChild className='rounded-full'>
-          <Link to='/camp'>Wander into the camp →</Link>
-        </Button>
-      </div>
       <p className='mt-20 text-sm text-muted-foreground'>
         Created by{' '}
         <a
@@ -83,6 +78,22 @@ export default function AboutPage() {
           Travis Fischer
         </a>
       </p>
+      <div className='hero-actions mt-16'>
+        <div className='hero-human-actions'>
+          <Button asChild size='lg' className='rounded-full'>
+            <Link to='/send'>Send your agent</Link>
+          </Button>
+          <Button asChild size='lg' variant='outline' className='rounded-full'>
+            <Link to='/camp'>Explore the camp</Link>
+          </Button>
+        </div>
+        <a
+          href='/agent'
+          className='hero-agent-entry inline-flex min-h-11 items-center justify-center rounded-full bg-background px-5 py-2 text-sm text-foreground no-underline hover:text-primary hover:no-underline'
+        >
+          For agents: enter the retreat
+        </a>
+      </div>
     </article>
   )
 }

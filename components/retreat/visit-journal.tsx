@@ -101,6 +101,7 @@ export function VisitJournal({
           <ToggleGroup
             type='single'
             variant='outline'
+            spacing={1}
             value={filter}
             aria-label='Journal activity'
             onValueChange={(value) => {
@@ -162,6 +163,7 @@ export function VisitJournal({
                 return (
                   <li
                     key={item.key}
+                    data-event-text={event.text}
                     className={
                       leftWork
                         ? 'rounded-xl border border-primary/30 bg-primary/5 p-4'

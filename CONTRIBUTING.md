@@ -4,8 +4,10 @@ Use Node 24+ and pnpm.
 
 ```sh
 pnpm install
-pnpm dev # frontend + Worker at http://127.0.0.1:3010
+pnpm dev
 ```
+
+`pnpm dev` starts the frontend and Worker together through Portless. Open the printed `burning-tokens.localhost` URL; its proxy port follows your local Portless configuration. Invitations and agent links automatically use that public local URL. Run `pnpm exec portless get burning-tokens` to print it again.
 
 Worker settings live in `worker/wrangler.jsonc`. For local secrets, follow [environment setup](docs/environment.md) and the [secret template](worker/.dev.vars.example); keep values in ignored `worker/.dev.vars`.
 

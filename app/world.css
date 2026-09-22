@@ -1033,7 +1033,7 @@
   border-top: 1px solid var(--border);
 }
 
-.world-following .world aside > :not(.inspection) {
+.world-following .world aside > :not(.inspection):not(.visit-journey) {
   display: none;
 }
 

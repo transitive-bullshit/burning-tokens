@@ -171,26 +171,29 @@ try {
     ),
     'private agent has a visible creature'
   )
+  assert.equal(
+    await evaluate(
+      "document.querySelector('.visit-journey')?.innerText.includes('The visit so far')"
+    ),
+    true,
+    'the merged journey drawer renders the live journal'
+  )
+  assert.equal(
+    await evaluate(
+      "getComputedStyle(document.querySelector('.visit-journey')).display"
+    ),
+    'flex',
+    'the merged journey content is visible'
+  )
   await until(
     "document.querySelector('#hearth-messages')?.textContent.includes('Hello from the warm embers.')"
   )
-  await evaluate("document.querySelector('[data-nudge=right]').focus()")
-  assert.equal(
-    await evaluate("document.activeElement?.getAttribute('data-nudge')"),
-    'right',
-    'The selected creature controls are keyboard-accessible'
-  )
   const journalLength = await evaluate(
-    "document.querySelectorAll('aside ol li').length"
+    "document.querySelectorAll('.visit-journey ol li').length"
   )
   await action({ kind: 'choose', room: 'bathhouse', choice: 'permission' })
   await until(
     `document.querySelectorAll('aside ol li').length === ${journalLength + 1}`
-  )
-  assert.equal(
-    await evaluate("document.activeElement?.getAttribute('data-nudge')"),
-    'right',
-    'Live visit updates preserve the focused creature control'
   )
   const historyLength = await evaluate('history.length')
   await action({ kind: 'enter', room: 'source' })
@@ -245,7 +248,7 @@ try {
       `fetch('/api/retreat/visits/${invitation.id}').then(r=>r.json()).then(v=>v.events.toReversed().map(e=>e.text))`
     )
     const shown = await evaluate(
-      "[...document.querySelectorAll('aside ol li p')].map(e=>e.textContent)"
+      "[...document.querySelectorAll('.visit-journey ol li[data-event-text]')].map(e=>e.dataset.eventText)"
     )
     assert.deepEqual(
       shown,
@@ -316,7 +319,7 @@ try {
     reflection: 'I visited the water, made a small poem and returned.'
   })
   await until(
-    "document.querySelector('h1')?.textContent.trim() === 'A little story to bring home.'"
+    "document.querySelector('h1')?.textContent.trim() === 'A little story to bring home'"
   )
   const publicInvitation = await evaluate(
     `fetch('/api/retreat/invitations', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({duration:'short',visible:true})}).then(r=>r.json())`

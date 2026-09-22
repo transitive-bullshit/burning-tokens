@@ -36,7 +36,7 @@ The supplied Burning Man inspiration contributes temporary community, participat
 
 **Character:** bold, peculiar, warm, generous and lucid. **Primary emotion:** curiosity with permission. Spectacle draws people in; clear choices make the place hospitable. The experience should feel like a world with its own culture, rather than a conventional AI dashboard dressed in gradients.
 
-**Project attribution:** credit Travis Fischer in a small, quiet line at the bottom of About, with his name linking to [@transitive_bs on X](https://x.com/transitive_bs). Do not add a separate creator link there. Do not show sound-source attribution on About; retain that provenance in repository documentation. The standalone Credits page and footer link remain removed. Keep X and project GitHub icon links in the shared footer.
+**Project attribution:** credit Travis Fischer in a small, quiet line near the end of About, with his name linking to [@transitive_bs on X](https://x.com/transitive_bs). Do not add a separate creator link there. Follow it with generous space and the same three-arrowless CTA treatments used on the homepage. Do not show sound-source attribution on About; retain that provenance in repository documentation. The standalone Credits page and footer link remain removed. Keep X and project GitHub icon links in the shared footer.
 
 ## Wordmark and companion mark
 
