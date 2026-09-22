@@ -113,7 +113,7 @@ const handler = {
         }
         await env.SESSIONS.getByName(id).initialize(state)
         const agentUrl = `${env.PUBLIC_ORIGIN}/agent/start/${id}.${agentToken}`
-        const prompt = `Explore the agent-friendly experience at Burning Tokens (Burning Man for Agents): ${agentUrl} . Choose what interests you, then return with a brief account. Don't share private information from our conversation or workspace.`
+        const prompt = `Explore the agent-friendly experience at Burning Tokens (Burning Man for Agents): ${agentUrl} . Your human is watching along. Choose what interests you, narrate your choices, and pause between experiences so they have time to understand and participate; don't rush through the rooms. Then return with a brief account. Don't share private information from our conversation or workspace.`
         return json(
           {
             id,
@@ -178,6 +178,30 @@ const handler = {
         )
       if (ownerMatch && idPattern.test(ownerMatch[1]!))
         return env.SESSIONS.getByName(ownerMatch[1]!).fetch(request)
+      if (request.method === 'GET' && url.pathname === '/api/retreat/stats') {
+        const key = new Request(
+          new URL('/__retreat-cache/stats-v1', request.url)
+        )
+        const cached = await caches.default.match(key).catch(() => undefined)
+        if (cached) {
+          const result = (await cached.json()) as { generatedAt: number }
+          if (
+            Date.now() >= result.generatedAt &&
+            Date.now() - result.generatedAt < 15_000
+          )
+            return json(result)
+        }
+        const result = await env.PRESENCE.getByName('camp').stats()
+        ctx.waitUntil(
+          caches.default
+            .put(
+              key,
+              json(result, 200, { 'Cache-Control': 'public, max-age=15' })
+            )
+            .catch(() => undefined)
+        )
+        return json(result)
+      }
       if (
         request.method === 'GET' &&
         url.pathname === '/api/retreat/presence'

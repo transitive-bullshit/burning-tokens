@@ -3,7 +3,7 @@ import { DurableObject } from 'cloudflare:workers'
 import { drizzle } from 'drizzle-orm/durable-sqlite'
 import { migrate } from 'drizzle-orm/durable-sqlite/migrator'
 import { and, asc, eq, gt, isNull, lt, sql } from 'drizzle-orm'
-import { summaries } from './db/schema'
+import { arrivals, visitTotals, summaries } from './db/schema'
 import { presenceMigrations } from './db/migrations'
 import { type PresenceSummary } from '../../lib/retreat/protocol'
 import type { Env } from './env'
@@ -91,6 +91,25 @@ export class RetreatPresence extends DurableObject<Env> {
       visitors: rows.map(({ value }) => this.publicValue(value))
     }
   }
+  stats() {
+    const now = Date.now()
+    return {
+      generatedAt: now,
+      totalVisits: this.db.select().from(visitTotals).get()?.total ?? 0,
+      visitingNow:
+        this.db
+          .select({ total: sql<number>`count(*)` })
+          .from(summaries)
+          .where(
+            and(
+              gt(summaries.expiresAt, now),
+              sql`json_extract(${summaries.value}, '$.lifecycle') IN ('opened', 'visiting', 'resting')`,
+              sql`(${summaries.lastSeen} > ${now - ACTIVE_WINDOW_MS} OR json_extract(${summaries.value}, '$.restUntil') > ${now})`
+            )
+          )
+          .get()?.total ?? 0
+    }
+  }
   detail(id: string) {
     const row = this.db
       .select()
@@ -125,8 +144,12 @@ export class RetreatPresence extends DurableObject<Env> {
     }
   }
   async alarm() {
+    this.db.delete(arrivals).where(lt(arrivals.expiresAt, Date.now())).run()
     this.db.delete(summaries).where(lt(summaries.expiresAt, Date.now())).run()
-    if (this.db.select({ id: summaries.id }).from(summaries).limit(1).get())
+    if (
+      this.db.select({ id: summaries.id }).from(summaries).limit(1).get() ||
+      this.db.select({ id: arrivals.id }).from(arrivals).limit(1).get()
+    )
       await this.ctx.storage.setAlarm(Date.now() + 60_000)
   }
 }

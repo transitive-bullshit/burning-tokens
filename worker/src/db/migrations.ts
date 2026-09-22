@@ -53,6 +53,12 @@ export const presenceMigrations = {
         when: 1789516800001,
         tag: 'presence_v2_admission',
         breakpoints: true
+      },
+      {
+        idx: 2,
+        when: 1789516800002,
+        tag: 'presence_v3_totals',
+        breakpoints: true
       }
     ]
   },
@@ -66,6 +72,15 @@ CREATE INDEX summaries_expiry ON summaries(expires_at);
 CREATE INDEX summaries_room ON summaries(room);`,
     m0001: `CREATE TABLE presence_admission (key INTEGER PRIMARY KEY, watermark INTEGER NOT NULL);
 --> statement-breakpoint
-INSERT INTO presence_admission (key, watermark) VALUES (1, -1);`
+INSERT INTO presence_admission (key, watermark) VALUES (1, -1);`,
+    m0002: `CREATE TABLE arrivals (id TEXT PRIMARY KEY, expires_at INTEGER NOT NULL);
+--> statement-breakpoint
+CREATE INDEX arrivals_expiry ON arrivals(expires_at);
+--> statement-breakpoint
+INSERT INTO arrivals SELECT id, expires_at FROM summaries WHERE last_seen > 0;
+--> statement-breakpoint
+CREATE TABLE visit_totals (key INTEGER PRIMARY KEY, total INTEGER NOT NULL);
+--> statement-breakpoint
+INSERT INTO visit_totals SELECT 1, count(*) FROM arrivals;`
   }
 }

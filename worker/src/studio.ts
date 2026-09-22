@@ -130,7 +130,7 @@ export class RetreatStudio extends DurableObject<Env> {
           )
         const audience = z
           .enum(audiences)
-          .safeParse(url.searchParams.get('audience') ?? 'agents')
+          .safeParse(url.searchParams.get('audience') ?? 'public')
         if (!audience.success)
           throw new HttpError(
             400,

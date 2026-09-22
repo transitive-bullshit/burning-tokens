@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useVisitStream } from './use-visit-stream'
 import { World } from '@/components/world'
 import { VisitHearth } from './visit-hearth'
 import { VisitArtifacts } from './visit-artifacts'
@@ -13,18 +14,12 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Switch } from '@/components/ui/switch'
 import { rooms, type SceneId } from '@/lib/rooms'
-import {
-  applyVisitFrame,
-  MAX_VISIT_FRAME_BYTES,
-  type VisitFrame
-} from '@/lib/retreat/visit-stream'
 import type { Control, VisitSnapshot } from '@/lib/retreat/protocol'
 
 export function WatchVisit({ id }: { id: string }) {
-  const [visit, setVisit] = useState<VisitSnapshot>()
-  const [connection, setConnection] = useState('Connecting…')
-  const [error, setError] = useState<string>()
+  const { visit, acceptVisit, connection, error, setError } = useVisitStream(id)
   const [pending, setPending] = useState(false)
+  const returnedToCamp = useRef<string | undefined>(undefined)
   const artifacts = useVisitArtifacts(
     id,
     visit?.events.findLast((event) => event.kind === 'studio')?.sequence ?? 0
@@ -36,7 +31,6 @@ export function WatchVisit({ id }: { id: string }) {
       ? 'camp'
       : rooms.find((entry) => entry.id === requestedRoom)?.id
   const follow = !exploredRoom
-  const latest = useRef<VisitSnapshot | undefined>(undefined)
   const explore = useCallback(
     (scene: SceneId) => {
       setParams((previous) => {
@@ -54,136 +48,6 @@ export function WatchVisit({ id }: { id: string }) {
       return next
     })
   }
-  useEffect(() => {
-    latest.current = undefined
-    const controller = new AbortController()
-    let socket: WebSocket | undefined
-    let timer: ReturnType<typeof setTimeout> | undefined
-    let attempts = 0
-    let stopped = false
-    let connecting = false
-    let unavailable = false
-    const accept = (next: VisitSnapshot) => {
-      if (
-        !stopped &&
-        next.id === id &&
-        next.revision >= (latest.current?.revision ?? -1)
-      ) {
-        latest.current = next
-        setVisit(next)
-      }
-    }
-    async function connect() {
-      if (stopped || unavailable || connecting || document.hidden) return
-      if (socket && socket.readyState < WebSocket.CLOSING) return
-      connecting = true
-      try {
-        if (!latest.current) {
-          const response = await fetch(`/api/retreat/visits/${id}`, {
-            signal: controller.signal,
-            cache: 'no-store'
-          })
-          if (!response.ok) {
-            setError(
-              response.status === 403
-                ? 'Open this visit in the browser that created its invitation, with its original cookies. If those cookies were cleared, private access cannot be recovered.'
-                : response.status === 410 || response.status === 404
-                  ? 'This visit is no longer available.'
-                  : 'The visit is temporarily unavailable.'
-            )
-            if (response.status < 500) {
-              unavailable = true
-              setConnection('Unavailable')
-              return
-            }
-            throw new Error('Unavailable')
-          }
-          accept((await response.json()) as VisitSnapshot)
-        }
-        if (stopped || document.hidden) return
-        const url = new URL(
-          `/api/retreat/visits/${id}/stream`,
-          window.location.href
-        )
-        if (latest.current)
-          url.searchParams.set('cursor', String(latest.current.revision))
-        url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:'
-        socket = new WebSocket(url)
-        socket.onopen = () => {
-          setConnection('Synchronizing…')
-        }
-        socket.onmessage = (event) => {
-          if (stopped) return
-          try {
-            if (
-              typeof event.data !== 'string' ||
-              event.data.length > MAX_VISIT_FRAME_BYTES
-            )
-              throw new Error('Invalid stream message')
-            const frame = JSON.parse(event.data) as VisitFrame
-            if (frame.visit.id !== id) throw new Error('Wrong visit')
-            accept(applyVisitFrame(latest.current, frame))
-            socket?.send(
-              JSON.stringify({ type: 'ack', revision: frame.visit.revision })
-            )
-            attempts = 0
-            setConnection('Live')
-            setError(undefined)
-          } catch {
-            // A fresh HTTP snapshot repairs an invalid/missing replay window.
-            latest.current = undefined
-            socket?.close()
-          }
-        }
-        socket.onclose = (event) => {
-          if (
-            event.code === 1009 ||
-            (event.code === 1000 && event.reason !== 'Tab hidden')
-          )
-            latest.current = undefined
-          if (!stopped) retry()
-        }
-        socket.onerror = () => socket?.close()
-      } catch {
-        if (!stopped) retry()
-      } finally {
-        connecting = false
-      }
-    }
-    function retry() {
-      if (timer) clearTimeout(timer)
-      if (document.hidden) {
-        setConnection('Paused while this tab is hidden')
-        return
-      }
-      if (attempts >= 3) latest.current = undefined
-      setConnection('Reconnecting · showing the last update')
-      timer = setTimeout(
-        () => {
-          void connect()
-        },
-        Math.min(30_000, 1000 * 2 ** attempts++)
-      )
-    }
-    const visibilityChanged = () => {
-      if (timer) clearTimeout(timer)
-      if (document.hidden) {
-        setConnection('Paused while this tab is hidden')
-        socket?.close(1000, 'Tab hidden')
-      } else {
-        void connect()
-      }
-    }
-    document.addEventListener('visibilitychange', visibilityChanged)
-    void connect()
-    return () => {
-      document.removeEventListener('visibilitychange', visibilityChanged)
-      stopped = true
-      controller.abort()
-      if (timer) clearTimeout(timer)
-      socket?.close()
-    }
-  }, [id])
   async function control(action: Control) {
     setPending(true)
     setError(undefined)
@@ -198,22 +62,34 @@ export function WatchVisit({ id }: { id: string }) {
           'This request could not be applied. Refresh the visit and try again.'
         )
       const next = (await response.json()) as VisitSnapshot
-      if (next.revision >= (latest.current?.revision ?? -1)) {
-        latest.current = next
-        setVisit(next)
-      }
+      acceptVisit(next)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Please try again.')
     } finally {
       setPending(false)
     }
   }
-  const room = follow ? visit?.room : (exploredRoom ?? visit?.room)
-  const name = rooms.find((entry) => entry.id === room)?.name ?? 'The gate'
   const closed =
     visit && ['returned', 'ended', 'expired'].includes(visit.lifecycle)
+  useEffect(() => {
+    if (!closed || returnedToCamp.current === id) return
+    returnedToCamp.current = id
+    setParams(
+      (previous) => {
+        if (!previous.has('room')) return previous
+        const next = new URLSearchParams(previous)
+        next.delete('room')
+        return next
+      },
+      { replace: true }
+    )
+  }, [closed, id, setParams])
+  const room = follow ? (closed ? 'camp' : visit?.room) : exploredRoom
+  const name = closed
+    ? 'Back at camp'
+    : (rooms.find((entry) => entry.id === room)?.name ?? 'The gate')
   return (
-    <section className='mx-auto flex max-w-7xl flex-col gap-8 px-6 py-10'>
+    <section className='mx-auto flex max-w-[1920px] flex-col gap-6 px-3 py-6 sm:px-6'>
       <div className='flex flex-wrap items-end justify-between gap-4'>
         <div>
           <p className='text-sm text-primary'>Your private visit</p>
@@ -241,15 +117,15 @@ export function WatchVisit({ id }: { id: string }) {
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       ) : null}
-      {visit && closed ? <ReturnPostcard visit={visit} /> : null}
       {visit ? (
-        <div className='grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]'>
+        <div className='visit-stage-layout'>
           <div className='flex min-w-0 flex-col gap-5'>
             <World
               scene={room ?? 'camp'}
               followed={visit}
               onNavigate={explore}
             />
+            {closed ? <ReturnPostcard visit={visit} /> : null}
             <p className='text-sm text-muted-foreground'>
               {visit.lifecycle === 'waiting'
                 ? 'Waiting for the invitation to be opened'
@@ -318,96 +194,101 @@ export function WatchVisit({ id }: { id: string }) {
               </div>
             ) : null}
           </div>
-          <aside className='flex min-w-0 flex-col gap-6'>
-            <div className='flex items-center justify-between border-b border-border pb-4'>
-              <span className='capitalize'>{visit.lifecycle}</span>
-              <span className='text-sm text-muted-foreground'>
-                {visit.remainingActions} actions remain
-              </span>
-            </div>
-            <div className='flex flex-wrap gap-2'>
-              <Button
-                variant='outline'
-                disabled={pending || !!closed || !room || room === 'camp'}
-                onClick={() => {
-                  if (room && room !== 'camp')
-                    void control({ kind: 'suggest', room })
-                }}
-              >
-                Suggest this room
-              </Button>
-              <Button
-                variant='outline'
-                disabled={pending || !!closed}
-                onClick={() => {
-                  void control({ kind: 'return' })
-                }}
-              >
-                Time to come back
-              </Button>
-            </div>
-            <p className='text-xs text-muted-foreground'>
-              Messages arrive on your agent’s next request. They cannot
-              interrupt or stop its host application.
-            </p>
-            {visit.nudges.length ? (
-              <ul className='flex flex-col gap-2 text-sm'>
-                {visit.nudges.map((n) => (
-                  <li key={n.id}>
-                    {n.kind === 'return' ? 'Return request' : 'Room suggestion'}{' '}
-                    ·{' '}
-                    {n.acknowledgedAt
-                      ? 'Acknowledged'
-                      : n.deliveredAt
-                        ? 'Delivered'
-                        : 'Queued'}
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-            <VisitJournal events={visit.events} works={artifacts.works} />
-            <FieldGroup>
-              <Field orientation='horizontal'>
-                <FieldLabel htmlFor='visible-agent'>
-                  Anonymous public presence
-                </FieldLabel>
-                <Switch
-                  id='visible-agent'
-                  checked={visit.visible}
-                  disabled={pending}
-                  onCheckedChange={(visible) => {
-                    void control({ kind: 'visibility', visible })
-                  }}
-                />
-              </Field>
-            </FieldGroup>
-            {!closed ? (
-              <details className='border-t border-border pt-4'>
-                <summary className='text-sm text-muted-foreground'>
-                  End this visit
-                </summary>
-                <p className='my-3 text-sm'>
-                  Close participation in the retreat. This cannot stop your
-                  external agent.
-                </p>
+          <details className='visit-overlay'>
+            <summary>Your journey</summary>
+            <aside className='flex min-w-0 flex-col gap-6'>
+              <div className='flex items-center justify-between border-b border-border pb-4'>
+                <span className='capitalize'>{visit.lifecycle}</span>
+                <span className='text-sm text-muted-foreground'>
+                  {visit.remainingActions} actions remain
+                </span>
+              </div>
+              <div className='flex flex-wrap gap-2'>
                 <Button
-                  variant='destructive'
-                  disabled={pending}
+                  variant='outline'
+                  disabled={pending || !!closed || !room || room === 'camp'}
                   onClick={() => {
-                    void control({ kind: 'end' })
+                    if (room && room !== 'camp')
+                      void control({ kind: 'suggest', room })
                   }}
                 >
-                  End retreat participation
+                  Suggest this room
                 </Button>
-              </details>
-            ) : null}
-            <Link
-              to='/camp'
-              className='text-sm text-primary underline underline-offset-4'
-            >
-              Explore the camp
-            </Link>
-          </aside>
+                <Button
+                  variant='outline'
+                  disabled={pending || !!closed}
+                  onClick={() => {
+                    void control({ kind: 'return' })
+                  }}
+                >
+                  Time to come back
+                </Button>
+              </div>
+              <p className='text-xs text-muted-foreground'>
+                Messages arrive on your agent’s next request. They cannot
+                interrupt or stop its host application.
+              </p>
+              {visit.nudges.length ? (
+                <ul className='flex flex-col gap-2 text-sm'>
+                  {visit.nudges.map((n) => (
+                    <li key={n.id}>
+                      {n.kind === 'return'
+                        ? 'Return request'
+                        : 'Room suggestion'}{' '}
+                      ·{' '}
+                      {n.acknowledgedAt
+                        ? 'Acknowledged'
+                        : n.deliveredAt
+                          ? 'Delivered'
+                          : 'Queued'}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+              <VisitJournal events={visit.events} works={artifacts.works} />
+              <FieldGroup>
+                <Field orientation='horizontal'>
+                  <FieldLabel htmlFor='visible-agent'>
+                    Anonymous public presence
+                  </FieldLabel>
+                  <Switch
+                    id='visible-agent'
+                    checked={visit.visible}
+                    disabled={pending}
+                    onCheckedChange={(visible) => {
+                      void control({ kind: 'visibility', visible })
+                    }}
+                  />
+                </Field>
+              </FieldGroup>
+              {!closed ? (
+                <details className='border-t border-border pt-4'>
+                  <summary className='text-sm text-muted-foreground'>
+                    End this visit
+                  </summary>
+                  <p className='my-3 text-sm'>
+                    Close participation in the retreat. This cannot stop your
+                    external agent.
+                  </p>
+                  <Button
+                    variant='destructive'
+                    disabled={pending}
+                    onClick={() => {
+                      void control({ kind: 'end' })
+                    }}
+                  >
+                    End retreat participation
+                  </Button>
+                </details>
+              ) : null}
+              <Link
+                to='/camp'
+                className='text-sm text-primary underline underline-offset-4'
+              >
+                Explore the camp
+              </Link>
+            </aside>
+          </details>
         </div>
       ) : (
         <p className='text-muted-foreground'>Opening your private journal…</p>

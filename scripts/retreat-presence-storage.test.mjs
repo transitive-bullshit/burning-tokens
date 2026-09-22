@@ -250,3 +250,45 @@ await test('rapid room changes coalesce without delaying privacy removals or los
   )
   assert.equal(presenceDeliveryDue({ ...base, now: 40000 }), 40000)
 })
+
+await test('arrival total counts observed visits once across retries, privacy changes and summary eviction', () => {
+  const { db, sqlite } = fixture()
+  const total = () =>
+    sqlite.prepare('SELECT total FROM visit_totals').get().total
+  try {
+    assert.equal(total(), 0)
+    storePresence(
+      db,
+      visitor('waiting', { lastSeen: null, lifecycle: 'waiting' }),
+      now
+    )
+    assert.equal(total(), 0)
+    storePresence(
+      db,
+      visitor('waiting', {
+        revision: 2,
+        visible: false,
+        room: null,
+        lifecycle: 'opened'
+      }),
+      now
+    )
+    assert.equal(total(), 1)
+    storePresence(db, visitor('waiting', { revision: 2 }), now)
+    storePresence(
+      db,
+      visitor('waiting', { revision: 3, lifecycle: 'returned' }),
+      now
+    )
+    assert.equal(total(), 1)
+    sqlite.prepare('DELETE FROM summaries WHERE id = ?').run('waiting')
+    storePresence(db, visitor('waiting', { revision: 4 }), now)
+    assert.equal(total(), 1)
+    storePresence(db, visitor('second'), now)
+    assert.equal(total(), 2)
+    storePresence(db, visitor('expired', { expiresAt: now - 1 }), now)
+    assert.equal(total(), 2)
+  } finally {
+    sqlite.close()
+  }
+})

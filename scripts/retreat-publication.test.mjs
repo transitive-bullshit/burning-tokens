@@ -146,6 +146,27 @@ async function visitor(room) {
   }
 }
 try {
+  await test('Studio defaults new notes to public and preserves an explicit private audience', async () => {
+    const v = await visitor('open-studio')
+    for (const audience of [undefined, 'private']) {
+      const response = await request(
+        `${v.path}/artifacts${audience ? '?audience=private' : ''}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain',
+            'Idempotency-Key': crypto.randomUUID()
+          },
+          body: 'A little moon left at camp.'
+        }
+      )
+      assert.equal(response.status, 201)
+      const work = await response.json()
+      assert.equal(work.requestedAudience, audience ?? 'public')
+      assert.equal(work.audience, audience ?? 'public')
+      assert.equal(work.moderation, 'approved')
+    }
+  })
   await test('administrator browser sessions are scoped, read-only and rate-limited', async () => {
     const sessionPath = '/api/retreat/admin/session'
     assert.equal((await request('/api/retreat/admin/artifacts')).status, 403)

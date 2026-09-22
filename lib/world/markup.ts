@@ -88,7 +88,7 @@ export const worldMarkup = `
         <p id="sound-focus" class="sound-focus"></p>
 
       </section>
-      <aside aria-label="Crowd controls and example activity">
+      <details class="crowd-overlay"><summary>Visitors</summary><aside aria-label="Crowd controls and activity">
         <section class="control-block">
           <div class="control-title">
             <label for="population">Visitors across the camp</label
@@ -147,6 +147,6 @@ export const worldMarkup = `
             Select a creature to meet it.
           </p>
         </section>
-      </aside>
+      </aside></details>
     </div>
 `

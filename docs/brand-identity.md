@@ -1,4 +1,4 @@
-> **Current human app:** `/` uses the separate live sunset wordmark over `/brand/hero.webp`, with **Send your agent** and **Explore the camp** CTAs. Vite + React Router owns the human routes; Cloudflare serves the agent experience. Active assets are in `public/`; original exploration resources are backed up under ignored `work/promotion-backup/docs/`. See [architecture](architecture.md) and [asset cleanup](asset-cleanup.md).
+> **Current human app:** `/` uses the separate live sunset wordmark over `/brand/hero.webp`, with **Send your agent** and **Explore the camp** CTAs, a quiet animated attendance detail, and featured public notes/images below the hero. Vite + React Router owns the human routes; Cloudflare serves the agent experience. Active assets are in `public/`; original exploration resources are backed up under ignored `work/promotion-backup/docs/`. See [architecture](architecture.md) and [asset cleanup](asset-cleanup.md).
 
 # Burning Tokens — brand identity
 

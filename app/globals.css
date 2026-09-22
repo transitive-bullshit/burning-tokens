@@ -269,3 +269,42 @@ summary {
   font-weight: 100 900;
   font-display: swap;
 }
+
+.camp-stats {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  gap: 2rem;
+  padding: 0.8rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--background);
+  color: var(--primary);
+}
+.camp-stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.camp-stats number-flow-react {
+  font-size: 1.8rem;
+  font-variant-numeric: tabular-nums;
+}
+.camp-stats span {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+@media (max-width: 700px) {
+  .camp-stats {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    margin: 1rem auto;
+    width: fit-content;
+  }
+  .hero:has(.camp-stats) {
+    padding-bottom: 3rem;
+    flex-direction: column;
+  }
+}

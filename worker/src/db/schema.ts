@@ -74,3 +74,17 @@ export const publicationGrants = sqliteTable('publication_grants', {
   key: text('key').primaryKey(),
   revision: integer('revision').notNull()
 })
+
+// Arrival receipts expire with the capability; the aggregate never expires.
+export const arrivals = sqliteTable(
+  'arrivals',
+  {
+    id: text('id').primaryKey(),
+    expiresAt: integer('expires_at').notNull()
+  },
+  (t) => [index('arrivals_expiry').on(t.expiresAt)]
+)
+export const visitTotals = sqliteTable('visit_totals', {
+  key: integer('key').primaryKey(),
+  total: integer('total').notNull()
+})
