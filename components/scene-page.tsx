@@ -2,7 +2,6 @@ import { PublicExhibits } from './retreat/public-exhibits'
 import { Link } from 'react-router'
 import { rooms, getRoom, scenePath, type SceneId } from '@/lib/rooms'
 import { World } from './world'
-import '@/app/world.css'
 export function ScenePage({ scene }: { scene: SceneId }) {
   const room = getRoom(scene)
   return (

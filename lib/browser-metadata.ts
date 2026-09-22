@@ -19,6 +19,6 @@ export function updateBrowserMetadata(pathname: string) {
     for (const [name, value] of Object.entries(tag.attributes))
       element.setAttribute(name, value)
     if (tag.text) element.textContent = tag.text
-    document.head.append(element)
+    document.head.appendChild(element)
   }
 }

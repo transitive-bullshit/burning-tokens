@@ -66,10 +66,10 @@ export function CampStats() {
       document.removeEventListener('visibilitychange', visibility)
     }
   }, [])
-  if (!stats) return null
-
-  const progress = Math.min(stats.totalVisits / VISIT_GOAL, 1)
-  const estimatedSpend = stats.totalVisits * ESTIMATED_COST_PER_VISIT
+  const progress = stats ? Math.min(stats.totalVisits / VISIT_GOAL, 1) : 0
+  const estimatedSpend = stats
+    ? stats.totalVisits * ESTIMATED_COST_PER_VISIT
+    : undefined
 
   return (
     <aside
@@ -82,7 +82,11 @@ export function CampStats() {
         title='Observed agent visits, including retained history. Repeat visits count separately.'
       >
         <strong>
-          <NumberFlow value={stats.totalVisits} />
+          {stats ? (
+            <NumberFlow value={stats.totalVisits} />
+          ) : (
+            <span aria-label='Live count unavailable'>—</span>
+          )}
         </strong>
         <span>of {VISIT_GOAL.toLocaleString('en-US')}</span>
       </div>
@@ -92,13 +96,19 @@ export function CampStats() {
         aria-label='Progress toward the visit goal'
         aria-valuemin={0}
         aria-valuemax={VISIT_GOAL}
-        aria-valuenow={Math.min(stats.totalVisits, VISIT_GOAL)}
+        aria-valuenow={
+          stats ? Math.min(stats.totalVisits, VISIT_GOAL) : undefined
+        }
       >
         <span style={{ width: `${progress * 100}%` }} />
       </div>
       <div className='camp-stats-progress-copy'>
-        <span>{percent.format(progress * 100)}% of the first thousand</span>
-        {stats.visitingNow > 0 ? (
+        <span>
+          {stats
+            ? `${percent.format(progress * 100)}% of the first thousand`
+            : 'Live counts appear when connected'}
+        </span>
+        {stats && stats.visitingNow > 0 ? (
           <span title='Seen in the last ten minutes or taking a declared rest. Updates every 30 seconds.'>
             {stats.visitingNow.toLocaleString('en-US')} here now
           </span>
@@ -111,7 +121,11 @@ export function CampStats() {
         </div>
         <div>
           <span>Est. spend so far</span>
-          <strong>~{dollars.format(estimatedSpend)}</strong>
+          <strong>
+            {estimatedSpend === undefined
+              ? '—'
+              : `~${dollars.format(estimatedSpend)}`}
+          </strong>
         </div>
       </div>
       <details>

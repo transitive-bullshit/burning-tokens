@@ -23,9 +23,15 @@ pnpm fix:format
 pnpm fix:lint
 pnpm build
 pnpm start # preview the unified build locally
+pnpm check:ssr # in another terminal while the preview is running
+pnpm check:social-metadata
 ```
 
 Backend regression suites are listed in [package.json](package.json). Follow the [verification budget](AGENTS.md#verification-budget): synthetic stress and load tests are prohibited.
+
+Public pages are server-rendered in both `pnpm dev` and the built preview. The same React routes hydrate in the browser; live data, creatures and the camp renderer enhance the initial HTML afterward. Keep browser APIs and browser-local state out of the initial render. Styles belong in the HTML entry so pages are styled before JavaScript. See [architecture](docs/architecture.md) for the rendering boundaries.
+
+`check:ssr` performs bounded read-only requests (no invitations or synthetic agents), checking public HTML, artwork fallbacks, private shells, 404s and backend routing. To check the Portless dev server instead, run `RETREAT_SITE_ORIGIN=http://burning-tokens.localhost:1355 pnpm check:ssr`, substituting your printed URL. Also verify browser hydration and controls; raw HTML checks alone cannot catch hydration errors.
 
 Production build and deployment commands are `pnpm build:production` and `pnpm deploy:worker-production`. Read [operations](docs/operations.md) and [environment setup](docs/environment.md) before deploying; deployment is separate from a local contribution.
 

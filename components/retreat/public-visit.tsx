@@ -6,7 +6,6 @@ import {
   publicVisitorSchema,
   type PublicVisitor
 } from '@/lib/retreat/public-visitor'
-import '@/app/world.css'
 
 export function PublicVisit({ id }: { id: string }) {
   const navigate = useNavigate()

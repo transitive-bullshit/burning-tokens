@@ -4,6 +4,7 @@ import {
   renderMetadata
 } from '../../lib/site-metadata'
 import type { Env } from './env'
+import { renderPage } from '../../app/entry-server'
 
 export async function humanHtml(request: Request, env: Env) {
   const url = new URL(request.url)
@@ -18,7 +19,13 @@ export async function humanHtml(request: Request, env: Env) {
     new Request(shellUrl, { method: request.method })
   )
   if (!shell.headers.get('Content-Type')?.includes('text/html')) return shell
+  const markup = request.method === 'HEAD' ? '' : await renderPage(url)
   const transformed = new HTMLRewriter()
+    .on('#root', {
+      element(element) {
+        element.setInnerContent(markup, { html: true })
+      }
+    })
     .on('[data-retreat-metadata]', {
       element(element) {
         element.remove()

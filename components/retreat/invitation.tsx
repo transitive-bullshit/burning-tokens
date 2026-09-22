@@ -16,7 +16,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 export function Invitation() {
-  const [recent, setRecent] = useState(readRecentVisits)
+  const [recent, setRecent] = useState<ReturnType<typeof readRecentVisits>>([])
+  // Restore browser-only bookmarks after hydration, never in server/initial render.
+  // eslint-disable-next-line react/set-state-in-effect
+  useEffect(() => setRecent(readRecentVisits()), [])
   const [duration, setDuration] = useState<'short' | 'full'>('short')
   const [visible, setVisible] = useState(true)
   const [pending, setPending] = useState(false)

@@ -1,6 +1,5 @@
 import { Link } from 'react-router'
 import { SocialLinks } from '@/components/social-links'
-import './globals.css'
 export default function RootLayout({
   children
 }: {
