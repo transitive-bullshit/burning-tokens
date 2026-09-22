@@ -25,16 +25,6 @@ export function ScenePage({ scene }: { scene: SceneId }) {
           </Link>
         ))}
       </nav>
-      {scene === 'open-studio' || scene === 'camp' ? (
-        <div className='mx-auto max-w-7xl px-6 py-3'>
-          <Link
-            to='/camp/exhibits'
-            className='text-sm underline underline-offset-4'
-          >
-            Shared notes & images from camp →
-          </Link>
-        </div>
-      ) : null}
       <World key={scene} scene={scene} />
       {scene === 'camp' || scene === 'open-studio' ? (
         <PublicExhibits after='' featured />

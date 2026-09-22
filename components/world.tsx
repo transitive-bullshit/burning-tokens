@@ -143,7 +143,7 @@ export function World({
       <div className='mb-3 flex flex-wrap items-center justify-between gap-3 text-sm'>
         <p role='status'>{live ? status : null}</p>
         {!followed ? (
-          <label className='flex cursor-pointer items-center gap-2'>
+          <label className='flex cursor-pointer select-none items-center gap-2'>
             <input
               type='checkbox'
               checked={!live}

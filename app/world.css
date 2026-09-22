@@ -1055,7 +1055,7 @@
 .world .crowd-overlay {
   position: absolute;
   right: 1rem;
-  top: 8rem;
+  top: 1rem;
   z-index: 3;
   width: min(310px, calc(100% - 2rem));
 }
@@ -1089,7 +1089,7 @@
   box-shadow: 0 12px 36px #0005;
 }
 .world-following .world .crowd-overlay {
-  top: 14rem;
+  top: 4.5rem;
 }
 .visit-stage-layout {
   position: relative;
@@ -1098,31 +1098,19 @@
 .visit-overlay {
   position: absolute;
   right: 1rem;
-  top: 11rem;
+  top: 3rem;
   width: min(360px, calc(100% - 2rem));
   z-index: 4;
 }
 .world-following {
   padding-inline: 0;
 }
-@media (max-width: 700px) {
-  .world .crowd-overlay {
-    top: 10rem;
-    right: 0.5rem;
-  }
-  .visit-overlay {
-    right: 0.5rem;
-  }
-  .world-following .world .crowd-overlay {
-    left: 0.5rem;
-    right: auto;
-    top: 12rem;
-    width: min(300px, calc(100% - 1rem));
-  }
-  .world-following .world .crowd-overlay > summary {
-    margin-left: 0;
-  }
-  .visit-overlay {
-    top: 14.5rem;
-  }
+
+.world .crowd-overlay > summary {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.world .scene-top {
+  display: none;
 }

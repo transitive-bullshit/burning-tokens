@@ -17,37 +17,8 @@ export const worldMarkup = `
               <option value="temple">Temple</option>
             </select>
           </div>
-          <div class="segmented" role="group" aria-label="Population display">
-            <button id="summary" aria-pressed="true">Summary</button
-            ><button id="full" aria-pressed="false">Full view</button>
-          </div>
         </div>
 
-        <section class="sound-controls" aria-label="Scene sound controls">
-          <button id="sound-toggle" type="button" aria-pressed="true">
-            Sound on
-          </button>
-          <label class="sound-volume" for="sound-volume"
-            >Volume
-            <input
-              id="sound-volume"
-              type="range"
-              min="0"
-              max="100"
-              value="40"
-            /><output id="sound-volume-value" for="sound-volume"
-              >40%</output
-            ></label
-          >
-          <label class="sound-background"
-            ><input id="sound-background" type="checkbox" checked /> Occasional
-            room sounds</label
-          >
-
-        </section>
-        <p id="sound-status" class="sound-help" aria-live="off">
-          Sound starts when you touch the scene.
-        </p>
         <div class="stage" id="stage">
           <canvas
             id="world"
@@ -61,9 +32,6 @@ export const worldMarkup = `
             <strong id="scene-title" tabindex="-1" role="heading" aria-level="2"
               >Dream Garden</strong>
           </div>
-          <button class="playback" id="pause" aria-pressed="false">
-            Pause motion
-          </button>
           <div id="room-links"></div>
           <div class="stage-footer">
             <span id="canvas-count">Loading the ceramic stage…</span>
@@ -85,6 +53,26 @@ export const worldMarkup = `
             ><button id="next-court" aria-label="Next courtyard">→</button>
           </nav>
         </div>
+        <section class="sound-controls" aria-label="Scene sound controls">
+          <button id="sound-toggle" type="button" aria-pressed="true">
+            Sound on
+          </button>
+          <label class="sound-volume" for="sound-volume"
+            >Volume
+            <input
+              id="sound-volume"
+              type="range"
+              min="0"
+              max="100"
+              value="40"
+            /><output id="sound-volume-value" for="sound-volume"
+              >40%</output
+            ></label
+          >
+        </section>
+        <p id="sound-status" class="sound-help" aria-live="off">
+          Sound starts when you touch the scene.
+        </p>
         <p id="sound-focus" class="sound-focus"></p>
 
       </section>
