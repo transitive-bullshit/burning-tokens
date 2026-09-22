@@ -258,6 +258,7 @@ summary {
   width: min(100%, 850px);
 }
 .hero-eyebrow {
+  text-wrap: balance;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   font-size: 0.7rem;
@@ -272,6 +273,7 @@ summary {
   animation: logo-arrive 900ms var(--ease-out) both;
 }
 .hero-invitation p {
+  text-wrap: balance;
   font-size: clamp(1.15rem, 2vw, 1.65rem);
   letter-spacing: -0.025em;
   margin: 1rem 0 1.5rem;
