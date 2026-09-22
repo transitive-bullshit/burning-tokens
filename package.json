@@ -8,7 +8,7 @@
   "repository": "https://github.com/transitive-bullshit/burning-tokens",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 127.0.0.1 --port 3010 --strictPort",
+    "dev": "portless run vite --host 127.0.0.1 --strictPort",
     "build": "vite build",
     "build:social-image": "node scripts/build-social-image.mjs",
     "check:social-metadata": "tsx scripts/check-site-metadata.mjs",

@@ -11,6 +11,12 @@ The frontend and backend deploy as one Cloudflare Worker. There are no applicati
 
 Local files are not synchronized with hosted secrets. Deploying code preserves existing hosted secrets; it does not upload `worker/.dev.vars`.
 
+## Local development
+
+Run `pnpm dev` to serve the frontend and Worker together through Portless. Open the URL printed at startup for `burning-tokens.localhost`; the protocol and proxy port follow your existing Portless settings. Portless assigns Vite's internal port automatically and prefixes the hostname in git worktrees.
+
+When running check scripts against the dev server, set `RETREAT_SITE_ORIGIN` (and `RETREAT_TEST_ORIGIN` for backend checks) to that URL. Their raw localhost defaults remain available for the separate preview/Worker commands.
+
 ## Secret inventory
 
 | Name | Purpose | Required when |

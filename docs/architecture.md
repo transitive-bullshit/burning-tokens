@@ -46,7 +46,7 @@ Administrator setup uses the encrypted `STUDIO_ADMIN_KEY` Worker secret. `/admin
 
 ## Frontend hosting
 
-The official Cloudflare Vite plugin builds the React client and Worker together. `pnpm dev` serves both on `http://127.0.0.1:3010`; `pnpm build` builds the local default and `pnpm start` previews that build in the Workers runtime. `pnpm build:production` generates the production target. Never deploy a client-only asset directory over the backend.
+The official Cloudflare Vite plugin builds the React client and Worker together. `pnpm dev` serves both through Portless at the `burning-tokens.localhost` hostname, with an automatically assigned internal Vite port. Use the URL printed at startup; Portless reuses the local proxy's protocol and port settings. Git worktrees receive a hostname prefix. `pnpm build` builds the local default and `pnpm start` previews that build in the Workers runtime at `http://127.0.0.1:3010`. `pnpm build:production` generates the production target. Never deploy a client-only asset directory over the backend.
 
 Workers Static Assets serves the React shell; authored human HTML routes run the Worker first for share metadata. `/agent`, `/agent/*`, `/api/*` and `/llms.txt` always run the Worker first, including navigations and WebSocket upgrades. API/agent misses return backend errors rather than the human HTML. Cookies, browser HTTP and live streams use one origin; there is no frontend proxy or second API host. Agent links use native anchors so the browser requests Worker-rendered content.
 
