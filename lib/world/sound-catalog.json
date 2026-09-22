@@ -68,16 +68,6 @@
       "description": "Cat, Kitten, Fiji and Osk share little mews, answering meows and playful mrarrs."
     },
     {
-      "id": "pauli-wonder",
-      "label": "Pauli · soft surprise",
-      "description": "Two pauliperez1999 surprised reactions, including the softly surprised oh."
-    },
-    {
-      "id": "otakua",
-      "label": "Otakua · little breaths",
-      "description": "An Otakua girl sigh and two short shocked breaths; a soft and surprised vocabulary."
-    },
-    {
       "id": "alba",
       "label": "Alba · low wonder",
       "description": "Two short Alba_Mac surprised reactions and a yawn from the same named performance source."
@@ -855,19 +845,6 @@
       "sourceUrl": "https://github.com/sgossner/VCSL"
     },
     {
-      "id": "wide-voice-428814",
-      "src": "wide-voice-428814.mp3",
-      "title": "A good surprise",
-      "duration": 2.042,
-      "kind": "voice",
-      "family": "pauli-wonder",
-      "roles": ["hover", "pickup", "surprise"],
-      "rooms": [],
-      "tags": ["wonder", "surprise", "reaction"],
-      "targets": [],
-      "sourceUrl": "https://freesound.org/people/pauliperez1999/sounds/428814/"
-    },
-    {
       "id": "room-kenney-minimize-001",
       "src": "room-kenney-minimize-001.mp3",
       "title": "A small contraction",
@@ -991,19 +968,6 @@
       "sourceUrl": "https://kenney.nl/assets/interface-sounds"
     },
     {
-      "id": "wide-voice-428805",
-      "src": "wide-voice-428805.mp3",
-      "title": "A softly surprised oh",
-      "duration": 0.788,
-      "kind": "voice",
-      "family": "pauli-wonder",
-      "roles": ["hover", "pickup", "surprise"],
-      "rooms": [],
-      "tags": ["wonder", "surprise", "reaction"],
-      "targets": [],
-      "sourceUrl": "https://freesound.org/people/pauliperez1999/sounds/428805/"
-    },
-    {
       "id": "room-vcsl-gong-2-1",
       "src": "room-vcsl-gong-2-1.mp3",
       "title": "A second soft gong · 1",
@@ -1112,19 +1076,6 @@
       "sourceUrl": "https://opengameart.org/content/atmospheric-interaction-sound-pack"
     },
     {
-      "id": "wide-voice-219897",
-      "src": "wide-voice-219897.mp3",
-      "title": "A soft sigh, second take",
-      "duration": 0.64,
-      "kind": "voice",
-      "family": "otakua",
-      "roles": ["drop", "idle"],
-      "rooms": [],
-      "tags": ["soft", "sleepy", "breath"],
-      "targets": [],
-      "sourceUrl": "https://freesound.org/people/Otakua/sounds/219897/"
-    },
-    {
       "id": "foley-kenney-impact-footstep-grass-001",
       "src": "foley-kenney-impact-footstep-grass-001.mp3",
       "title": "A step through soft ground · take 2",
@@ -1196,7 +1147,7 @@
       "id": "room-vcsl-hand-chimes-2",
       "src": "room-vcsl-hand-chimes-2.mp3",
       "title": "A hand chime · 2",
-      "duration": 5.0,
+      "duration": 5,
       "kind": "room-effect",
       "roles": ["hover", "idle"],
       "rooms": ["temple", "dream-garden"],
@@ -1205,19 +1156,6 @@
       "effectType": "one-shot",
       "useCase": "An individual light point answers a visitor",
       "sourceUrl": "https://github.com/sgossner/VCSL"
-    },
-    {
-      "id": "wide-voice-219890",
-      "src": "wide-voice-219890.mp3",
-      "title": "A small astonished breath",
-      "duration": 0.341,
-      "kind": "voice",
-      "family": "otakua",
-      "roles": ["hover", "pickup", "surprise"],
-      "rooms": [],
-      "tags": ["wonder", "surprise", "reaction"],
-      "targets": [],
-      "sourceUrl": "https://freesound.org/people/Otakua/sounds/219890/"
     },
     {
       "id": "foley-kenney-rpg-bookplace2",
@@ -1302,19 +1240,6 @@
       "sourceUrl": "https://opengameart.org/content/atmospheric-interaction-sound-pack"
     },
     {
-      "id": "wide-voice-219891",
-      "src": "wide-voice-219891.mp3",
-      "title": "A second little surprise",
-      "duration": 0.369,
-      "kind": "voice",
-      "family": "otakua",
-      "roles": ["hover", "pickup", "surprise"],
-      "rooms": [],
-      "tags": ["wonder", "surprise", "reaction"],
-      "targets": [],
-      "sourceUrl": "https://freesound.org/people/Otakua/sounds/219891/"
-    },
-    {
       "id": "wide-voice-650188",
       "src": "wide-voice-650188.mp3",
       "title": "A sleepy yawn",
@@ -1359,7 +1284,7 @@
       "id": "room-vcsl-vibraphone-soft-mallets-1",
       "src": "room-vcsl-vibraphone-soft-mallets-1.mp3",
       "title": "A soft vibraphone strike · 1",
-      "duration": 5.0,
+      "duration": 5,
       "kind": "room-effect",
       "roles": ["hover", "idle"],
       "rooms": ["temple", "source"],
@@ -1550,7 +1475,7 @@
       "id": "room-vcsl-tubular-bells-1-1",
       "src": "room-vcsl-tubular-bells-1-1.mp3",
       "title": "A gently struck tubular bell · 1",
-      "duration": 8.0,
+      "duration": 8,
       "kind": "room-effect",
       "roles": ["hover"],
       "rooms": ["temple"],
@@ -1631,7 +1556,7 @@
       "id": "foley-tinyworlds-boiling-cooking-without-cover-01-0",
       "src": "foley-tinyworlds-boiling-cooking-without-cover-01-0.mp3",
       "title": "An open pot softly bubbles",
-      "duration": 8.0,
+      "duration": 8,
       "kind": "room-effect",
       "roles": ["hover", "idle"],
       "rooms": ["hearth"],
@@ -1849,7 +1774,7 @@
       "id": "room-vcsl-glockenspiel-1",
       "src": "room-vcsl-glockenspiel-1.mp3",
       "title": "A soft glockenspiel strike · 1",
-      "duration": 4.0,
+      "duration": 4,
       "kind": "room-effect",
       "roles": ["hover", "idle"],
       "rooms": ["dream-garden", "temple"],
@@ -1931,7 +1856,7 @@
       "id": "room-vcsl-glockenspiel-2",
       "src": "room-vcsl-glockenspiel-2.mp3",
       "title": "A soft glockenspiel strike · 2",
-      "duration": 4.0,
+      "duration": 4,
       "kind": "room-effect",
       "roles": ["hover"],
       "rooms": ["dream-garden", "temple"],
@@ -2012,7 +1937,7 @@
       "id": "room-vcsl-concert-harp-2",
       "src": "room-vcsl-concert-harp-2.mp3",
       "title": "A single harp string · 2",
-      "duration": 4.0,
+      "duration": 4,
       "kind": "room-effect",
       "roles": ["hover", "pickup"],
       "rooms": ["dream-garden", "camp"],
@@ -2052,7 +1977,7 @@
       "id": "room-vcsl-mark-trees-legacy-2",
       "src": "room-vcsl-mark-trees-legacy-2.mp3",
       "title": "A sweep of hanging chimes · 2",
-      "duration": 5.0,
+      "duration": 5,
       "kind": "room-effect",
       "roles": ["hover"],
       "rooms": ["dream-garden", "temple"],
@@ -2094,7 +2019,7 @@
       "id": "foley-pagdev-fireplace-fire-10000",
       "src": "foley-pagdev-fireplace-fire-10000.mp3",
       "title": "The fire settles into a hush",
-      "duration": 8.0,
+      "duration": 8,
       "kind": "room-effect",
       "roles": ["hover", "idle"],
       "rooms": ["hearth"],

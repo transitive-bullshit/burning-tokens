@@ -728,19 +728,6 @@
     "verifiedOn": "2026-09-16"
   },
   {
-    "id": "wide-voice-428814",
-    "file": "wide-voice-428814.mp3",
-    "sha256": "82b089c21a8b2bfc0c2d1e757a7a2b757302a9fe925201557a50f4ee5c0f53b6",
-    "title": "a good surprise.wav",
-    "creator": "pauliperez1999",
-    "sourceUrl": "https://freesound.org/people/pauliperez1999/sounds/428814/",
-    "license": "CC BY 3.0. Credit “a good surprise.wav” by pauliperez1999. Retrieved from NC AI’s raw Designed Vocalizations Dataset; retain Lee et al. (Interspeech 2026) attribution for the CC BY 4.0 compilation and annotations. Original source license remains applicable.",
-    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
-    "recordedStatus": "attribution",
-    "processing": "Source excerpt at its supplied pitch and speed; no pitch variants added. Mono 48 kHz, peak matched to −6 dBFS before MP3 encoding, with 8 ms entrance and 60 ms exit fades. Source times refer to the dataset’s raw excerpt, which can omit original leading/trailing silence.",
-    "verifiedOn": null
-  },
-  {
     "id": "room-kenney-minimize-001",
     "file": "room-kenney-minimize-001.mp3",
     "sha256": "b6d0f994049ac70964b35a1f94cd81ead49cbb1697e9c8541ff32667c50caf07",
@@ -858,19 +845,6 @@
     "verifiedOn": "2026-09-16"
   },
   {
-    "id": "wide-voice-428805",
-    "file": "wide-voice-428805.mp3",
-    "sha256": "b25ca7648a3249f58e2f192c970d3c52b8d19ffe382b279fcb78fdc48f9681cc",
-    "title": "surprised \"oh\".wav",
-    "creator": "pauliperez1999",
-    "sourceUrl": "https://freesound.org/people/pauliperez1999/sounds/428805/",
-    "license": "CC BY 3.0. Credit “surprised \"oh\".wav” by pauliperez1999. Retrieved from NC AI’s raw Designed Vocalizations Dataset; retain Lee et al. (Interspeech 2026) attribution for the CC BY 4.0 compilation and annotations. Original source license remains applicable.",
-    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
-    "recordedStatus": "attribution",
-    "processing": "Source excerpt at its supplied pitch and speed; no pitch variants added. Mono 48 kHz, peak matched to −6 dBFS before MP3 encoding, with 8 ms entrance and 60 ms exit fades. Source times refer to the dataset’s raw excerpt, which can omit original leading/trailing silence.",
-    "verifiedOn": null
-  },
-  {
     "id": "room-vcsl-gong-2-1",
     "file": "room-vcsl-gong-2-1.mp3",
     "sha256": "8773fca09acd9425428aa92bfd53760fe91a66899ac307ab88b1aa537e85d149",
@@ -975,19 +949,6 @@
     "verifiedOn": null
   },
   {
-    "id": "wide-voice-219897",
-    "file": "wide-voice-219897.mp3",
-    "sha256": "ec3e211675a63052905fc5d15d07188e9ba2e52fcccc1e7dc5a941edf5b72d20",
-    "title": "GirlSigh02.wav",
-    "creator": "Otakua",
-    "sourceUrl": "https://freesound.org/people/Otakua/sounds/219897/",
-    "license": "CC BY 3.0. Credit “GirlSigh02.wav” by Otakua. Retrieved from NC AI’s raw Designed Vocalizations Dataset; retain Lee et al. (Interspeech 2026) attribution for the CC BY 4.0 compilation and annotations. Original source license remains applicable.",
-    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
-    "recordedStatus": "attribution",
-    "processing": "Source excerpt at its supplied pitch and speed; no pitch variants added. Mono 48 kHz, peak matched to −6 dBFS before MP3 encoding, with 8 ms entrance and 60 ms exit fades. Source times refer to the dataset’s raw excerpt, which can omit original leading/trailing silence.",
-    "verifiedOn": null
-  },
-  {
     "id": "foley-kenney-impact-footstep-grass-001",
     "file": "foley-kenney-impact-footstep-grass-001.mp3",
     "sha256": "075d9e8c59545906e811975e05c86fce626c305206baadc9221e03e0beb3d1fc",
@@ -1066,19 +1027,6 @@
     "verifiedOn": "2026-09-16"
   },
   {
-    "id": "wide-voice-219890",
-    "file": "wide-voice-219890.mp3",
-    "sha256": "4a22f6aae4e79da673c934de0a05d0a1a3061f877c97a718c03c1f53048a7d71",
-    "title": "GirlShock01.wav",
-    "creator": "Otakua",
-    "sourceUrl": "https://freesound.org/people/Otakua/sounds/219890/",
-    "license": "CC BY 3.0. Credit “GirlShock01.wav” by Otakua. Retrieved from NC AI’s raw Designed Vocalizations Dataset; retain Lee et al. (Interspeech 2026) attribution for the CC BY 4.0 compilation and annotations. Original source license remains applicable.",
-    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
-    "recordedStatus": "attribution",
-    "processing": "Source excerpt at its supplied pitch and speed; no pitch variants added. Mono 48 kHz, peak matched to −6 dBFS before MP3 encoding, with 8 ms entrance and 41 ms exit fades. Source times refer to the dataset’s raw excerpt, which can omit original leading/trailing silence.",
-    "verifiedOn": null
-  },
-  {
     "id": "foley-kenney-rpg-bookplace2",
     "file": "foley-kenney-rpg-bookplace2.mp3",
     "sha256": "f72fadc2be0a819eae2971a791b91f5d8a36c01d1f687b81bfe211c29fc5fffd",
@@ -1154,19 +1102,6 @@
     "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
     "recordedStatus": "cc0",
     "processing": "Original pitch and speed. Boundary silence trimmed; 4 ms in / 140 ms out fades; mono 48 kHz; peak matched to −6 dBFS before MP3 encoding. Any long decay is bounded to the displayed audition duration.",
-    "verifiedOn": null
-  },
-  {
-    "id": "wide-voice-219891",
-    "file": "wide-voice-219891.mp3",
-    "sha256": "bbbc719e06ac88f927e658a54d0c19625359f10f79dad7ee39e4b7e6baf6a34e",
-    "title": "GirlShock02.wav",
-    "creator": "Otakua",
-    "sourceUrl": "https://freesound.org/people/Otakua/sounds/219891/",
-    "license": "CC BY 3.0. Credit “GirlShock02.wav” by Otakua. Retrieved from NC AI’s raw Designed Vocalizations Dataset; retain Lee et al. (Interspeech 2026) attribution for the CC BY 4.0 compilation and annotations. Original source license remains applicable.",
-    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
-    "recordedStatus": "attribution",
-    "processing": "Source excerpt at its supplied pitch and speed; no pitch variants added. Mono 48 kHz, peak matched to −6 dBFS before MP3 encoding, with 8 ms entrance and 44 ms exit fades. Source times refer to the dataset’s raw excerpt, which can omit original leading/trailing silence.",
     "verifiedOn": null
   },
   {

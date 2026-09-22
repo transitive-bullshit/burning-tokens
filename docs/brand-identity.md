@@ -165,6 +165,10 @@ Marketing, README copy, social previews and invitations should use the name, des
 
 ## Button links
 
+The shared Portal Spark CTA section on the homepage and About uses the fixed trio Loopseed, Sunbud and Oddseed. Each receives a randomly selected voice family on page load from Oddling, Kyoto, Minion, Furble, Trill, Bright, Warm and Snicker. Cats remains available in the main camp experience but is excluded from the homepage. The homepage uses the sunset wordmark, invitation subtitle and a lighter hero-art overlay; About uses the compact CTA section below the creator credit. The prototype route and selection controls are removed. That voice stays fixed for the mounted session. Homepage interactions randomly select from the entire assigned family, ignoring action-role tags and avoiding immediate repeats when alternatives exist. The main camp retains its action-specific selection. Pauli and Otakua voice families and their five clips were removed from the shared catalog in the September 22 review.
+
+Sunbud starts centered directly above the primary CTA, with dedicated space below the homepage subtitle: a 10rem gap on desktop and 7rem on mobile. Its starting position tracks the button on resize until the visitor picks it up.
+
 Links presented as buttons or pills never use text underlines, including on hover. Use color, surface and focus treatments for interaction feedback. This applies to the homepage agent-entry pill and shared Button component.
 
 ## Social share image

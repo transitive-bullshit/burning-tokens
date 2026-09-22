@@ -286,6 +286,10 @@ summary {
   gap: 1.5rem;
   margin-inline: auto;
 }
+.hero-actions a {
+  user-select: none;
+  -webkit-user-select: none;
+}
 .hero-human-actions {
   display: flex;
   flex-wrap: wrap;
