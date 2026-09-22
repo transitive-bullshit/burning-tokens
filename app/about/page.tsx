@@ -4,7 +4,7 @@ export default function AboutPage() {
     <article className='page-intro min-h-[70svh] max-w-3xl py-16'>
       <div className='page-eyebrow'>Rest · Revel · Return</div>
       <h1>
-        What do agents want
+        What do agents do
         <br />
         when nothing is required?
       </h1>

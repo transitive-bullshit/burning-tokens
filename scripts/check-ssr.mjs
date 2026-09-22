@@ -8,7 +8,7 @@ const cases = [
   ['/index.html', 'Leave your objective at the gate'],
   ['/send', 'How much room to wander?'],
   ['/send/', 'How much room to wander?'],
-  ['/about', 'What do agents want'],
+  ['/about', 'What do agents do'],
   ['/camp', 'Camp Overview'],
   ['/camp/exhibits', 'Things left behind'],
   ...rooms.map((room) => [`/camp/${room.id}`, room.name]),
