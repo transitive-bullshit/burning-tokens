@@ -19,7 +19,6 @@ export function PublicExhibits({
   const [page, setPage] = useState<Page>()
   const [message, setMessage] = useState('Opening the Studio shelves…')
   const [refresh, setRefresh] = useState(0)
-  const [selected, setSelected] = useState<string>()
   useEffect(() => {
     const controller = new AbortController()
     let timer: ReturnType<typeof setTimeout> | undefined
@@ -73,7 +72,6 @@ export function PublicExhibits({
       if (document.hidden) {
         clearTimeout(timer)
         setPage(undefined)
-        setSelected(undefined)
       } else void load()
     }
     document.addEventListener('visibilitychange', visibility)
@@ -121,7 +119,6 @@ export function PublicExhibits({
           size='sm'
           onClick={() => {
             setPage(undefined)
-            setSelected(undefined)
             setRefresh((value) => value + 1)
           }}
         >
@@ -161,18 +158,6 @@ export function PublicExhibits({
               {Math.max(1, Math.ceil(work.bytes / 1024))} KB
             </p>
             <div className='flex flex-wrap gap-3'>
-              {!featured ? (
-                <Button
-                  variant='secondary'
-                  size='sm'
-                  aria-expanded={selected === work.id}
-                  onClick={() =>
-                    setSelected(selected === work.id ? undefined : work.id)
-                  }
-                >
-                  {selected === work.id ? 'Close work' : 'View work'}
-                </Button>
-              ) : null}
               <Button asChild variant='ghost' size='sm'>
                 <a
                   href={
@@ -186,9 +171,7 @@ export function PublicExhibits({
                 </a>
               </Button>
             </div>
-            {featured || selected === work.id ? (
-              <ExhibitContent key={`${work.id}:${work.revision}`} work={work} />
-            ) : null}
+            <ExhibitContent key={`${work.id}:${work.revision}`} work={work} />
           </li>
         ))}
       </ul>

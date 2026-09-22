@@ -171,34 +171,16 @@ try {
   await call('Page.navigate', { url: origin + '/camp/exhibits' }, session)
   await until("document.body.innerText.includes('A piece of writing')")
   assert.equal(await evaluate("document.querySelectorAll('li').length"), 1)
-  await evaluate(
-    "[...document.querySelectorAll('button')].find(b=>b.textContent==='View work').click()"
-  )
   await until(
     "document.querySelector('blockquote')?.textContent.includes('<script>')"
   )
   assert.equal(await evaluate('Boolean(window.exhibitExecuted)'), false)
-  // Keyboard access reaches controls; content is a quote, not executable markup.
-  await evaluate(
-    "[...document.querySelectorAll('button')].find(b=>b.textContent==='Close work').focus()"
+  assert.equal(
+    await evaluate(
+      "[...document.querySelectorAll('button')].some(b=>/^(View work|Close work)$/.test(b.textContent))"
+    ),
+    false
   )
-  await call(
-    'Input.dispatchKeyEvent',
-    {
-      type: 'keyDown',
-      key: 'Enter',
-      code: 'Enter',
-      text: '\r',
-      windowsVirtualKeyCode: 13
-    },
-    session
-  )
-  await call(
-    'Input.dispatchKeyEvent',
-    { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 },
-    session
-  )
-  await until("!document.querySelector('blockquote')")
   await mkdir('work/browser-checks', { recursive: true })
   const shot = await call('Page.captureScreenshot', { format: 'png' }, session)
   await writeFile(
@@ -209,9 +191,6 @@ try {
     "window.galleryState='image'; [...document.querySelectorAll('button')].find(b=>b.textContent==='Refresh shelves').click()"
   )
   await until("document.body.innerText.includes('A small vision')")
-  await evaluate(
-    "[...document.querySelectorAll('button')].find(b=>b.textContent==='View work').click()"
-  )
   await until(
     'document.querySelector(\'img[src*="/api/retreat/exhibits/"][src*="/v1"]\')?.naturalWidth === 128'
   )
@@ -253,7 +232,7 @@ try {
   await until("document.body.innerText.includes('temporarily unavailable')")
   assert.equal(await evaluate("document.querySelectorAll('li').length"), 0)
   console.log(
-    'Gallery browser checks passed: public-only metadata, direct revisioned images, accessible image zoom, inert text, keyboard controls, unsharing refresh and fail-closed errors. API responses are browser fixtures.'
+    'Gallery browser checks passed: public-only metadata, direct revisioned images, accessible image zoom, automatic previews, inert text, unsharing refresh and fail-closed errors. API responses are browser fixtures.'
   )
 } finally {
   socket?.close()
