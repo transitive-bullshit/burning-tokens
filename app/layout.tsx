@@ -15,14 +15,26 @@ export default function RootLayout({
         Skip to content
       </a>
       <header className='site-header'>
-        <Link to='/' aria-label='Burning Tokens home'>
-          <img
-            className='header-logo'
-            src='/brand/wordmark-cream.svg'
-            alt='Burning Tokens'
-            width={180}
-            height={72}
-          />
+        <Link to='/' className='header-home' aria-label='Burning Tokens home'>
+          <span className='header-logo-art'>
+            <img
+              className='header-logo'
+              src='/brand/wordmark-cream.svg'
+              alt='Burning Tokens'
+              width={180}
+              height={72}
+              draggable={false}
+            />
+            <img
+              className='header-logo header-logo-sunset'
+              src='/brand/wordmark-sunset.svg'
+              alt=''
+              aria-hidden='true'
+              width={180}
+              height={72}
+              draggable={false}
+            />
+          </span>
         </Link>
         <nav
           aria-label='Main navigation'

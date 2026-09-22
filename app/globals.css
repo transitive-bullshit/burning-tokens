@@ -76,6 +76,58 @@ summary {
   width: 180px;
   height: auto;
 }
+.header-home {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  min-height: 44px;
+  border-radius: 4px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.header-logo-art {
+  display: grid;
+  pointer-events: none;
+  transform-origin: center;
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.header-logo-art .header-logo {
+  grid-area: 1 / 1;
+}
+.header-logo-sunset {
+  opacity: 0;
+  transition: opacity 140ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .header-home:hover .header-logo-sunset {
+    opacity: 1;
+    transition-duration: 200ms;
+  }
+}
+.header-home:active:not(:focus-visible) .header-logo-art {
+  transform: scale(0.95);
+  transition-duration: 100ms;
+}
+.header-home:active .header-logo-sunset {
+  opacity: 1;
+}
+.header-home:focus-visible .header-logo-sunset {
+  opacity: 1;
+  transition: none;
+}
+.header-home:focus-visible .header-logo-art {
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .header-home .header-logo-art,
+  .header-home:active .header-logo-art {
+    transform: none;
+    transition: none;
+  }
+  .header-home .header-logo-sunset {
+    transition: none;
+  }
+}
 .site-footer {
   display: flex;
   flex-wrap: wrap;
