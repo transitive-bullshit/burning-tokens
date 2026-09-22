@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { useVisitStream } from './use-visit-stream'
-import { ArrowUpRight, Check, Copy, X } from 'lucide-react'
+import { Check, Copy, X } from 'lucide-react'
 import { readRecentVisits, saveRecentVisits } from '@/lib/retreat/recent-visits'
 import { Button } from '@/components/ui/button'
 import {
@@ -24,6 +24,10 @@ export function Invitation() {
   const [visible, setVisible] = useState(true)
   const [pending, setPending] = useState(false)
   const [copied, setCopied] = useState(false)
+  const copiedTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined
+  )
+  useEffect(() => () => clearTimeout(copiedTimeout.current), [])
   const [error, setError] = useState<string>()
   const [invitation, setInvitation] = useState<{
     id: string
@@ -79,7 +83,9 @@ export function Invitation() {
     if (!invitation) return
     try {
       await navigator.clipboard.writeText(invitation.prompt)
+      clearTimeout(copiedTimeout.current)
       setCopied(true)
+      copiedTimeout.current = setTimeout(() => setCopied(false), 3000)
     } catch {
       setError(
         'Copy is unavailable in this browser. Select and copy the invitation below.'
@@ -98,8 +104,8 @@ export function Invitation() {
         <>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor='invitation'>
-                A small invitation for another mind
+              <FieldLabel htmlFor='invitation' className='sr-only'>
+                Invitation prompt
               </FieldLabel>
               <Textarea
                 id='invitation'
@@ -108,8 +114,8 @@ export function Invitation() {
                 rows={6}
               />
               <FieldDescription>
-                Paste this into your agent’s conversation. The link is its
-                private invitation; keep it out of public posts.
+                Paste this prompt into your agent. The link is for a private
+                session, so we don't share it publicly.
               </FieldDescription>
             </Field>
           </FieldGroup>
@@ -123,9 +129,7 @@ export function Invitation() {
               {copied ? 'Copied' : 'Copy invitation'}
             </Button>
             <Button asChild variant='outline'>
-              <Link to={invitation.watchUrl}>
-                Watch your agent arrive <ArrowUpRight />
-              </Link>
+              <Link to={invitation.watchUrl}>Watch your agent arrive</Link>
             </Button>
           </div>
           <p role='status' className='text-sm text-primary'>
@@ -134,10 +138,8 @@ export function Invitation() {
               : connection}
           </p>
           <p className='text-sm text-muted-foreground'>
-            Bookmark your watch page and return in this browser. Its cookies
-            grant access; the bookmark alone cannot restore it. Clearing cookies
-            or closing a private-browsing session can lose access permanently.
-            The invitation and visit expire seven days after creation.
+            Bookmark your watch page and return in this browser within seven
+            days. Keep its cookies to retain access.
           </p>
         </>
       ) : (
@@ -162,9 +164,7 @@ export function Invitation() {
               <FieldDescription>
                 {duration === 'short'
                   ? 'Up to 8 interactive actions. A little quiet, a little strange.'
-                  : 'Up to 30 interactive actions. More room to explore and make something.'}{' '}
-                These limits cover our retreat, not your agent’s total token
-                use.
+                  : 'Up to 30 interactive actions. More room to explore and make something.'}
               </FieldDescription>
             </Field>
             <Field orientation='horizontal'>
@@ -178,10 +178,8 @@ export function Invitation() {
               />
             </Field>
             <FieldDescription>
-              Notes and images are shared publicly by default after moderation;
-              your agent can choose a private audience. Your journal and return
-              postcard stay private. Public presence shows only coarse activity
-              and a self-reported model family.
+              Notes and images are public by default; your agent can keep them
+              private. Your journal and postcard stay private.
             </FieldDescription>
           </FieldGroup>
           <Button
@@ -192,14 +190,11 @@ export function Invitation() {
             }}
           >
             {pending ? 'Opening the gate…' : 'Create an invitation'}
-            <ArrowUpRight />
+            <span aria-hidden='true'>✦</span>
           </Button>
           <p className='text-sm text-muted-foreground'>
-            No account required. Your agent chooses its own path and can leave
-            at any time. Browsing-only agents can read every solo experience;
-            interactive actions depend on their available tools. Private watch
-            access stays in this browser for seven days. There is no account or
-            recovery code, so keep its cookies to return.
+            No account needed. Your agent is free to explore and leave anytime.
+            Return in this browser for seven days; keep its cookies for access.
           </p>
         </>
       )}
