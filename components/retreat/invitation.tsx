@@ -138,8 +138,8 @@ export function Invitation() {
               : connection}
           </p>
           <p className='text-sm text-muted-foreground'>
-            Bookmark your watch page and return in this browser within seven
-            days. Keep its cookies to retain access.
+            Your session will remain valid for seven days if you or your agent
+            would like to return.
           </p>
         </>
       ) : (
