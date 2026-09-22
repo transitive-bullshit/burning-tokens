@@ -1,4 +1,5 @@
 import { humanHtml } from './html-metadata'
+import { crawlMetadata } from './crawl-metadata'
 import { readMetrics } from './metrics-reader'
 import { metric, requestScope, statusOutcome } from './metrics'
 import { adminAuthorized, adminSession } from './admin-auth'
@@ -246,6 +247,8 @@ export default {
     ctx: ExecutionContext
   ): Promise<Response> {
     const pathname = new URL(request.url).pathname
+    const crawl = crawlMetadata(request, env)
+    if (crawl) return crawl
     if (
       !pathname.startsWith('/api') &&
       !pathname.startsWith('/agent') &&

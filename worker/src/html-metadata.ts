@@ -51,6 +51,7 @@ export async function humanHtml(request: Request, env: Env) {
   headers.delete('ETag')
   headers.delete('Content-Length')
   headers.set('Cache-Control', 'no-store')
+  headers.delete('X-Robots-Tag')
   if (!page.indexable) headers.set('X-Robots-Tag', 'noindex, nofollow')
   return new Response(transformed.body, {
     status: page.notFound ? 404 : shell.status,

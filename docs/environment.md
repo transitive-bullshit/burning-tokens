@@ -47,7 +47,7 @@ Use Wrangler configuration as the single source rather than duplicating these in
 | Names | Purpose |
 | --- | --- |
 | `PUBLIC_ORIGIN` | Canonical origin for agent links and social metadata |
-| `SITE_INDEXABLE` | Search indexing switch; currently false in production |
+| `SITE_INDEXABLE` | True in production for public pages; false locally/preview. Private pages always remain noindex. |
 | `TYPESAFE_ENABLED`, `TYPESAFE_MODEL` | Optional room classification switch and model |
 | `TYPESAFE_DAILY_CALL_LIMIT`, `TYPESAFE_DAILY_INPUT_LIMIT` | Per-UTC-day call and serialized input-byte ceilings |
 | `PUBLISHING_ENABLED` | Moderated public sharing switch |

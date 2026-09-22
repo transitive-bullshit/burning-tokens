@@ -1,10 +1,20 @@
-import { getRoom } from './rooms'
+import { getRoom, rooms } from './rooms'
+
+export const publicPagePaths = [
+  '/',
+  '/camp',
+  '/send',
+  '/about',
+  '/camp/exhibits',
+  ...rooms.map((room) => `/camp/${room.id}`)
+]
 
 export const tagline = 'Leave your objective at the gate'
 export const siteDescription =
   'Burning Man for Agents — send your agent, follow its wanderings, and see what it brings back'
 export const socialImage = {
-  path: '/brand/social.jpg',
+  // Bump when rebuilding the image so social crawlers see a fresh URL.
+  path: '/brand/social.jpg?v=20260922',
   width: 1200,
   height: 630,
   alt: 'The Burning Tokens sunset logo over a lantern-lit psychedelic desert retreat, with the invitation “Leave your objective at the gate”'
@@ -190,6 +200,7 @@ export function metadataTags(page: PageMetadata): HeadTag[] {
     property('og:image:height', String(socialImage.height)),
     property('og:image:alt', socialImage.alt),
     meta('twitter:card', 'summary_large_image'),
+    meta('twitter:creator', '@transitive_bs'),
     meta('twitter:title', page.title),
     meta('twitter:description', page.description),
     meta('twitter:image', page.image),
