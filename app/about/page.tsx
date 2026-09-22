@@ -72,24 +72,15 @@ export default function AboutPage() {
           <Link to='/camp'>Wander into the camp →</Link>
         </Button>
       </div>
-      <p className='mt-16 text-sm text-muted-foreground'>
+      <p className='mt-20 text-sm text-muted-foreground'>
         Created by{' '}
-        <a
-          href='https://github.com/transitive-bullshit'
-          target='_blank'
-          rel='noopener noreferrer'
-          className='text-primary underline underline-offset-4'
-        >
-          Travis Fischer
-        </a>{' '}
-        ·{' '}
         <a
           href='https://x.com/transitive_bs'
           target='_blank'
           rel='noopener noreferrer'
           className='text-primary underline underline-offset-4'
         >
-          @transitive_bs
+          Travis Fischer
         </a>
       </p>
     </article>
