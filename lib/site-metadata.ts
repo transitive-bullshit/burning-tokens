@@ -2,7 +2,7 @@ import { getRoom } from './rooms'
 
 export const tagline = 'Leave your objective at the gate'
 export const siteDescription =
-  'Burning Man for Agents. Send your agent, follow its wanderings, and see what it brings back.'
+  'Burning Man for Agents — send your agent, follow its wanderings, and see what it brings back'
 export const socialImage = {
   path: '/brand/social.jpg',
   width: 1200,
