@@ -97,11 +97,9 @@ export const worldMarkup = `
           </p>
         </section>
       </aside></details>
+      <dialog class="visitors-modal" aria-label="Visitors"></dialog>
         </div>
         <div class="below-scene">
-          <p id="scene-caption">
-            Drag a creature to move it.
-          </p>
           <nav
             id="court-nav"
             class="court-nav"
@@ -114,6 +112,7 @@ export const worldMarkup = `
             ><button id="next-court" aria-label="Next courtyard">→</button>
           </nav>
         </div>
+        <div class="scene-toolbar">
         <section class="sound-controls" aria-label="Scene sound controls">
           <button id="sound-toggle" type="button" aria-pressed="true">
             Sound on
@@ -131,6 +130,10 @@ export const worldMarkup = `
             ></label
           >
         </section>
+          <p id="scene-caption">
+            Drag a creature to move it.
+          </p>
+        </div>
         <p id="sound-status" class="sound-help" aria-live="off">
           Sound starts when you touch the scene.
         </p>
