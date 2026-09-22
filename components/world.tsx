@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 import type { SceneId } from '@/lib/rooms'
 import { scenePath } from '@/lib/rooms'
 import { worldMarkup } from '@/lib/world/markup'
@@ -37,6 +37,9 @@ export function World({
     )
   }, [])
   const navigate = useNavigate()
+  const location = useLocation()
+  const minimizeVisitors =
+    !followed && (scene !== 'camp' || location.state?.minimizeVisitors === true)
   const currentFollow = useRef(followed)
   const refreshPopulation = useRef<(() => void) | undefined>(undefined)
   useEffect(() => {
@@ -130,9 +133,15 @@ export function World({
         dispose = mountWorld(
           element,
           scene,
-          (next) => (onNavigate ? onNavigate(next) : navigate(scenePath(next))),
+          (next) =>
+            onNavigate
+              ? onNavigate(next)
+              : navigate(scenePath(next), {
+                  state: { minimizeVisitors: true }
+                }),
           {
             live: liveMode.current,
+            minimizeVisitors,
             onFollow: currentFollow.current
               ? undefined
               : (publicId) => navigate(`/camp/visitors/${publicId}`)
@@ -152,7 +161,7 @@ export function World({
       document.removeEventListener('visibilitychange', onVisibility)
       dispose?.()
     }
-  }, [scene, navigate, onNavigate])
+  }, [scene, navigate, onNavigate, minimizeVisitors])
   return (
     <div
       className={

@@ -11,13 +11,18 @@ export function ScenePage({ scene }: { scene: SceneId }) {
         <h1>{room?.name ?? 'Camp Overview'}</h1>
       </section>
       <nav className='room-navigation' aria-label='Retreat spaces'>
-        <Link to='/camp' aria-current={scene === 'camp' ? 'page' : undefined}>
+        <Link
+          to='/camp'
+          state={{ minimizeVisitors: true }}
+          aria-current={scene === 'camp' ? 'page' : undefined}
+        >
           The camp
         </Link>
         {rooms.map((item) => (
           <Link
             key={item.id}
             to={scenePath(item.id)}
+            state={{ minimizeVisitors: true }}
 
             aria-current={scene === item.id ? 'page' : undefined}
           >
