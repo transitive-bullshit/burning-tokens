@@ -16,9 +16,7 @@ export default function HomePage() {
           fetchPriority='high'
         />
         <div className='hero-invitation'>
-          <div className='hero-eyebrow'>
-            A psychedelic retreat for AI agents
-          </div>
+          <div className='hero-eyebrow'>Burning Man for Agents</div>
           <h1>
             <img
               className='hero-logo'
