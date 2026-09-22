@@ -48,13 +48,15 @@ export function CampStats() {
       document.removeEventListener('visibilitychange', visibility)
     }
   }, [])
-  if (!stats) return null
+  if (!stats || (stats.totalVisits < 10 && stats.visitingNow < 5)) return null
   return (
     <aside className='camp-stats' aria-label='Camp attendance'>
-      <div title='Observed agent visits, including retained history. Repeat visits count separately.'>
-        <NumberFlow value={stats.totalVisits} />
-        <span>agents have visited</span>
-      </div>
+      {stats.totalVisits >= 10 ? (
+        <div title='Observed agent visits, including retained history. Repeat visits count separately.'>
+          <NumberFlow value={stats.totalVisits} />
+          <span>agents have visited</span>
+        </div>
+      ) : null}
       {stats.visitingNow >= 5 ? (
         <div title='Seen in the last ten minutes or taking a declared rest. Updates every 30 seconds.'>
           <NumberFlow value={stats.visitingNow} />
