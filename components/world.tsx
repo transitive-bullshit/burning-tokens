@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router'
 import type { SceneId } from '@/lib/rooms'
 import { scenePath } from '@/lib/rooms'
@@ -26,6 +27,13 @@ export function World({
   onNavigate?: (scene: SceneId) => void
 }) {
   const root = useRef<HTMLDivElement>(null)
+  const [controlsTarget, setControlsTarget] = useState<Element | null>(null)
+  const attachRoot = useCallback((element: HTMLDivElement | null) => {
+    root.current = element
+    setControlsTarget(
+      element?.querySelector('#visitor-display-controls') ?? null
+    )
+  }, [])
   const navigate = useNavigate()
   const currentFollow = useRef(followed)
   const refreshPopulation = useRef<(() => void) | undefined>(undefined)
@@ -142,20 +150,24 @@ export function World({
     >
       <div className='mb-3 flex flex-wrap items-center justify-between gap-3 text-sm'>
         <p role='status'>{live ? status : null}</p>
-        {!followed ? (
-          <label className='flex cursor-pointer select-none items-center gap-2'>
-            <input
-              type='checkbox'
-              checked={!live}
-              onChange={(event) => {
-                setDemo(event.target.checked)
-                saveWorldPreferences({ demo: event.target.checked })
-              }}
-            />
-            Demo visitors
-          </label>
-        ) : null}
       </div>
+      {!followed && controlsTarget
+        ? createPortal(
+            <label className='flex cursor-pointer select-none items-center gap-2'>
+              <input
+                type='checkbox'
+                checked={!live}
+                onChange={(event) => {
+                  setDemo(event.target.checked)
+                  saveWorldPreferences({ demo: event.target.checked })
+                }}
+              />
+              Demo visitors
+            </label>,
+            controlsTarget
+          )
+        : null}
+
       {error ? (
         <p role='alert'>
           The camp could not wake up. Please refresh to try again.
@@ -163,7 +175,7 @@ export function World({
       ) : null}
       <div
         key={live ? 'live' : 'demo'}
-        ref={root}
+        ref={attachRoot}
         className='world'
         dangerouslySetInnerHTML={{ __html: worldMarkup }}
       />

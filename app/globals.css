@@ -199,8 +199,7 @@ summary {
 .room-navigation {
   display: flex;
   gap: 0.4rem;
-  overflow-x: auto;
-  scrollbar-width: thin;
+  flex-wrap: wrap;
   padding: 0 clamp(1.25rem, 3vw, 3rem) 1rem;
   max-width: 1600px;
   margin: auto;

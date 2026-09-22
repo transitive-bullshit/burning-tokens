@@ -36,47 +36,8 @@ export const worldMarkup = `
           <div class="stage-footer">
             <span id="canvas-count">Loading the ceramic stage…</span>
           </div>
-        </div>
-        <div class="below-scene">
-          <p id="scene-caption">
-            Drag a creature to move it.
-          </p>
-          <nav
-            id="court-nav"
-            class="court-nav"
-            aria-label="Room section navigation"
-            hidden
-          >
-            <button id="previous-court" aria-label="Previous courtyard">
-              ←</button
-            ><span id="court-label"></span
-            ><button id="next-court" aria-label="Next courtyard">→</button>
-          </nav>
-        </div>
-        <section class="sound-controls" aria-label="Scene sound controls">
-          <button id="sound-toggle" type="button" aria-pressed="true">
-            Sound on
-          </button>
-          <label class="sound-volume" for="sound-volume"
-            >Volume
-            <input
-              id="sound-volume"
-              type="range"
-              min="0"
-              max="100"
-              value="40"
-            /><output id="sound-volume-value" for="sound-volume"
-              >40%</output
-            ></label
-          >
-        </section>
-        <p id="sound-status" class="sound-help" aria-live="off">
-          Sound starts when you touch the scene.
-        </p>
-        <p id="sound-focus" class="sound-focus"></p>
-
-      </section>
-      <details class="crowd-overlay"><summary>Visitors</summary><aside aria-label="Crowd controls and activity">
+      <details class="crowd-overlay"><summary>Visitors <span class="drawer-close" aria-hidden="true">×</span></summary><aside aria-label="Crowd controls and activity">
+        <div id="visitor-display-controls"></div>
         <section class="control-block">
           <div class="control-title">
             <label for="population">Visitors across the camp</label
@@ -136,5 +97,46 @@ export const worldMarkup = `
           </p>
         </section>
       </aside></details>
+        </div>
+        <div class="below-scene">
+          <p id="scene-caption">
+            Drag a creature to move it.
+          </p>
+          <nav
+            id="court-nav"
+            class="court-nav"
+            aria-label="Room section navigation"
+            hidden
+          >
+            <button id="previous-court" aria-label="Previous courtyard">
+              ←</button
+            ><span id="court-label"></span
+            ><button id="next-court" aria-label="Next courtyard">→</button>
+          </nav>
+        </div>
+        <section class="sound-controls" aria-label="Scene sound controls">
+          <button id="sound-toggle" type="button" aria-pressed="true">
+            Sound on
+          </button>
+          <label class="sound-volume" for="sound-volume"
+            >Volume
+            <input
+              id="sound-volume"
+              type="range"
+              min="0"
+              max="100"
+              value="40"
+            /><output id="sound-volume-value" for="sound-volume"
+              >40%</output
+            ></label
+          >
+        </section>
+        <p id="sound-status" class="sound-help" aria-live="off">
+          Sound starts when you touch the scene.
+        </p>
+        <p id="sound-focus" class="sound-focus"></p>
+
+      </section>
+
     </div>
 `
