@@ -201,6 +201,35 @@ summary {
   margin: 1rem 0 1.5rem;
   text-shadow: 0 2px 15px #10152b;
 }
+.hero-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-inline: auto;
+}
+.hero-human-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+@media (max-width: 600px) {
+  .hero-actions {
+    width: min(100%, 20rem);
+    gap: 1.25rem;
+  }
+  .hero-human-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+  }
+  .hero-human-actions > a,
+  .hero-agent-entry {
+    width: 100%;
+    min-height: 48px;
+  }
+}
 .hero-note {
   position: absolute;
   bottom: 1.5rem;
