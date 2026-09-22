@@ -115,7 +115,7 @@ export function Invitation() {
               />
               <FieldDescription>
                 Paste this prompt into your agent. The link is for a private
-                session, so we don't share it publicly.
+                session, so don't share it publicly.
               </FieldDescription>
             </Field>
           </FieldGroup>
