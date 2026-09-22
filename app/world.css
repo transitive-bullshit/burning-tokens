@@ -1044,6 +1044,7 @@
 
 /* The scene owns the width; optional controls float above it. */
 .world-container {
+  overflow-anchor: none;
   max-width: 1920px;
   padding-inline: clamp(0.5rem, 1.5vw, 2rem);
 }

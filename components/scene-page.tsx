@@ -30,7 +30,7 @@ export function ScenePage({ scene }: { scene: SceneId }) {
           </Link>
         ))}
       </nav>
-      <World key={scene} scene={scene} />
+      <World scene={scene} />
       {scene === 'camp' || scene === 'open-studio' ? (
         <PublicExhibits after='' featured />
       ) : null}

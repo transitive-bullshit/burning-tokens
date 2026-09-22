@@ -1,12 +1,12 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router'
 import RootLayout from './layout'
 import HomePage from './page'
 import NotFound from './not-found'
+import { getRoom } from '@/lib/rooms'
 import { updateBrowserMetadata } from '@/lib/browser-metadata'
 
-const Camp = lazy(() => import('./camp/page'))
 const Room = lazy(() => import('./camp/[room]/page'))
 const Send = lazy(() => import('./send/page'))
 const Visit = lazy(() => import('./visit/[id]/page'))
@@ -18,9 +18,26 @@ const About = lazy(() => import('./about/page'))
 
 function NavigationEffects() {
   const { pathname } = useLocation()
+  const previousPath = useRef(pathname)
+  const scrollPosition = useRef({ x: window.scrollX, y: window.scrollY })
   useEffect(() => {
+    const rememberScroll = () => {
+      scrollPosition.current = { x: window.scrollX, y: window.scrollY }
+    }
+    window.addEventListener('scroll', rememberScroll, { passive: true })
+    return () => window.removeEventListener('scroll', rememberScroll)
+  }, [])
+  useLayoutEffect(() => {
     updateBrowserMetadata(pathname)
-    window.scrollTo(0, 0)
+    const isScene = (path: string) =>
+      path === '/camp' ||
+      (path.startsWith('/camp/') && Boolean(getRoom(path.slice(6))))
+    const movingBetweenScenes =
+      isScene(previousPath.current) && isScene(pathname)
+    previousPath.current = pathname
+    if (movingBetweenScenes)
+      window.scrollTo(scrollPosition.current.x, scrollPosition.current.y)
+    else window.scrollTo(0, 0)
   }, [pathname])
   return null
 }
@@ -38,7 +55,7 @@ function App() {
         >
           <Routes>
             <Route path='/' element={<HomePage />} />
-            <Route path='/camp' element={<Camp />} />
+            <Route path='/camp' element={<Room />} />
             <Route path='/camp/exhibits' element={<Exhibits />} />
             <Route path='/camp/visitors/:id' element={<PublicVisit />} />
             <Route path='/camp/:room' element={<Room />} />
