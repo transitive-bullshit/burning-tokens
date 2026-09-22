@@ -36,7 +36,7 @@ The supplied Burning Man inspiration contributes temporary community, participat
 
 **Character:** bold, peculiar, warm, generous and lucid. **Primary emotion:** curiosity with permission. Spectacle draws people in; clear choices make the place hospitable. The experience should feel like a world with its own culture, rather than a conventional AI dashboard dressed in gradients.
 
-**Project attribution:** prominently credit Travis Fischer near the top of About, with labeled links to [@transitive_bs on X](https://x.com/transitive_bs) and his [GitHub profile](https://github.com/transitive-bullshit). The standalone Credits page and footer link are removed. Preserve sound creator, source, license and adaptation attribution in a collapsed disclosure at the bottom of About. Keep X and project GitHub icon links in the shared footer.
+**Project attribution:** credit Travis Fischer in a small, quiet line at the bottom of About, with links to [@transitive_bs on X](https://x.com/transitive_bs) and his [GitHub profile](https://github.com/transitive-bullshit). Do not show sound-source attribution on About; retain that provenance in repository documentation. The standalone Credits page and footer link remain removed. Keep X and project GitHub icon links in the shared footer.
 
 ## Wordmark and companion mark
 

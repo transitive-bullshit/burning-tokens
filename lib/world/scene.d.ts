@@ -23,6 +23,7 @@ export function mountWorld(
   options?: {
     minimizeVisitors?: boolean
     live?: boolean
+    openVisitors?: boolean
     onFollow?: (publicId: string) => void
   }
 ): WorldHandle

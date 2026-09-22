@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ReactNode
+} from 'react'
 import { createPortal } from 'react-dom'
 import { useLocation, useNavigate } from 'react-router'
 import type { SceneId } from '@/lib/rooms'
@@ -20,29 +27,40 @@ type CrowdSnapshot = { visitors: unknown[]; total: number }
 export function World({
   scene,
   followed,
-  onNavigate
+  onNavigate,
+  visitorPanel
 }: {
   scene: SceneId
   followed?: FollowedVisitor
   onNavigate?: (scene: SceneId) => void
+  visitorPanel?: { title: string; content: ReactNode }
 }) {
   const root = useRef<HTMLDivElement>(null)
   const [statusTarget, setStatusTarget] = useState<Element | null>(null)
   const [controlsTarget, setControlsTarget] = useState<Element | null>(null)
+  const [panelTitleTarget, setPanelTitleTarget] = useState<Element | null>(null)
+  const [panelContentTarget, setPanelContentTarget] = useState<Element | null>(
+    null
+  )
   const attachRoot = useCallback((element: HTMLDivElement | null) => {
     root.current = element
     setStatusTarget(element?.querySelector('#visitor-status') ?? null)
     setControlsTarget(
       element?.querySelector('#visitor-display-controls') ?? null
     )
+    setPanelTitleTarget(element?.querySelector('#visitor-panel-title') ?? null)
+    setPanelContentTarget(
+      element?.querySelector('#visitor-panel-content') ?? null
+    )
   }, [])
   const navigate = useNavigate()
   const location = useLocation()
+  const hasVisitorPanel = Boolean(visitorPanel)
   const minimizeVisitors =
     !followed && (scene !== 'camp' || location.state?.minimizeVisitors === true)
   const currentFollow = useRef(followed)
   const refreshPopulation = useRef<(() => void) | undefined>(undefined)
-  useEffect(() => {
+  useLayoutEffect(() => {
     currentFollow.current = followed
     refreshPopulation.current?.()
   }, [followed])
@@ -142,6 +160,7 @@ export function World({
           {
             live: liveMode.current,
             minimizeVisitors,
+            openVisitors: hasVisitorPanel,
             onFollow: currentFollow.current
               ? undefined
               : (publicId) => navigate(`/camp/visitors/${publicId}`)
@@ -161,7 +180,7 @@ export function World({
       document.removeEventListener('visibilitychange', onVisibility)
       dispose?.()
     }
-  }, [scene, navigate, onNavigate, minimizeVisitors])
+  }, [scene, navigate, onNavigate, minimizeVisitors, hasVisitorPanel])
   return (
     <div
       className={
@@ -172,6 +191,15 @@ export function World({
         ? createPortal(
             live ? <span role='status'>{status}</span> : null,
             statusTarget
+          )
+        : null}
+      {panelTitleTarget
+        ? createPortal(visitorPanel?.title ?? 'Visitors', panelTitleTarget)
+        : null}
+      {visitorPanel && panelContentTarget
+        ? createPortal(
+            <div className='visit-journey'>{visitorPanel.content}</div>,
+            panelContentTarget
           )
         : null}
       {!followed && controlsTarget

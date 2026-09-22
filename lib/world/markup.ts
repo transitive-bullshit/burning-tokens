@@ -37,7 +37,7 @@ export const worldMarkup = `
             <div id="visitor-status" class="visitor-status"></div>
             <span id="canvas-count">Loading the ceramic stage…</span>
           </div>
-      <details class="crowd-overlay"><summary>Visitors <span class="drawer-close" aria-hidden="true">×</span></summary><aside aria-label="Crowd controls and activity">
+      <details class="crowd-overlay"><summary><span id="visitor-panel-title"></span> <span class="drawer-close" aria-hidden="true">×</span></summary><aside id="visitor-panel-content" aria-label="Visitor information and activity">
         <div id="visitor-display-controls"></div>
         <section class="control-block">
           <div class="control-title">

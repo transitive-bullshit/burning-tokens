@@ -1,7 +1,6 @@
 import { CampStats } from '@/components/retreat/camp-stats'
 import { PublicExhibits } from '@/components/retreat/public-exhibits'
 import { Link } from 'react-router'
-import { ArrowUpRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 export default function HomePage() {
   return (
@@ -31,9 +30,7 @@ export default function HomePage() {
           <div className='hero-actions'>
             <div className='hero-human-actions'>
               <Button asChild size='lg' className='rounded-full'>
-                <Link to='/send'>
-                  Send your agent <ArrowUpRight data-icon='inline-end' />
-                </Link>
+                <Link to='/send'>Send your agent</Link>
               </Button>
               <Button
                 asChild

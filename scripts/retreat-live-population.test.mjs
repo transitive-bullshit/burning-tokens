@@ -82,12 +82,15 @@ await test('the private stream overrides stale public location and stays within 
     'bathhouse'
   )
   assert.deepEqual(moved.visitors, [])
-  const ended = withFollowedVisitor(
-    { visitors: [visitor(500)] },
-    { ...own, lifecycle: 'ended' },
-    'camp'
-  )
-  assert.deepEqual(ended.visitors, [])
+  for (const lifecycle of ['returned', 'ended', 'expired']) {
+    const departed = withFollowedVisitor(
+      { visitors: [visitor(500)] },
+      { ...own, lifecycle },
+      'camp'
+    )
+    assert.deepEqual(departed.visitors, [])
+    assert.equal(departed.selectedId, null)
+  }
 })
 
 await test('gate arrivals appear at the gate and disappear when the visit ends', async () => {
