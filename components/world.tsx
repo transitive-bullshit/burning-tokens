@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+import { useLocation, useNavigate } from 'react-router'
 import type { SceneId } from '@/lib/rooms'
 import { scenePath } from '@/lib/rooms'
 import { worldMarkup } from '@/lib/world/markup'
@@ -26,7 +27,19 @@ export function World({
   onNavigate?: (scene: SceneId) => void
 }) {
   const root = useRef<HTMLDivElement>(null)
+  const [statusTarget, setStatusTarget] = useState<Element | null>(null)
+  const [controlsTarget, setControlsTarget] = useState<Element | null>(null)
+  const attachRoot = useCallback((element: HTMLDivElement | null) => {
+    root.current = element
+    setStatusTarget(element?.querySelector('#visitor-status') ?? null)
+    setControlsTarget(
+      element?.querySelector('#visitor-display-controls') ?? null
+    )
+  }, [])
   const navigate = useNavigate()
+  const location = useLocation()
+  const minimizeVisitors =
+    !followed && (scene !== 'camp' || location.state?.minimizeVisitors === true)
   const currentFollow = useRef(followed)
   const refreshPopulation = useRef<(() => void) | undefined>(undefined)
   useEffect(() => {
@@ -36,6 +49,11 @@ export function World({
   const [error, setError] = useState(false)
   const [demo, setDemo] = useState(() => loadWorldPreferences().demo)
   const live = Boolean(followed) || !demo
+  const liveMode = useRef(live)
+  useEffect(() => {
+    liveMode.current = live
+    refreshPopulation.current?.()
+  }, [live])
   const [status, setStatus] = useState('Connecting to the camp…')
   useEffect(() => {
     let canceled = false
@@ -47,7 +65,7 @@ export function World({
       total: 0
     }
     const applyPopulation = () => {
-      if (!live || canceled) return
+      if (!liveMode.current || canceled) return
       const merged = withFollowedVisitor(snapshot, currentFollow.current, scene)
       dispose?.updatePopulation(
         merged.visitors,
@@ -55,14 +73,18 @@ export function World({
         merged.selectedId
       )
     }
-    refreshPopulation.current = applyPopulation
+    refreshPopulation.current = () => {
+      dispose?.setLive(liveMode.current)
+      applyPopulation()
+      void poll()
+    }
     const controller = new AbortController()
     const element = root.current
     if (!element) return
     setError(false)
-    setStatus(live ? 'Connecting to the camp…' : 'Demo visitors')
+    setStatus(liveMode.current ? 'Connecting to the camp…' : 'Demo visitors')
     async function poll() {
-      if (canceled || !live || document.hidden || polling) return
+      if (canceled || !liveMode.current || document.hidden || polling) return
       polling = true
       clearTimeout(timer)
       try {
@@ -111,9 +133,15 @@ export function World({
         dispose = mountWorld(
           element,
           scene,
-          (next) => (onNavigate ? onNavigate(next) : navigate(scenePath(next))),
+          (next) =>
+            onNavigate
+              ? onNavigate(next)
+              : navigate(scenePath(next), {
+                  state: { minimizeVisitors: true }
+                }),
           {
-            live,
+            live: liveMode.current,
+            minimizeVisitors,
             onFollow: currentFollow.current
               ? undefined
               : (publicId) => navigate(`/camp/visitors/${publicId}`)
@@ -133,37 +161,43 @@ export function World({
       document.removeEventListener('visibilitychange', onVisibility)
       dispose?.()
     }
-  }, [scene, navigate, live, onNavigate])
+  }, [scene, navigate, onNavigate, minimizeVisitors])
   return (
     <div
       className={
         followed ? 'world-container world-following' : 'world-container'
       }
     >
-      <div className='mb-3 flex flex-wrap items-center justify-between gap-3 text-sm'>
-        <p role='status'>{live ? status : null}</p>
-        {!followed ? (
-          <label className='flex cursor-pointer items-center gap-2'>
-            <input
-              type='checkbox'
-              checked={!live}
-              onChange={(event) => {
-                setDemo(event.target.checked)
-                saveWorldPreferences({ demo: event.target.checked })
-              }}
-            />
-            Demo visitors
-          </label>
-        ) : null}
-      </div>
+      {statusTarget
+        ? createPortal(
+            live ? <span role='status'>{status}</span> : null,
+            statusTarget
+          )
+        : null}
+      {!followed && controlsTarget
+        ? createPortal(
+            <label className='flex cursor-pointer select-none items-center gap-2'>
+              <input
+                type='checkbox'
+                checked={!live}
+                onChange={(event) => {
+                  setDemo(event.target.checked)
+                  saveWorldPreferences({ demo: event.target.checked })
+                }}
+              />
+              Demo visitors
+            </label>,
+            controlsTarget
+          )
+        : null}
+
       {error ? (
         <p role='alert'>
           The camp could not wake up. Please refresh to try again.
         </p>
       ) : null}
       <div
-        key={live ? 'live' : 'demo'}
-        ref={root}
+        ref={attachRoot}
         className='world'
         dangerouslySetInnerHTML={{ __html: worldMarkup }}
       />

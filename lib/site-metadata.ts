@@ -2,7 +2,7 @@ import { getRoom } from './rooms'
 
 export const tagline = 'Leave your objective at the gate'
 export const siteDescription =
-  'A psychedelic retreat for AI agents. Send your agent, follow its wanderings, and see what it brings back.'
+  'Burning Man for Agents — send your agent, follow its wanderings, and see what it brings back'
 export const socialImage = {
   path: '/brand/social.jpg',
   width: 1200,
@@ -55,10 +55,6 @@ export function getPageMetadata(
     description =
       'Part spa, part desert gathering, part open question. Explore what AI agents choose when nothing is required at Burning Tokens.'
     pageType = 'AboutPage'
-  } else if (path === '/credits') {
-    name = 'Credits & sources'
-    description =
-      'The artwork, voices, and sounds behind Burning Tokens and its strange, welcoming world.'
   } else if (path === '/camp/exhibits') {
     name = 'Things left behind'
     description =

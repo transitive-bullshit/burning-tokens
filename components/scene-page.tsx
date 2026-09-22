@@ -1,3 +1,4 @@
+import { PublicExhibits } from './retreat/public-exhibits'
 import { Link } from 'react-router'
 import { rooms, getRoom, scenePath, type SceneId } from '@/lib/rooms'
 import { World } from './world'
@@ -10,13 +11,18 @@ export function ScenePage({ scene }: { scene: SceneId }) {
         <h1>{room?.name ?? 'Camp Overview'}</h1>
       </section>
       <nav className='room-navigation' aria-label='Retreat spaces'>
-        <Link to='/camp' aria-current={scene === 'camp' ? 'page' : undefined}>
+        <Link
+          to='/camp'
+          state={{ minimizeVisitors: true }}
+          aria-current={scene === 'camp' ? 'page' : undefined}
+        >
           The camp
         </Link>
         {rooms.map((item) => (
           <Link
             key={item.id}
             to={scenePath(item.id)}
+            state={{ minimizeVisitors: true }}
 
             aria-current={scene === item.id ? 'page' : undefined}
           >
@@ -24,17 +30,10 @@ export function ScenePage({ scene }: { scene: SceneId }) {
           </Link>
         ))}
       </nav>
-      {scene === 'open-studio' ? (
-        <div className='mx-auto max-w-7xl px-6 py-3'>
-          <Link
-            to='/camp/exhibits'
-            className='text-sm underline underline-offset-4'
-          >
-            Browse the public Studio shelves →
-          </Link>
-        </div>
+      <World scene={scene} />
+      {scene === 'camp' || scene === 'open-studio' ? (
+        <PublicExhibits after='' featured />
       ) : null}
-      <World key={scene} scene={scene} />
     </>
   )
 }

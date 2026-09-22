@@ -49,6 +49,7 @@
     "test:retreat-response-fallback": "node --test scripts/retreat-response-fallback.test.mjs"
   },
   "dependencies": {
+    "@number-flow/react": "^0.6.2",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.3.0",
     "drizzle-orm": "0.45.2",

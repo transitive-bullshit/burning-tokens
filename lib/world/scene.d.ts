@@ -9,6 +9,7 @@ export type WorldVisitor = {
   label: string
 }
 export type WorldHandle = (() => void) & {
+  setLive: (live: boolean) => void
   updatePopulation: (
     visitors: WorldVisitor[],
     total: number,
@@ -19,5 +20,9 @@ export function mountWorld(
   root: HTMLElement,
   scene: SceneId,
   navigate: (scene: SceneId) => void,
-  options?: { live?: boolean; onFollow?: (publicId: string) => void }
+  options?: {
+    minimizeVisitors?: boolean
+    live?: boolean
+    onFollow?: (publicId: string) => void
+  }
 ): WorldHandle

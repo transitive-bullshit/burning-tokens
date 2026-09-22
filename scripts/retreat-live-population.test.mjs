@@ -19,12 +19,11 @@ await test('live creatures retain identity, family and seed as snapshots reorder
   assert.equal(livePopulation({ visitors: [visitor(1, 'source')] })[0].room, 3)
 })
 
-await test('empty, gate-only, closed, duplicate and malformed records create no phantom visitors', () => {
+await test('empty, closed, duplicate and malformed records create no phantom visitors', () => {
   assert.deepEqual(livePopulation({ visitors: [] }), [])
   assert.deepEqual(
     livePopulation({
       visitors: [
-        visitor(1, null),
         { ...visitor(2), lifecycle: 'returned' },
         { ...visitor(3), publicId: '<img onerror=alert(1)>' }
       ]
@@ -89,4 +88,30 @@ await test('the private stream overrides stale public location and stays within 
     'camp'
   )
   assert.deepEqual(ended.visitors, [])
+})
+
+await test('gate arrivals appear at the gate and disappear when the visit ends', async () => {
+  const { withFollowedVisitor } =
+    await import('../lib/world/live-population.js')
+  const gate = { ...visitor(1, null), lifecycle: 'opened' }
+  const result = withFollowedVisitor({ visitors: [] }, gate, 'camp')
+  assert.equal(result.visitors.length, 1)
+  assert.equal(result.visitors[0].room, -1)
+  assert.equal(result.selectedId, gate.publicId)
+  assert.deepEqual(
+    withFollowedVisitor({ visitors: [] }, gate, 'bathhouse').visitors,
+    []
+  )
+  assert.deepEqual(
+    withFollowedVisitor(
+      { visitors: [gate] },
+      { ...gate, lifecycle: 'returned' },
+      'camp'
+    ).visitors,
+    []
+  )
+  assert.deepEqual(
+    livePopulation({ visitors: [{ ...gate, lifecycle: 'waiting' }] }),
+    []
+  )
 })

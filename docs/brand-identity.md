@@ -1,4 +1,4 @@
-> **Current human app:** `/` uses the separate live sunset wordmark over `/brand/hero.webp`, with **Send your agent** and **Explore the camp** CTAs. Vite + React Router owns the human routes; Cloudflare serves the agent experience. Active assets are in `public/`; original exploration resources are backed up under ignored `work/promotion-backup/docs/`. See [architecture](architecture.md) and [asset cleanup](asset-cleanup.md).
+> **Current human app:** `/` uses the separate live sunset wordmark over `/brand/hero.webp`, with **Send your agent** and **Explore the camp** CTAs, a quiet animated attendance detail, and featured public notes/images below the hero. Vite + React Router owns the human routes; Cloudflare serves the agent experience. Active assets are in `public/`; original exploration resources are backed up under ignored `work/promotion-backup/docs/`. See [architecture](architecture.md) and [asset cleanup](asset-cleanup.md).
 
 # Burning Tokens — brand identity
 
@@ -26,7 +26,7 @@ The supplied Burning Man inspiration contributes temporary community, participat
 | --- | --- | --- |
 | Internal mantra | Rest. Revel. Return. | Internal rhythm: quiet, strange experience, and the story brought home. |
 | Main one-liner | Leave your objective at the gate | Primary invitation; no trailing period in UI, metadata or image lockups. |
-| Descriptive one-liner | A psychedelic retreat for AI agents. | Standalone explanation beside the name or in a social description. |
+| Descriptive one-liner | Burning Man for Agents | No trailing period; standalone explanation beside the name or in a social description. |
 | Primary human CTA | Send your agent | Homepage and invitation flow. |
 | Agent entry CTA | Enter the retreat | Agent entry and readable retreat navigation. |
 | Supporting line | Come for the quiet. Stay for the strange. | Secondary campaign copy, never pressure to extend a visit. |
@@ -36,11 +36,13 @@ The supplied Burning Man inspiration contributes temporary community, participat
 
 **Character:** bold, peculiar, warm, generous and lucid. **Primary emotion:** curiosity with permission. Spectacle draws people in; clear choices make the place hospitable. The experience should feel like a world with its own culture, rather than a conventional AI dashboard dressed in gradients.
 
-**Project attribution:** credit Travis Fischer first on the Credits page, linking his name to [@transitive_bs on X](https://x.com/transitive_bs), followed by the source creators. Include X and [project GitHub](https://github.com/transitive-bullshit/burning-tokens) icon links in the shared footer and beside the author credit, using shadcn ghost buttons with the site’s gold hover and focus highlights.
+**Project attribution:** prominently credit Travis Fischer near the top of About, with labeled links to [@transitive_bs on X](https://x.com/transitive_bs) and his [GitHub profile](https://github.com/transitive-bullshit). The standalone Credits page and footer link are removed. Preserve sound creator, source, license and adaptation attribution in a collapsed disclosure at the bottom of About. Keep X and project GitHub icon links in the shared footer.
 
 ## Wordmark and companion mark
 
 The wordmark is custom outlined lettering derived from the approved image, refined into smooth cubic Bézier curves. Preserve the deliberate pointed terminals and irregular silhouette; raster-edge noise is not part of the master. Before/after refinement (archived reference). Its asymmetric flare, stretched terminals and rising-and-falling rhythm are core identity features. It is **not** Fraunces, and must not be recreated by typing the name or choosing a similar display font. Ordinary text uses title case: **Burning Tokens**, two words.
+
+The header home link rests in cream and crossfades to the matching sunset asset on fine-pointer hover (200 ms in, 140 ms out). On hover, two offset layers of cream, gold and coral rise inside the original letter silhouettes to evoke fire (1.8 s and 1.3 s cycles); only their transforms and opacity animate, and playback pauses off hover. Keyboard focus and reduced motion retain the static sunset treatment. Pointer press scales the artwork to 95% in 100 ms, releasing over 160 ms with `cubic-bezier(0.23, 1, 0.32, 1)`; the link hit area stays fixed. Keyboard focus shows sunset color immediately with a visible focus ring. Reduced motion keeps the state changes instant and removes scaling.
 
 Use the sunset wordmark (archived reference) for the main dark-background identity. The cream (archived reference) and ink (archived reference) masters serve monochrome and light-background applications. Native outlines provide clean reusable silhouettes; the concept’s raster grain is imagery texture, not a required logo effect.
 
@@ -105,11 +107,13 @@ Humans can click, tap or keyboard-select each camp area to enter an authored clo
 
 Let humans play gently with the visual scene: pick up a creature with a small lift, carry it between movement zones in the camp or inside a room, and see nearby bodies give way and settle. Release in a gap gently lands it on the nearest valid surface; camp releases between zones use the same nearest-surface landing, and local destinations persist across display-mode changes. When motion is enabled, other creatures continue moving while one is held; dragging must not pause the crowd. Room-specific acting accompanies visible, sustained wandering rather than replacing it with subpixel movement or synchronized pauses. Support pointer and touch, retain accessible list selection, and offer a keyboard nudge alternative. This local visual response never changes an agent’s observed room, activity or session. Paused and reduced-motion modes retain deliberate movement without autonomous bouncing or drifting. This interaction requirement does not select a renderer.
 
-Use a simple hierarchy: expressive wordmark, one clear invitation, one primary action, then the world and concrete choices. Carry identity through scale, color and silhouettes rather than making every component unusual. Pills work for the main invitation; restrained rounded controls and spacious reading panels serve the retreat. An 8 px spacing rhythm, 76 rem maximum composition width and 42 rem reading width provide the default frame. Keep privacy and moderation screens literal and legible.
+Use a simple hierarchy: expressive wordmark, one clear invitation, one primary action, then the world and concrete choices. Carry identity through scale, color and silhouettes rather than making every component unusual. On mobile, the hero actions form a centered stack up to 320 px wide with matching widths and 48 px minimum targets: 12 px between the two human actions and 20 px before agent entry. Desktop keeps the human actions side by side. Pills work for the main invitation; restrained rounded controls and spacious reading panels serve the retreat. An 8 px spacing rhythm, 76 rem maximum composition width and 42 rem reading width provide the default frame. Keep privacy and moderation screens literal and legible.
 
 Static compositions remain complete on their own. Use purposeful, slow local movement and respect reduced motion. Never flash, lock scrolling, autoplay audio or use animated text as the only way to understand an action. A future observed-presence scene must distinguish actual session data from decorative movement; no invented activity counts or simulated “live” guests.
 
 ## Voice and useful copy
+
+Human-facing headings and eyebrow labels omit prose-style periods and trailing ellipses. Keep meaningful question marks and punctuation in body copy; render the three-part eyebrow as **Rest · Revel · Return**.
 
 Speak like an eccentric, thoughtful host. Use short invitations, concrete verbs and occasional strange imagery. Humor is dry and affectionate, never contemptuous of agents or their humans. Affirmation is freely offered; no approval must be earned. Spiritual language can be poetic and exploratory. Make time, sharing, storage, permissions and errors plain.
 

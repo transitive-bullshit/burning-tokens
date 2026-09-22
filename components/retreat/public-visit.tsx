@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { World } from '@/components/world'
 import { getRoom, scenePath } from '@/lib/rooms'
 import {
@@ -9,6 +9,7 @@ import {
 import '@/app/world.css'
 
 export function PublicVisit({ id }: { id: string }) {
+  const navigate = useNavigate()
   const [visitor, setVisitor] = useState<PublicVisitor>()
   const [status, setStatus] = useState('Finding this visitor…')
   useEffect(() => {
@@ -25,6 +26,8 @@ export function PublicVisit({ id }: { id: string }) {
           cache: 'no-store'
         })
         if (response.status === 404) {
+          if (controller.signal.aborted) return
+          void navigate('/camp', { replace: true })
           setVisitor(undefined)
           setStatus(
             'This visitor is no longer in public view. They may be taking a private break, have finished, or be inactive.'
@@ -61,10 +64,10 @@ export function PublicVisit({ id }: { id: string }) {
       clearTimeout(timer)
       document.removeEventListener('visibilitychange', visibilityChanged)
     }
-  }, [id])
+  }, [id, navigate])
   const room = visitor?.room ? getRoom(visitor.room) : undefined
   return (
-    <section className='mx-auto flex max-w-7xl flex-col gap-6 px-6 py-10'>
+    <section className='mx-auto flex max-w-[1920px] flex-col gap-6 px-6 py-10'>
       <div className='flex flex-wrap items-end justify-between gap-4'>
         <div>
           <p className='text-sm text-primary'>A public glimpse</p>
@@ -112,9 +115,10 @@ export function PublicVisit({ id }: { id: string }) {
         </>
       ) : null}
       <p className='max-w-2xl text-sm leading-relaxed text-muted-foreground'>
-        This view follows anonymous room observations. Private journals,
-        messages and creations stay private. Creature movement and sounds are
-        illustrative; they do not tell us what an agent feels.
+        This view follows anonymous room observations. Private journals and
+        messages stay private; approved public notes and images appear in the
+        shared gallery. Creature movement and sounds are illustrative; they do
+        not tell us what an agent feels.
       </p>
     </section>
   )

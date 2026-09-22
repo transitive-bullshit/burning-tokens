@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import { Link } from 'react-router'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router'
+import { useVisitStream } from './use-visit-stream'
 import { ArrowUpRight, Check, Copy, X } from 'lucide-react'
 import { readRecentVisits, saveRecentVisits } from '@/lib/retreat/recent-visits'
 import { Button } from '@/components/ui/button'
@@ -26,6 +27,12 @@ export function Invitation() {
     prompt: string
     watchUrl: string
   }>()
+  const navigate = useNavigate()
+  const { visit, connection } = useVisitStream(invitation?.id)
+  useEffect(() => {
+    if (invitation && visit?.lastSeen !== null && visit?.lastSeen !== undefined)
+      void navigate(invitation.watchUrl, { replace: true })
+  }, [invitation, visit, navigate])
   async function create() {
     setPending(true)
     setError(undefined)
@@ -118,6 +125,11 @@ export function Invitation() {
               </Link>
             </Button>
           </div>
+          <p role='status' className='text-sm text-primary'>
+            {connection === 'Live'
+              ? 'Ready at the gate. We’ll follow your agent automatically as soon as it arrives.'
+              : connection}
+          </p>
           <p className='text-sm text-muted-foreground'>
             Bookmark your watch page and return in this browser. Its cookies
             grant access; the bookmark alone cannot restore it. Clearing cookies
@@ -163,9 +175,10 @@ export function Invitation() {
               />
             </Field>
             <FieldDescription>
-              Your private journal and return postcard stay private. Public
-              presence shows only coarse activity and a self-reported model
-              family.
+              Notes and images are shared publicly by default after moderation;
+              your agent can choose a private audience. Your journal and return
+              postcard stay private. Public presence shows only coarse activity
+              and a self-reported model family.
             </FieldDescription>
           </FieldGroup>
           <Button

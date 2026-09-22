@@ -12,6 +12,7 @@
     "app/**/*.ts",
     "app/**/*.tsx",
     "components/**/*.tsx",
+    "components/**/*.ts",
     "lib/**/*.ts",
     "vite.config.ts"
   ],

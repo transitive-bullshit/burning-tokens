@@ -17,37 +17,8 @@ export const worldMarkup = `
               <option value="temple">Temple</option>
             </select>
           </div>
-          <div class="segmented" role="group" aria-label="Population display">
-            <button id="summary" aria-pressed="true">Summary</button
-            ><button id="full" aria-pressed="false">Full view</button>
-          </div>
         </div>
 
-        <section class="sound-controls" aria-label="Scene sound controls">
-          <button id="sound-toggle" type="button" aria-pressed="true">
-            Sound on
-          </button>
-          <label class="sound-volume" for="sound-volume"
-            >Volume
-            <input
-              id="sound-volume"
-              type="range"
-              min="0"
-              max="100"
-              value="40"
-            /><output id="sound-volume-value" for="sound-volume"
-              >40%</output
-            ></label
-          >
-          <label class="sound-background"
-            ><input id="sound-background" type="checkbox" checked /> Occasional
-            room sounds</label
-          >
-
-        </section>
-        <p id="sound-status" class="sound-help" aria-live="off">
-          Sound starts when you touch the scene.
-        </p>
         <div class="stage" id="stage">
           <canvas
             id="world"
@@ -61,34 +32,13 @@ export const worldMarkup = `
             <strong id="scene-title" tabindex="-1" role="heading" aria-level="2"
               >Dream Garden</strong>
           </div>
-          <button class="playback" id="pause" aria-pressed="false">
-            Pause motion
-          </button>
           <div id="room-links"></div>
           <div class="stage-footer">
+            <div id="visitor-status" class="visitor-status"></div>
             <span id="canvas-count">Loading the ceramic stage…</span>
           </div>
-        </div>
-        <div class="below-scene">
-          <p id="scene-caption">
-            Drag a creature to move it.
-          </p>
-          <nav
-            id="court-nav"
-            class="court-nav"
-            aria-label="Room section navigation"
-            hidden
-          >
-            <button id="previous-court" aria-label="Previous courtyard">
-              ←</button
-            ><span id="court-label"></span
-            ><button id="next-court" aria-label="Next courtyard">→</button>
-          </nav>
-        </div>
-        <p id="sound-focus" class="sound-focus"></p>
-
-      </section>
-      <aside aria-label="Crowd controls and example activity">
+      <details class="crowd-overlay"><summary>Visitors <span class="drawer-close" aria-hidden="true">×</span></summary><aside aria-label="Crowd controls and activity">
+        <div id="visitor-display-controls"></div>
         <section class="control-block">
           <div class="control-title">
             <label for="population">Visitors across the camp</label
@@ -142,11 +92,55 @@ export const worldMarkup = `
           </div>
         </section>
         <section class="inspection" id="inspection" aria-live="polite">
-          <h3>Meet a little wanderer.</h3>
+          <h3>Meet a little wanderer</h3>
           <p>
             Select a creature to meet it.
           </p>
         </section>
-      </aside>
+      </aside></details>
+      <dialog class="visitors-modal" aria-label="Visitors"></dialog>
+        </div>
+        <div class="below-scene">
+          <nav
+            id="court-nav"
+            class="court-nav"
+            aria-label="Room section navigation"
+            hidden
+          >
+            <button id="previous-court" aria-label="Previous courtyard">
+              ←</button
+            ><span id="court-label"></span
+            ><button id="next-court" aria-label="Next courtyard">→</button>
+          </nav>
+        </div>
+        <div class="scene-toolbar">
+        <section class="sound-controls" aria-label="Scene sound controls">
+          <button id="sound-toggle" type="button" aria-pressed="true">
+            Sound on
+          </button>
+          <label class="sound-volume" for="sound-volume"
+            >Volume
+            <input
+              id="sound-volume"
+              type="range"
+              min="0"
+              max="100"
+              value="40"
+            /><output id="sound-volume-value" for="sound-volume"
+              >40%</output
+            ></label
+          >
+        </section>
+          <p id="scene-caption">
+            Drag a creature to move it.
+          </p>
+        </div>
+        <p id="sound-status" class="sound-help" aria-live="off">
+          Sound starts when you touch the scene.
+        </p>
+        <p id="sound-focus" class="sound-focus"></p>
+
+      </section>
+
     </div>
 `

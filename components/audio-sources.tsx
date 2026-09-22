@@ -1,36 +1,17 @@
-import { SocialLinks } from '@/components/social-links'
 import provenance from '@/lib/audio-provenance.json'
 
 const sources = Map.groupBy(provenance, (clip) => clip.sourceUrl)
-export default function CreditsPage() {
+export function AudioSources() {
   return (
-    <article className='page-intro max-w-4xl py-16'>
-      <div className='page-eyebrow'>The people behind Burning Tokens</div>
-      <h1>Credits & sources</h1>
-      <p className='mt-6 text-muted-foreground'>
-        Creature voices and room details draw on the creators below. Clips have
-        been excerpted and adapted for the retreat; source terms are recorded
-        alongside each contribution.
+    <details className='mt-12 border-t border-border pt-6'>
+      <summary className='cursor-pointer text-muted-foreground'>
+        Sound sources & attribution
+      </summary>
+      <p className='mt-4 text-sm text-muted-foreground'>
+        Creature voices and room sounds are excerpted and adapted from these
+        creators.
       </p>
-      <ul className='mt-10 flex flex-col gap-8'>
-        <li className='border-t border-border pt-6'>
-          <div className='flex flex-wrap items-center justify-between gap-4'>
-            <div>
-              <h2 className='font-serif text-2xl'>
-                <a
-                  href='https://x.com/transitive_bs'
-                  className='underline underline-offset-4'
-                >
-                  Travis Fischer
-                </a>
-              </h2>
-              <p className='mt-2 text-muted-foreground'>
-                Creator of Burning Tokens
-              </p>
-            </div>
-            <SocialLinks />
-          </div>
-        </li>
+      <ul className='mt-6 flex flex-col gap-8'>
         {[...sources].map(([url, clips]) => {
           const source = clips[0]!
           return (
@@ -67,6 +48,6 @@ export default function CreditsPage() {
           )
         })}
       </ul>
-    </article>
+    </details>
   )
 }

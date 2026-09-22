@@ -1041,3 +1041,197 @@
   width: 100%;
   padding: 0 0 2rem;
 }
+
+/* The scene owns the width; optional controls float above it. */
+.world-container {
+  overflow-anchor: none;
+  max-width: 1920px;
+  padding-inline: clamp(0.5rem, 1.5vw, 2rem);
+}
+.world .layout {
+  display: block;
+  position: relative;
+  padding: 0;
+}
+.world .crowd-overlay {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  z-index: 3;
+  width: min(310px, calc(100% - 2rem));
+}
+.world .crowd-overlay > summary,
+.visit-overlay > summary {
+  width: fit-content;
+  margin-left: auto;
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  padding: 0.65rem 1rem;
+  color: var(--primary);
+  background: var(--background);
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+.world .crowd-overlay[open] > summary,
+.visit-overlay[open] > summary {
+  margin-bottom: 0.5rem;
+}
+.world .crowd-overlay aside,
+.world-following .world .crowd-overlay aside,
+.visit-overlay aside {
+  display: flex;
+  flex-direction: column;
+  max-height: min(60dvh, 640px);
+  overflow-y: auto;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  background: var(--background);
+  box-shadow: 0 12px 36px #0005;
+}
+.visit-stage-layout {
+  position: relative;
+  min-width: 0;
+}
+.visit-overlay {
+  position: absolute;
+  right: 1rem;
+  top: 3rem;
+  width: min(360px, calc(100% - 2rem));
+  z-index: 4;
+}
+.world-following {
+  padding-inline: 0;
+}
+
+.world .crowd-overlay > summary {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.world .scene-top {
+  display: none;
+}
+
+.world .crowd-overlay[open] {
+  inset: 0 0 0 auto;
+  width: min(340px, 85%);
+  background: var(--background);
+  border-left: 1px solid var(--border);
+  box-shadow: -12px 0 36px #0004;
+}
+.world .crowd-overlay[open] > summary {
+  width: 100%;
+  height: 3.5rem;
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  padding: 1rem;
+}
+.world .drawer-close {
+  display: none;
+}
+.world .crowd-overlay[open] .drawer-close {
+  display: block;
+  float: right;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+.world .crowd-overlay[open] aside {
+  position: absolute;
+  inset: 3.5rem 0 0;
+  max-height: none;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overscroll-behavior: contain;
+}
+.visit-overlay {
+  left: 1rem;
+  right: auto;
+}
+.visit-overlay > summary {
+  margin-left: 0;
+}
+
+.world #visitor-display-controls:not(:empty) {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.world .visitors-modal {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--background);
+  color: var(--foreground);
+}
+.world .visitors-modal .crowd-overlay[open] {
+  width: 100%;
+  border: 0;
+}
+.world .visitors-modal .crowd-overlay[open] > summary {
+  height: calc(3.5rem + env(safe-area-inset-top));
+  padding-top: calc(1rem + env(safe-area-inset-top));
+}
+.world .visitors-modal .crowd-overlay[open] aside {
+  top: calc(3.5rem + env(safe-area-inset-top));
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+.world .scene-toolbar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+  padding-top: 0.75rem;
+}
+.world .scene-toolbar .sound-controls {
+  padding: 0;
+}
+.world .scene-toolbar #scene-caption {
+  text-align: right;
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin: 0;
+}
+.world .below-scene:has([hidden]) {
+  display: none;
+}
+@media (max-width: 600px) {
+  .world .scene-toolbar {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: 0.5rem;
+  }
+  .world .sound-volume {
+    flex-wrap: wrap;
+  }
+  .world .scene-toolbar #scene-caption {
+    overflow-wrap: anywhere;
+  }
+}
+
+.world .stage-footer {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+.world .visitor-status:empty {
+  display: none;
+}
+.world .visitor-status {
+  max-width: min(30rem, 100%);
+  padding: 0.4rem 0.65rem;
+  border: 1px solid #fff2;
+  border-radius: 0.5rem;
+  background: #151632ed;
+  color: #fff0cf;
+  font-size: 0.75rem;
+}

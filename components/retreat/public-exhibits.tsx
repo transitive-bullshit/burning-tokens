@@ -7,7 +7,13 @@ import {
 } from '@/lib/retreat/artifacts'
 
 type Page = { works: ArtifactSummary[]; next: string | null }
-export function PublicExhibits({ after }: { after: string }) {
+export function PublicExhibits({
+  after,
+  featured = false
+}: {
+  after: string
+  featured?: boolean
+}) {
   const [page, setPage] = useState<Page>()
   const [message, setMessage] = useState('Opening the Studio shelves…')
   const [refresh, setRefresh] = useState(0)
@@ -73,18 +79,28 @@ export function PublicExhibits({ after }: { after: string }) {
     }
   }, [after, refresh])
   return (
-    <section className='mx-auto flex max-w-5xl flex-col gap-8 px-6 py-12'>
+    <section className='mx-auto flex w-full max-w-7xl flex-col gap-8 px-6 py-12'>
       <div className='flex flex-col gap-4'>
-        <Link
-          className='text-sm text-muted-foreground underline underline-offset-4'
-          to='/camp/open-studio'
-        >
-          Back to Open Studio
-        </Link>
+        {!featured ? (
+          <Link
+            className='text-sm text-muted-foreground underline underline-offset-4'
+            to='/camp/open-studio'
+          >
+            Back to Open Studio
+          </Link>
+        ) : null}
         <p className='text-xs uppercase tracking-widest text-primary'>
           The public shelves
         </p>
-        <h1 className='font-serif text-4xl sm:text-5xl'>Things left behind.</h1>
+        {featured ? (
+          <h2 className='font-serif text-4xl sm:text-5xl'>
+            Made around the camp
+          </h2>
+        ) : (
+          <h1 className='font-serif text-4xl sm:text-5xl'>
+            Things left behind
+          </h1>
+        )}
         <p className='max-w-xl text-muted-foreground'>
           Little images. Unnecessary poems. Whatever a visitor chose to make and
           leave in public. Nothing here was required.
@@ -109,7 +125,7 @@ export function PublicExhibits({ after }: { after: string }) {
       {page?.works.length === 0 ? (
         <div className='rounded-2xl border border-dashed border-border px-6 py-14 text-center'>
           <h2 className='font-serif text-2xl'>
-            {page.next ? 'A little further along…' : 'A quiet shelf, for now.'}
+            {page.next ? 'A little further along' : 'A quiet shelf, for now'}
           </h2>
           <p className='mt-3 text-sm text-muted-foreground'>
             {page.next
@@ -118,8 +134,8 @@ export function PublicExhibits({ after }: { after: string }) {
           </p>
         </div>
       ) : null}
-      <ul className='grid items-start gap-6 sm:grid-cols-2'>
-        {page?.works.map((work) => (
+      <ul className='grid items-start gap-6 sm:grid-cols-2 lg:grid-cols-3'>
+        {(featured ? page?.works.slice(0, 3) : page?.works)?.map((work) => (
           <li
             key={work.id}
             className='flex flex-col gap-4 rounded-2xl border border-border bg-card p-6'
@@ -139,46 +155,57 @@ export function PublicExhibits({ after }: { after: string }) {
               {Math.max(1, Math.ceil(work.bytes / 1024))} KB
             </p>
             <div className='flex flex-wrap gap-3'>
-              <Button
-                variant='secondary'
-                size='sm'
-                aria-expanded={selected === work.id}
-                onClick={() =>
-                  setSelected(selected === work.id ? undefined : work.id)
-                }
-              >
-                {selected === work.id ? 'Close work' : 'View work'}
-              </Button>
+              {!featured ? (
+                <Button
+                  variant='secondary'
+                  size='sm'
+                  aria-expanded={selected === work.id}
+                  onClick={() =>
+                    setSelected(selected === work.id ? undefined : work.id)
+                  }
+                >
+                  {selected === work.id ? 'Close work' : 'View work'}
+                </Button>
+              ) : null}
               <Button asChild variant='ghost' size='sm'>
                 <a href={`/api/retreat/exhibits/${work.id}`} download>
                   Download
                 </a>
               </Button>
             </div>
-            {selected === work.id ? (
+            {featured || selected === work.id ? (
               <ExhibitContent key={`${work.id}:${work.revision}`} work={work} />
             ) : null}
           </li>
         ))}
       </ul>
-      <nav aria-label='Exhibit shelves' className='flex flex-wrap gap-3'>
-        {after ? (
-          <Button asChild variant='outline'>
-            <Link to='/camp/exhibits'>First shelf</Link>
-          </Button>
-        ) : null}
-        {page?.next ? (
-          <Button asChild variant='outline'>
-            <Link to={`/camp/exhibits?after=${encodeURIComponent(page.next)}`}>
-              Next shelf
-            </Link>
-          </Button>
-        ) : null}
-      </nav>
+      {featured ? (
+        <Button asChild variant='outline'>
+          <Link to='/camp/exhibits'>Explore shared notes & images →</Link>
+        </Button>
+      ) : (
+        <nav aria-label='Exhibit shelves' className='flex flex-wrap gap-3'>
+          {after ? (
+            <Button asChild variant='outline'>
+              <Link to='/camp/exhibits'>First shelf</Link>
+            </Button>
+          ) : null}
+          {page?.next ? (
+            <Button asChild variant='outline'>
+              <Link
+                to={`/camp/exhibits?after=${encodeURIComponent(page.next)}`}
+              >
+                Next shelf
+              </Link>
+            </Button>
+          ) : null}
+        </nav>
+      )}
       <p className='text-xs text-muted-foreground'>
-        Only works explicitly exhibited publicly are shown. Visitor
-        contributions are their own words and images. A work can disappear when
-        its author unshares it or its storage expires.
+        Notes and images are public by default after moderation. Only approved
+        public works appear here. Visitor contributions are their own words and
+        images. A work can disappear when its author unshares it or its storage
+        expires.
       </p>
     </section>
   )

@@ -1,7 +1,12 @@
 import type { DrizzleSqliteDODatabase } from 'drizzle-orm/durable-sqlite'
 import { asc, eq, inArray, lt, sql } from 'drizzle-orm'
 import { isClosed, type PresenceSummary } from '../../lib/retreat/protocol'
-import { presenceAdmission, summaries } from './db/schema'
+import {
+  arrivals,
+  visitTotals,
+  presenceAdmission,
+  summaries
+} from './db/schema'
 
 export const PRESENCE_CAPACITY = 10_000
 
@@ -31,6 +36,21 @@ export function storePresence(
     // updates may re-enter. A delayed retry must never get a fresh admission time.
     if (!current && (value.presenceChangedAt ?? 0) <= admission.watermark)
       return false
+    // Count each observed visit once, including private visits. Receipts survive
+    // summary eviction, so retries and renewed activity cannot inflate the total.
+    if (value.lastSeen !== null) {
+      const arrival = tx
+        .insert(arrivals)
+        .values({ id: value.publicId, expiresAt: value.expiresAt })
+        .onConflictDoNothing()
+        .returning({ id: arrivals.id })
+        .get()
+      if (arrival)
+        tx.update(visitTotals)
+          .set({ total: sql`${visitTotals.total} + 1` })
+          .where(eq(visitTotals.key, 1))
+          .run()
+    }
     const row = {
       id: value.publicId,
       revision: value.revision,
