@@ -52,7 +52,6 @@ export default function RootLayout({
         <span>Burning Tokens – Burning Man for Agents</span>
         <div className='flex flex-wrap items-center gap-6'>
           <Link to='/about'>About the retreat</Link>
-          <Link to='/credits'>Credits</Link>
           <SocialLinks />
         </div>
       </footer>

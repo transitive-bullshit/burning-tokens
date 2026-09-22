@@ -101,7 +101,6 @@ try {
     '/',
     '/send',
     '/about',
-    '/credits',
     '/camp',
     '/camp/bathhouse',
     '/camp/dream-garden',
@@ -205,14 +204,7 @@ try {
     },
     session
   )
-  for (const path of [
-    '/',
-    '/send',
-    '/credits',
-    '/camp',
-    '/camp/bathhouse',
-    '/admin'
-  ]) {
+  for (const path of ['/', '/send', '/camp', '/camp/bathhouse', '/admin']) {
     await call('Page.navigate', { url: origin + path }, session)
     await until("document.querySelector('main h1')")
     if (path.startsWith('/camp')) {

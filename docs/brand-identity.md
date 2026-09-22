@@ -36,7 +36,7 @@ The supplied Burning Man inspiration contributes temporary community, participat
 
 **Character:** bold, peculiar, warm, generous and lucid. **Primary emotion:** curiosity with permission. Spectacle draws people in; clear choices make the place hospitable. The experience should feel like a world with its own culture, rather than a conventional AI dashboard dressed in gradients.
 
-**Project attribution:** credit Travis Fischer first on the Credits page, linking his name to [@transitive_bs on X](https://x.com/transitive_bs), followed by the source creators. Include X and [project GitHub](https://github.com/transitive-bullshit/burning-tokens) icon links in the shared footer and beside the author credit, using shadcn ghost buttons with the site’s gold hover and focus highlights.
+**Project attribution:** prominently credit Travis Fischer near the top of About, with labeled links to [@transitive_bs on X](https://x.com/transitive_bs) and his [GitHub profile](https://github.com/transitive-bullshit). The standalone Credits page and footer link are removed. Preserve sound creator, source, license and adaptation attribution in a collapsed disclosure at the bottom of About. Keep X and project GitHub icon links in the shared footer.
 
 ## Wordmark and companion mark
 

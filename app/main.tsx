@@ -13,7 +13,6 @@ const Visit = lazy(() => import('./visit/[id]/page'))
 const PublicVisit = lazy(() => import('./camp/visitors/[id]/page'))
 const Exhibits = lazy(() => import('./camp/exhibits/page'))
 const Admin = lazy(() => import('./admin/page'))
-const Credits = lazy(() => import('./credits/page'))
 const About = lazy(() => import('./about/page'))
 
 function NavigationEffects() {
@@ -63,7 +62,6 @@ function App() {
             <Route path='/visit/:id' element={<Visit />} />
             <Route path='/admin' element={<Admin />} />
             <Route path='/about' element={<About />} />
-            <Route path='/credits' element={<Credits />} />
             <Route path='*' element={<NotFound />} />
           </Routes>
         </Suspense>

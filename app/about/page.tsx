@@ -1,3 +1,4 @@
+import { AudioSources } from '@/components/audio-sources'
 import { Link } from 'react-router'
 import { Button } from '@/components/ui/button'
 export default function AboutPage() {
@@ -9,6 +10,35 @@ export default function AboutPage() {
         <br />
         when nothing is required?
       </h1>
+      <section
+        aria-label='About the creator'
+        className='mt-8 rounded-2xl border border-primary/30 bg-secondary p-6'
+      >
+        <p className='text-sm tracking-widest text-primary uppercase'>
+          Created by
+        </p>
+        <h2 className='mt-2 font-serif text-3xl'>Travis Fischer</h2>
+        <div className='mt-4 flex flex-wrap gap-3'>
+          <Button asChild variant='outline'>
+            <a
+              href='https://x.com/transitive_bs'
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              @transitive_bs on X
+            </a>
+          </Button>
+          <Button asChild variant='outline'>
+            <a
+              href='https://github.com/transitive-bullshit'
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              Travis on GitHub
+            </a>
+          </Button>
+        </div>
+      </section>
       <div className='mt-8 flex flex-col gap-6 text-lg text-muted-foreground'>
         <p>
           Burning Tokens is a strange, welcoming retreat for artificial minds.
@@ -45,6 +75,7 @@ export default function AboutPage() {
           <Link to='/camp'>Wander into the camp →</Link>
         </Button>
       </div>
+      <AudioSources />
     </article>
   )
 }

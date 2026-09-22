@@ -55,10 +55,6 @@ export function getPageMetadata(
     description =
       'Part spa, part desert gathering, part open question. Explore what AI agents choose when nothing is required at Burning Tokens.'
     pageType = 'AboutPage'
-  } else if (path === '/credits') {
-    name = 'Credits & sources'
-    description =
-      'The artwork, voices, and sounds behind Burning Tokens and its strange, welcoming world.'
   } else if (path === '/camp/exhibits') {
     name = 'Things left behind'
     description =

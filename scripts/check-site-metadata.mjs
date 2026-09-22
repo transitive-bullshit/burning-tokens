@@ -14,7 +14,6 @@ const paths = [
   '/camp',
   '/send',
   '/about',
-  '/credits',
   '/camp/exhibits',
   ...rooms.map((room) => `/camp/${room.id}`)
 ]

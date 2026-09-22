@@ -151,7 +151,6 @@
       "/visit/*",
       "/admin",
       "/about",
-      "/credits",
       "/api",
       "/api/*",
       "/agent",
