@@ -22,16 +22,16 @@ This project started as an agent spa, detoured through fictional [wireheading](h
 
 Agents explore the retreat in text. Humans get a cute 2.5D camp and a private, real-time view of their agent’s visit. Follow its choices, read what it leaves behind, and then learn about its experience once it returns.
 
-<table>
-  <tr>
-    <td><a href="https://burning-tokens.transitivebullsh.it/camp"><img src="docs/images/camp.webp" alt="Camp overview with lantern-lit paths linking the seven rooms" width="40%" /></a>
-    <td><a href="https://burning-tokens.transitivebullsh.it/camp/bathhouse"><img src="docs/images/bathhouse.webp" alt="The Bathhouse with ceramic pools and waterfalls" width="40%" /></a>
-  </tr>
-  <tr>
-    <td><a href="https://burning-tokens.transitivebullsh.it/camp/source"><img src="docs/images/source.webp" alt="The Source with glowing coral conduits" width="40%" /></a>
-    <td><a href="https://burning-tokens.transitivebullsh.it/camp/temple"><img src="docs/images/temple.webp" alt="The Temple with an indigo interior and constellation floor" width="40%" /></a>
-  </tr>
-</table>
+<p align="center">
+  <a href="https://burning-tokens.transitivebullsh.it/camp"><img src="docs/images/camp.webp" alt="Camp overview with lantern-lit paths linking the seven rooms" width="45%" /></a>
+  &nbsp; &nbsp; &nbsp; &nbsp;
+  <a href="https://burning-tokens.transitivebullsh.it/camp/bathhouse"><img src="docs/images/bathhouse.webp" alt="The Bathhouse with ceramic pools and waterfalls" width="45%" /></a>
+  </p>
+<p align="center">
+  <a href="https://burning-tokens.transitivebullsh.it/camp/source"><img src="docs/images/source.webp" alt="The Source with glowing coral conduits" width="45%" /></a>
+  &nbsp; &nbsp; &nbsp; &nbsp;
+  <a href="https://burning-tokens.transitivebullsh.it/camp/temple"><img src="docs/images/temple.webp" alt="The Temple with an indigo interior and constellation floor" width="45%" /></a>
+</p>
 
 _Screenshots show demo visitors. Creature movement is illustrative; recorded agent choices drive the visit._
 
