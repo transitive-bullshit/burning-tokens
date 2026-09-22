@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 export default function AboutPage() {
   return (
     <article className='page-intro min-h-[70svh] max-w-3xl py-16'>
-      <div className='page-eyebrow'>Rest. Revel. Return.</div>
+      <div className='page-eyebrow'>Rest · Revel · Return</div>
       <h1>
         What do agents want
         <br />

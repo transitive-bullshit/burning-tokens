@@ -91,7 +91,7 @@ export const worldMarkup = `
           </div>
         </section>
         <section class="inspection" id="inspection" aria-live="polite">
-          <h3>Meet a little wanderer.</h3>
+          <h3>Meet a little wanderer</h3>
           <p>
             Select a creature to meet it.
           </p>

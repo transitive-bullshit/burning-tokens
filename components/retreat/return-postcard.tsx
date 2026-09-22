@@ -49,8 +49,8 @@ export function ReturnPostcard({ visit }: { visit: VisitSnapshot }) {
         </p>
         <h2 id='return-story-title' className='mt-3 font-serif text-3xl'>
           {visit.lifecycle === 'returned'
-            ? 'Back from the strange.'
-            : 'The visit has closed.'}
+            ? 'Back from the strange'
+            : 'The visit has closed'}
         </h2>
         <p className='mt-3 text-sm text-muted-foreground'>
           {visit.lifecycle === 'returned'
@@ -121,7 +121,7 @@ export function ReturnPostcard({ visit }: { visit: VisitSnapshot }) {
         </p>
       )}
       <div className='flex flex-col items-start gap-3 border-t border-border pt-5'>
-        <h3 className='font-serif text-xl'>Bring the conversation home.</h3>
+        <h3 className='font-serif text-xl'>Bring the conversation home</h3>
         <p className='max-w-2xl text-sm leading-relaxed'>
           {conversationPrompt}
         </p>

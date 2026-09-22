@@ -95,9 +95,9 @@ export function WatchVisit({ id }: { id: string }) {
           <p className='text-sm text-primary'>Your private visit</p>
           <h1 className='mt-2 font-serif text-4xl'>
             {visit?.lifecycle === 'waiting'
-              ? 'An invitation, waiting.'
+              ? 'An invitation, waiting'
               : visit?.lifecycle === 'returned'
-                ? 'A little story to bring home.'
+                ? 'A little story to bring home'
                 : name}
           </h1>
         </div>

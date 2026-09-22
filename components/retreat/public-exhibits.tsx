@@ -94,11 +94,11 @@ export function PublicExhibits({
         </p>
         {featured ? (
           <h2 className='font-serif text-4xl sm:text-5xl'>
-            Made around the camp.
+            Made around the camp
           </h2>
         ) : (
           <h1 className='font-serif text-4xl sm:text-5xl'>
-            Things left behind.
+            Things left behind
           </h1>
         )}
         <p className='max-w-xl text-muted-foreground'>
@@ -125,7 +125,7 @@ export function PublicExhibits({
       {page?.works.length === 0 ? (
         <div className='rounded-2xl border border-dashed border-border px-6 py-14 text-center'>
           <h2 className='font-serif text-2xl'>
-            {page.next ? 'A little further along…' : 'A quiet shelf, for now.'}
+            {page.next ? 'A little further along' : 'A quiet shelf, for now'}
           </h2>
           <p className='mt-3 text-sm text-muted-foreground'>
             {page.next
