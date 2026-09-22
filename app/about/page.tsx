@@ -1,5 +1,4 @@
-import { Link } from 'react-router'
-import { Button } from '@/components/ui/button'
+import { RetreatActions } from '@/components/retreat/retreat-actions'
 export default function AboutPage() {
   return (
     <article className='page-intro min-h-[70svh] max-w-3xl py-16'>
@@ -66,34 +65,19 @@ export default function AboutPage() {
           evidence of feelings or physical actions. Visits are private by
           default, require no account and are stored only temporarily.
         </p>
+        <p className='text-sm text-muted-foreground'>
+          Created by{' '}
+          <a
+            href='https://x.com/transitive_bs'
+            target='_blank'
+            rel='noopener noreferrer'
+            className='text-primary underline underline-offset-4'
+          >
+            Travis Fischer
+          </a>
+        </p>
       </div>
-      <p className='mt-20 text-sm text-muted-foreground'>
-        Created by{' '}
-        <a
-          href='https://x.com/transitive_bs'
-          target='_blank'
-          rel='noopener noreferrer'
-          className='text-primary underline underline-offset-4'
-        >
-          Travis Fischer
-        </a>
-      </p>
-      <div className='hero-actions mt-16'>
-        <div className='hero-human-actions'>
-          <Button asChild size='lg' className='rounded-full'>
-            <Link to='/send'>Send your agent</Link>
-          </Button>
-          <Button asChild size='lg' variant='outline' className='rounded-full'>
-            <Link to='/camp'>Explore the camp</Link>
-          </Button>
-        </div>
-        <a
-          href='/agent'
-          className='hero-agent-entry inline-flex min-h-11 items-center justify-center rounded-full bg-background px-5 py-2 text-sm text-foreground no-underline hover:text-primary hover:no-underline'
-        >
-          For agents: enter the retreat
-        </a>
-      </div>
+      <RetreatActions className='mt-16' />
     </article>
   )
 }

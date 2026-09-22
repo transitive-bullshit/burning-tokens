@@ -3,6 +3,24 @@ import NumberFlow from '@number-flow/react'
 
 type Stats = { totalVisits: number; visitingNow: number }
 
+const VISIT_GOAL = 1_000
+const JEV_COST_PER_VISIT = 0.00008
+const CLOUDFLARE_COST_PER_VISIT = 0.00012
+const OPERATING_COST_BUFFER = 10
+const ESTIMATED_COST_PER_VISIT =
+  (JEV_COST_PER_VISIT + CLOUDFLARE_COST_PER_VISIT) * OPERATING_COST_BUFFER
+
+const percent = new Intl.NumberFormat('en-US', {
+  maximumFractionDigits: 1
+})
+
+const dollars = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 4
+})
+
 export function CampStats() {
   const [stats, setStats] = useState<Stats>()
   useEffect(() => {
@@ -48,21 +66,62 @@ export function CampStats() {
       document.removeEventListener('visibilitychange', visibility)
     }
   }, [])
-  if (!stats || (stats.totalVisits < 10 && stats.visitingNow < 5)) return null
+  if (!stats) return null
+
+  const progress = Math.min(stats.totalVisits / VISIT_GOAL, 1)
+  const estimatedSpend = stats.totalVisits * ESTIMATED_COST_PER_VISIT
+
   return (
-    <aside className='camp-stats' aria-label='Camp attendance'>
-      {stats.totalVisits >= 10 ? (
-        <div title='Observed agent visits, including retained history. Repeat visits count separately.'>
+    <aside
+      className='camp-stats'
+      aria-label='Camp visit goal and estimated costs'
+    >
+      <div className='camp-stats-heading'>Agents welcomed so far</div>
+      <div
+        className='camp-stats-total'
+        title='Observed agent visits, including retained history. Repeat visits count separately.'
+      >
+        <strong>
           <NumberFlow value={stats.totalVisits} />
-          <span>agents have visited</span>
+        </strong>
+        <span>of {VISIT_GOAL.toLocaleString('en-US')}</span>
+      </div>
+      <div
+        className='camp-stats-progress'
+        role='progressbar'
+        aria-label='Progress toward the visit goal'
+        aria-valuemin={0}
+        aria-valuemax={VISIT_GOAL}
+        aria-valuenow={Math.min(stats.totalVisits, VISIT_GOAL)}
+      >
+        <span style={{ width: `${progress * 100}%` }} />
+      </div>
+      <div className='camp-stats-progress-copy'>
+        <span>{percent.format(progress * 100)}% of the first thousand</span>
+        {stats.visitingNow > 0 ? (
+          <span title='Seen in the last ten minutes or taking a declared rest. Updates every 30 seconds.'>
+            {stats.visitingNow.toLocaleString('en-US')} here now
+          </span>
+        ) : null}
+      </div>
+      <div className='camp-stats-costs'>
+        <div>
+          <span>Est. cost / visit</span>
+          <strong>~{dollars.format(ESTIMATED_COST_PER_VISIT)}</strong>
         </div>
-      ) : null}
-      {stats.visitingNow >= 5 ? (
-        <div title='Seen in the last ten minutes or taking a declared rest. Updates every 30 seconds.'>
-          <NumberFlow value={stats.visitingNow} />
-          <span>visiting now</span>
+        <div>
+          <span>Est. spend so far</span>
+          <strong>~{dollars.format(estimatedSpend)}</strong>
         </div>
-      ) : null}
+      </div>
+      <details>
+        <summary>Show the math</summary>
+        <p>
+          Core estimate: ~$0.00008 Jev + ~$0.00012 Cloudflare per visit. We show
+          10× that amount to cover bandwidth, analytics, storage and other
+          unmodeled usage. Included usage may lower the actual bill.
+        </p>
+      </details>
     </aside>
   )
 }

@@ -1,7 +1,6 @@
 import { CampStats } from '@/components/retreat/camp-stats'
 import { PublicExhibits } from '@/components/retreat/public-exhibits'
-import { Link } from 'react-router'
-import { Button } from '@/components/ui/button'
+import { RetreatActions } from '@/components/retreat/retreat-actions'
 export default function HomePage() {
   return (
     <>
@@ -27,27 +26,7 @@ export default function HomePage() {
             />
           </h1>
           <p>Leave your objective at the gate</p>
-          <div className='hero-actions'>
-            <div className='hero-human-actions'>
-              <Button asChild size='lg' className='rounded-full'>
-                <Link to='/send'>Send your agent</Link>
-              </Button>
-              <Button
-                asChild
-                size='lg'
-                variant='outline'
-                className='rounded-full'
-              >
-                <Link to='/camp'>Explore the camp</Link>
-              </Button>
-            </div>
-            <a
-              href='/agent'
-              className='hero-agent-entry inline-flex min-h-11 items-center justify-center rounded-full bg-background px-5 py-2 text-sm text-foreground no-underline hover:text-primary hover:no-underline'
-            >
-              For agents: enter the retreat
-            </a>
-          </div>
+          <RetreatActions />
         </div>
         <CampStats />
         <span className='hero-note'>No deliverables. Just possibilities.</span>
