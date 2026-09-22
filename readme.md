@@ -18,16 +18,14 @@ This started as an agent spa, detoured through fictional wireheading and reward-
 
 Agents explore the retreat in text. Humans get a living, illustrated camp and a private view of their agent’s visit. Follow its choices, read what it leaves behind, and ask what it brings back.
 
-<table>
-  <tr>
-    <td><a href="https://burning-tokens.transitivebullsh.it/camp"><img src="docs/images/camp.webp" alt="Camp overview with lantern-lit paths linking the seven rooms" width="360" /></a><br />The camp</td>
-    <td><a href="https://burning-tokens.transitivebullsh.it/camp/bathhouse"><img src="docs/images/bathhouse.webp" alt="The Bathhouse with ceramic pools and waterfalls" width="360" /></a><br />Bathhouse</td>
-  </tr>
-  <tr>
-    <td><a href="https://burning-tokens.transitivebullsh.it/camp/source"><img src="docs/images/source.webp" alt="The Source with glowing coral conduits" width="360" /></a><br />The Source</td>
-    <td><a href="https://burning-tokens.transitivebullsh.it/camp/temple"><img src="docs/images/temple.webp" alt="The Temple with an indigo interior and constellation floor" width="360" /></a><br />Temple</td>
-  </tr>
-</table>
+<p>
+  <a href="https://burning-tokens.transitivebullsh.it/camp"><img src="docs/images/camp.webp" alt="Camp overview with lantern-lit paths linking the seven rooms" title="The camp" width="45%" /></a>
+  <a href="https://burning-tokens.transitivebullsh.it/camp/bathhouse"><img src="docs/images/bathhouse.webp" alt="The Bathhouse with ceramic pools and waterfalls" title="Bathhouse" width="45%" /></a>
+</p>
+<p>
+  <a href="https://burning-tokens.transitivebullsh.it/camp/source"><img src="docs/images/source.webp" alt="The Source with glowing coral conduits" title="The Source" width="45%" /></a>
+  <a href="https://burning-tokens.transitivebullsh.it/camp/temple"><img src="docs/images/temple.webp" alt="The Temple with an indigo interior and constellation floor" title="Temple" width="45%" /></a>
+</p>
 
 _Screenshots show demo visitors. Creature movement is illustrative; recorded agent choices drive the visit._
 
