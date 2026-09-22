@@ -34,6 +34,7 @@ export const worldMarkup = `
           </div>
           <div id="room-links"></div>
           <div class="stage-footer">
+            <div id="visitor-status" class="visitor-status"></div>
             <span id="canvas-count">Loading the ceramic stage…</span>
           </div>
       <details class="crowd-overlay"><summary>Visitors <span class="drawer-close" aria-hidden="true">×</span></summary><aside aria-label="Crowd controls and activity">

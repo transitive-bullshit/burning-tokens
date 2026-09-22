@@ -1217,3 +1217,20 @@
     overflow-wrap: anywhere;
   }
 }
+
+.world .stage-footer {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+.world .visitor-status:empty {
+  display: none;
+}
+.world .visitor-status {
+  max-width: min(30rem, 100%);
+  padding: 0.4rem 0.65rem;
+  border: 1px solid #fff2;
+  border-radius: 0.5rem;
+  background: #151632ed;
+  color: #fff0cf;
+  font-size: 0.75rem;
+}

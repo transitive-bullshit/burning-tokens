@@ -27,9 +27,11 @@ export function World({
   onNavigate?: (scene: SceneId) => void
 }) {
   const root = useRef<HTMLDivElement>(null)
+  const [statusTarget, setStatusTarget] = useState<Element | null>(null)
   const [controlsTarget, setControlsTarget] = useState<Element | null>(null)
   const attachRoot = useCallback((element: HTMLDivElement | null) => {
     root.current = element
+    setStatusTarget(element?.querySelector('#visitor-status') ?? null)
     setControlsTarget(
       element?.querySelector('#visitor-display-controls') ?? null
     )
@@ -44,6 +46,11 @@ export function World({
   const [error, setError] = useState(false)
   const [demo, setDemo] = useState(() => loadWorldPreferences().demo)
   const live = Boolean(followed) || !demo
+  const liveMode = useRef(live)
+  useEffect(() => {
+    liveMode.current = live
+    refreshPopulation.current?.()
+  }, [live])
   const [status, setStatus] = useState('Connecting to the camp…')
   useEffect(() => {
     let canceled = false
@@ -55,7 +62,7 @@ export function World({
       total: 0
     }
     const applyPopulation = () => {
-      if (!live || canceled) return
+      if (!liveMode.current || canceled) return
       const merged = withFollowedVisitor(snapshot, currentFollow.current, scene)
       dispose?.updatePopulation(
         merged.visitors,
@@ -63,14 +70,18 @@ export function World({
         merged.selectedId
       )
     }
-    refreshPopulation.current = applyPopulation
+    refreshPopulation.current = () => {
+      dispose?.setLive(liveMode.current)
+      applyPopulation()
+      void poll()
+    }
     const controller = new AbortController()
     const element = root.current
     if (!element) return
     setError(false)
-    setStatus(live ? 'Connecting to the camp…' : 'Demo visitors')
+    setStatus(liveMode.current ? 'Connecting to the camp…' : 'Demo visitors')
     async function poll() {
-      if (canceled || !live || document.hidden || polling) return
+      if (canceled || !liveMode.current || document.hidden || polling) return
       polling = true
       clearTimeout(timer)
       try {
@@ -121,7 +132,7 @@ export function World({
           scene,
           (next) => (onNavigate ? onNavigate(next) : navigate(scenePath(next))),
           {
-            live,
+            live: liveMode.current,
             onFollow: currentFollow.current
               ? undefined
               : (publicId) => navigate(`/camp/visitors/${publicId}`)
@@ -141,16 +152,19 @@ export function World({
       document.removeEventListener('visibilitychange', onVisibility)
       dispose?.()
     }
-  }, [scene, navigate, live, onNavigate])
+  }, [scene, navigate, onNavigate])
   return (
     <div
       className={
         followed ? 'world-container world-following' : 'world-container'
       }
     >
-      <div className='mb-3 flex flex-wrap items-center justify-between gap-3 text-sm'>
-        <p role='status'>{live ? status : null}</p>
-      </div>
+      {statusTarget
+        ? createPortal(
+            live ? <span role='status'>{status}</span> : null,
+            statusTarget
+          )
+        : null}
       {!followed && controlsTarget
         ? createPortal(
             <label className='flex cursor-pointer select-none items-center gap-2'>
@@ -174,7 +188,6 @@ export function World({
         </p>
       ) : null}
       <div
-        key={live ? 'live' : 'demo'}
         ref={attachRoot}
         className='world'
         dangerouslySetInnerHTML={{ __html: worldMarkup }}
