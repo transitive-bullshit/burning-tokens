@@ -34,6 +34,7 @@ export default function RootLayout({
               height={72}
               draggable={false}
             />
+            <span className='header-logo-fire' aria-hidden='true' />
           </span>
         </Link>
         <nav

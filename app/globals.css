@@ -86,6 +86,7 @@ summary {
   -webkit-user-select: none;
 }
 .header-logo-art {
+  position: relative;
   display: grid;
   pointer-events: none;
   transform-origin: center;
@@ -97,6 +98,81 @@ summary {
 .header-logo-sunset {
   opacity: 0;
   transition: opacity 140ms ease;
+}
+/* Keep the lettering crisp while warm tongues of light rise inside it. */
+.header-logo-fire {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  mask: url('/brand/wordmark-cream.svg') center / 100% 100% no-repeat;
+  opacity: 0;
+  transition: opacity 140ms ease;
+}
+.header-logo-fire::before,
+.header-logo-fire::after {
+  content: '';
+  position: absolute;
+  inset: -100% -25%;
+  background:
+    radial-gradient(
+      ellipse at 20% 80%,
+      #fff0cf 0%,
+      #ffcc83 12%,
+      transparent 28%
+    ),
+    radial-gradient(
+      ellipse at 65% 50%,
+      #ffcc83 0%,
+      #ff7464 20%,
+      transparent 38%
+    ),
+    radial-gradient(
+      ellipse at 85% 85%,
+      #fff0cf 0%,
+      #ffcc83 10%,
+      transparent 25%
+    ),
+    #ff7464;
+  animation: logo-fire-rise 1800ms linear infinite;
+  animation-play-state: paused;
+}
+.header-logo-fire::after {
+  background:
+    radial-gradient(
+      ellipse at 35% 75%,
+      #fff0cf 0%,
+      #ffcc83 10%,
+      transparent 27%
+    ),
+    radial-gradient(ellipse at 75% 45%, #ffcc83 0%, transparent 30%);
+  animation-duration: 1300ms;
+  animation-delay: -650ms;
+}
+@keyframes logo-fire-rise {
+  0% {
+    transform: translate3d(-3%, 20%, 0) scaleX(1);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(3%, -20%, 0) scaleX(1.12);
+    opacity: 0;
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .header-home:hover:not(:focus-visible) .header-logo-fire {
+    opacity: 1;
+    transition-duration: 200ms;
+  }
+  .header-home:hover:not(:focus-visible) .header-logo-fire::before,
+  .header-home:hover:not(:focus-visible) .header-logo-fire::after {
+    animation-play-state: running;
+  }
 }
 @media (hover: hover) and (pointer: fine) {
   .header-home:hover .header-logo-sunset {
