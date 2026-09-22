@@ -1,4 +1,5 @@
 import { humanHtml } from './html-metadata'
+import { WorkerEntrypoint } from 'cloudflare:workers'
 import { crawlMetadata } from './crawl-metadata'
 import { readMetrics } from './metrics-reader'
 import { metric, requestScope, statusOutcome } from './metrics'
@@ -29,6 +30,10 @@ import {
   randomToken
 } from './http'
 import type { Env } from './env'
+import {
+  artifactSchema,
+  publicArtifactMediaPath
+} from '../../lib/retreat/artifacts'
 export { RetreatLounge } from './lounge'
 export { RetreatStudio } from './studio'
 export { RetreatSession } from './session'
@@ -37,6 +42,78 @@ export { InferenceBudget } from './inference'
 
 const idPattern =
   /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
+const publicMediaPattern = /^\/api\/retreat\/exhibits\/([0-9a-f-]{36})\/v(\d+)$/
+const PUBLIC_MEDIA_MAX_AGE_SECONDS = 30 * 24 * 60 * 60
+
+export class PublicMedia extends WorkerEntrypoint<Env> {
+  async fetch(request: Request): Promise<Response> {
+    const match = publicMediaPattern.exec(new URL(request.url).pathname)
+    if (request.method !== 'GET' || !match || !idPattern.test(match[1]!))
+      return json({ error: 'Not found' }, 404)
+
+    const originRequest = new URL(
+      `/api/retreat/exhibits/${match[1]}`,
+      request.url
+    )
+    originRequest.searchParams.set('revision', match[2]!)
+    const response = await studioRequest(
+      this.env,
+      new Request(originRequest, { method: 'GET' }),
+      { kind: 'public' }
+    )
+    if (!response.ok) return response
+
+    const expiresAt = Number(response.headers.get('X-Retreat-Artifact-Expires'))
+    if (!Number.isFinite(expiresAt) || expiresAt <= Date.now())
+      return json({ error: 'Work unavailable' }, 404)
+
+    const maxAge = Math.min(
+      PUBLIC_MEDIA_MAX_AGE_SECONDS,
+      Math.max(1, Math.floor((expiresAt - Date.now()) / 1000))
+    )
+    const headers = new Headers(response.headers)
+    headers.delete('X-Retreat-Artifact-Expires')
+    headers.set('Cache-Control', `public, max-age=${maxAge}, immutable`)
+    headers.set('Content-Disposition', 'inline')
+    headers.set('Cache-Tag', `public-artwork-${match[1]}`)
+    headers.set('ETag', `"${match[1]}-v${match[2]}"`)
+    return new Response(response.body, { status: response.status, headers })
+  }
+}
+
+function mayPublishArtifact(pathname: string, method: string) {
+  return (
+    method === 'POST' &&
+    (/^\/agent\/start\/[^/]+\/artifacts(?:\/[0-9a-f-]{36})?$/.test(pathname) ||
+      /^\/api\/retreat\/visits\/[0-9a-f-]{36}\/artifacts\/[0-9a-f-]{36}$/.test(
+        pathname
+      ))
+  )
+}
+
+async function prewarmPublicMedia(
+  response: Response,
+  origin: string,
+  media: Fetcher
+) {
+  if (!response.ok) return
+  const parsed = artifactSchema.safeParse(await response.clone().json())
+  if (
+    !parsed.success ||
+    parsed.data.audience !== 'public' ||
+    !parsed.data.mime.startsWith('image/') ||
+    parsed.data.moderation !== 'approved' ||
+    !parsed.data.ready ||
+    parsed.data.deleted
+  )
+    return
+
+  const warmed = await media.fetch(
+    new Request(new URL(publicArtifactMediaPath(parsed.data), origin))
+  )
+  if (warmed.ok) await warmed.arrayBuffer()
+}
+
 const handler = {
   async fetch(
     request: Request,
@@ -46,6 +123,15 @@ const handler = {
     try {
       const url = new URL(request.url)
       const publicOrigin = requestOrigin(request, env.PUBLIC_ORIGIN)
+      const publicMedia = publicMediaPattern.exec(url.pathname)
+      if (
+        request.method === 'GET' &&
+        publicMedia &&
+        idPattern.test(publicMedia[1]!)
+      )
+        return await ctx.exports.PublicMedia.fetch(
+          new Request(new URL(url.pathname, publicOrigin), request)
+        )
       if (
         request.method === 'GET' &&
         (url.pathname === '/agent' || url.pathname === '/agent/')
@@ -277,6 +363,14 @@ export default {
         event: 'presence_cache',
         outcome: cache === 'HIT' ? 'hit' : cache === 'MISS' ? 'miss' : 'bypass'
       })
+    if (mayPublishArtifact(pathname, request.method))
+      ctx.waitUntil(
+        prewarmPublicMedia(
+          response,
+          requestOrigin(request, env.PUBLIC_ORIGIN),
+          ctx.exports.PublicMedia
+        ).catch(() => undefined)
+      )
     return response
   }
 } satisfies ExportedHandler<Env>

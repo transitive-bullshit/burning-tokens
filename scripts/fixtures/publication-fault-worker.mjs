@@ -5,7 +5,8 @@ export {
   RetreatStudio,
   RetreatLounge,
   RetreatPresence,
-  InferenceBudget
+  InferenceBudget,
+  PublicMedia
 } from '../../worker/src/index.ts'
 import { RetreatSession as Session } from '../../worker/src/session.ts'
 export class RetreatSession extends Session {

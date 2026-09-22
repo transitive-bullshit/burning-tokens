@@ -40,6 +40,7 @@ try {
     socket.once('error', reject)
   })
   let nextId = 0
+  let imageBytes = ''
   const pending = new Map()
   socket.on('message', (data) => {
     const message = JSON.parse(
@@ -50,6 +51,30 @@ try {
           : Buffer.from(data)
       ).toString('utf8')
     )
+    if (
+      message.method === 'Fetch.requestPaused' &&
+      /\/api\/retreat\/exhibits\/[0-9a-f-]{36}\/v\d+$/.test(
+        message.params.request.url
+      )
+    ) {
+      void call(
+        'Fetch.fulfillRequest',
+        {
+          requestId: message.params.requestId,
+          responseCode: 200,
+          responseHeaders: [
+            { name: 'Content-Type', value: 'image/png' },
+            {
+              name: 'Cache-Control',
+              value: 'public, max-age=2592000, immutable'
+            }
+          ],
+          body: imageBytes
+        },
+        message.sessionId
+      )
+      return
+    }
     const request = pending.get(message.id)
     if (!request) return
     clearTimeout(request.timer)
@@ -97,9 +122,21 @@ try {
     }
     throw new Error(`Browser condition not met: ${expression}`)
   }
-  const imageBytes = (
-    await readFile('scripts/fixtures/media/moon.png')
-  ).toString('base64')
+  imageBytes = (await readFile('scripts/fixtures/media/moon.png')).toString(
+    'base64'
+  )
+  await call(
+    'Fetch.enable',
+    {
+      patterns: [
+        {
+          urlPattern: '*/api/retreat/exhibits/*/v*',
+          requestStage: 'Request'
+        }
+      ]
+    },
+    session
+  )
   const work = {
     id: '11111111-1111-4111-8111-111111111111',
     revision: 1,
@@ -176,8 +213,26 @@ try {
     "[...document.querySelectorAll('button')].find(b=>b.textContent==='View work').click()"
   )
   await until(
-    'document.querySelector(\'img[src^="blob:"]\')?.naturalWidth === 128'
+    'document.querySelector(\'img[src*="/api/retreat/exhibits/"][src*="/v1"]\')?.naturalWidth === 128'
   )
+  assert.ok(
+    await evaluate(
+      'Boolean(document.querySelector(\'button[aria-label^="Enlarge image"]\'))'
+    )
+  )
+  await evaluate(
+    'document.querySelector(\'button[aria-label^="Enlarge image"]\').click()'
+  )
+  await until(
+    "document.querySelector('[role=dialog] img')?.naturalWidth === 128"
+  )
+  assert.ok(
+    await evaluate("document.body.innerText.includes('Download image')")
+  )
+  await evaluate(
+    'document.querySelector(\'button[aria-label^="Zoom out image"]\').click()'
+  )
+  await until("!document.querySelector('[role=dialog]')")
   await call(
     'Emulation.setDeviceMetricsOverride',
     { width: 390, height: 844, deviceScaleFactor: 1, mobile: true },
@@ -198,7 +253,7 @@ try {
   await until("document.body.innerText.includes('temporarily unavailable')")
   assert.equal(await evaluate("document.querySelectorAll('li').length"), 0)
   console.log(
-    'Gallery browser checks passed: public-only metadata, inert text, keyboard controls, unsharing refresh and fail-closed errors. API responses are browser fixtures.'
+    'Gallery browser checks passed: public-only metadata, direct revisioned images, accessible image zoom, inert text, keyboard controls, unsharing refresh and fail-closed errors. API responses are browser fixtures.'
   )
 } finally {
   socket?.close()

@@ -204,6 +204,105 @@ summary {
     transition: none;
   }
 }
+
+.uploaded-image-lightbox-trigger {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0.75rem;
+  background: transparent;
+  cursor: zoom-in;
+}
+.uploaded-image-lightbox-trigger:focus-visible {
+  outline-width: 1px;
+}
+.uploaded-image-lightbox {
+  --lightbox-caption-space: 0px;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  overflow: visible;
+  padding: 4rem 1.5rem 1.5rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  animation: none;
+}
+.uploaded-image-lightbox:has(.uploaded-image-lightbox-caption) {
+  --lightbox-caption-space: calc(min(80px, 10dvh) + 1rem);
+}
+.uploaded-image-lightbox-overlay {
+  background: color-mix(in srgb, var(--background) 92%, transparent);
+  backdrop-filter: blur(12px);
+}
+.uploaded-image-lightbox-frame {
+  position: relative;
+  width: min(
+    100%,
+    1440px,
+    calc((100dvh - 168px - var(--lightbox-caption-space)) * var(--image-ratio))
+  );
+  aspect-ratio: var(--image-ratio);
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  margin-inline: auto;
+  transform-origin: top left;
+  cursor: zoom-out;
+}
+.uploaded-image-lightbox-image {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: auto;
+}
+.uploaded-image-lightbox-full {
+  transition: opacity 160ms ease-out;
+}
+.uploaded-image-lightbox-caption {
+  max-height: min(80px, 10dvh);
+  overflow-y: auto;
+  margin: 0;
+  text-align: center;
+  white-space: pre-wrap;
+}
+.uploaded-image-lightbox [data-slot='dialog-close'] {
+  top: 0.75rem;
+  right: 0.75rem;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  background: transparent;
+  color: var(--foreground);
+}
+@media (max-width: 600px) {
+  .uploaded-image-lightbox {
+    padding-inline: 0.75rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .uploaded-image-lightbox,
+  .uploaded-image-lightbox-overlay {
+    animation: none;
+    transition: none;
+  }
+  .uploaded-image-lightbox-full {
+    transition: none;
+  }
+}
 .site-footer {
   display: flex;
   flex-wrap: wrap;

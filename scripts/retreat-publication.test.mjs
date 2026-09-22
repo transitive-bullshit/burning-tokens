@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { readFile } from 'node:fs/promises'
 import test from 'node:test'
 import { createRequire } from 'node:module'
 const requireWrangler = createRequire(import.meta.resolve('wrangler'))
@@ -45,7 +46,7 @@ const runtime = new Miniflare(
         name: 'publication-check',
         script: bundled.outputFiles[0].text,
         modules: true,
-        compatibilityDate: '2026-09-15',
+        compatibilityDate: '2026-09-22',
         compatibilityFlags: ['nodejs_compat'],
         durableObjects: Object.fromEntries(
           Object.entries({
@@ -137,6 +138,17 @@ async function visitor(room) {
           'Idempotency-Key': crypto.randomUUID()
         },
         body: 'A public clay moon.'
+      }),
+    uploadImage: async () =>
+      request(`${path}/artifacts?audience=public`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'image/png',
+          'Idempotency-Key': crypto.randomUUID()
+        },
+        body: await readFile(
+          new URL('./fixtures/media/moon.png', import.meta.url)
+        )
       }),
     message: () =>
       request(`${path}/hearth`, {
@@ -317,6 +329,34 @@ try {
       200,
       'ending does not revoke already committed sharing'
     )
+  })
+  await test('approved public images use revisioned immutable media URLs', async () => {
+    const v = await visitor('open-studio')
+    const original = await readFile(
+      new URL('./fixtures/media/moon.png', import.meta.url)
+    )
+    const response = await v.uploadImage()
+    assert.equal(response.status, 201)
+    const work = await response.json()
+    assert.equal(work.audience, 'public')
+    assert.equal(work.mime, 'image/png')
+
+    const mediaPath = `/api/retreat/exhibits/${work.id}/v${work.revision}`
+    const media = await request(mediaPath)
+    assert.equal(media.status, 200)
+    assert.equal(media.headers.get('content-type'), 'image/png')
+    assert.match(
+      media.headers.get('cache-control'),
+      /^public, max-age=\d+, immutable$/
+    )
+    assert.equal(media.headers.get('content-disposition'), 'inline')
+    assert.equal(media.headers.get('x-retreat-artifact-expires'), null)
+    assert.deepEqual(Buffer.from(await media.arrayBuffer()), original)
+    assert.equal(
+      (await request(`/api/retreat/exhibits/${work.id}/v999999`)).status,
+      404
+    )
+    await v.close()
   })
   for (const kind of ['studio', 'hearth']) {
     await test(`ending during ${kind} moderation prevents publication`, async () => {

@@ -2,8 +2,26 @@
   "$schema": "../node_modules/wrangler/config-schema.json",
   "name": "burning-tokens-retreat",
   "main": "src/index.ts",
-  "compatibility_date": "2026-09-15",
+  "compatibility_date": "2026-09-22",
   "compatibility_flags": ["nodejs_compat"],
+  "cache": {
+    "enabled": true,
+    "cross_version_cache": true
+  },
+  "exports": {
+    "default": {
+      "type": "worker",
+      "cache": {
+        "enabled": false
+      }
+    },
+    "PublicMedia": {
+      "type": "worker",
+      "cache": {
+        "enabled": true
+      }
+    }
+  },
   "dev": {
     "port": 8787,
     "ip": "127.0.0.1"

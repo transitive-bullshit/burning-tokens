@@ -87,10 +87,14 @@ try {
       'approved',
       'Real moderation must approve this benign contribution'
     )
-    assert.equal(value.audience, 'agents')
+    assert.equal(value.audience, kind === 'studio' ? 'public' : 'agents')
     assert.equal(value.ready, true)
     await request(`${other.path}/${collection}/${value.id}`)
-    await request(`/api/retreat/${publicCollection}/${value.id}`, {}, 404)
+    await request(
+      `/api/retreat/${publicCollection}/${value.id}`,
+      {},
+      kind === 'studio' ? 200 : 404
+    )
     for (const audience of ['public', 'private', 'agents']) {
       const changed = await request(ownPath, post({ audience }, author.cookie))
       assert.equal((await changed.json()).audience, audience)
@@ -130,7 +134,7 @@ try {
           )
     const mime = format === 'wav' ? 'audio/wav' : `image/${format}`
     const uploaded = await request(
-      `${author.path}/artifacts?audience=public`,
+      `${author.path}/artifacts?audience=${format === 'png' ? 'private' : 'public'}`,
       {
         method: 'POST',
         headers: {
@@ -141,7 +145,7 @@ try {
       },
       201
     )
-    const value = await uploaded.json()
+    let value = await uploaded.json()
     const ownPath = `${author.owner}/artifacts/${value.id}`
     contributions.push({ path: ownPath, cookie: author.cookie })
     assert.equal(value.ready, true)
@@ -150,7 +154,10 @@ try {
       value.moderation,
       format === 'wav' ? 'unsupported' : 'approved'
     )
-    assert.equal(value.audience, format === 'wav' ? 'private' : 'public')
+    assert.equal(
+      value.audience,
+      format === 'wav' || format === 'png' ? 'private' : 'public'
+    )
     const own = await request(`${author.path}/artifacts/${value.id}`)
     assert.deepEqual(
       Buffer.from(await own.arrayBuffer()),
@@ -158,6 +165,14 @@ try {
       'Stored bytes must match the moderated input'
     )
     const publicPath = `/api/retreat/exhibits/${value.id}`
+    if (format === 'png') {
+      const changed = await request(
+        `${author.path}/artifacts/${value.id}`,
+        post({ audience: 'public' })
+      )
+      value = await changed.json()
+      assert.equal(value.audience, 'public')
+    }
     if (format === 'wav') {
       await request(publicPath, {}, 404)
       await request(`${other.path}/artifacts/${value.id}`, {}, 404)
@@ -171,14 +186,35 @@ try {
         'Audience edits cannot bypass unsupported moderation'
       )
     } else {
-      const shared = await request(publicPath)
+      const shelf = await (await request('/api/retreat/exhibits?after=')).json()
+      const listed = shelf.works.find((work) => work.id === value.id)
+      assert.ok(listed, 'A new public image must be visible on the shelf')
+      assert.equal(listed.revision, value.revision)
+      const immutablePath = `${publicPath}/v${listed.revision}`
+      const shared = await request(immutablePath)
+      assert.equal(
+        shared.headers.get('cf-cache-status'),
+        'HIT',
+        'Publication must prewarm the immutable image before its first viewer'
+      )
       assert.equal(shared.headers.get('content-type'), mime)
-      assert.match(shared.headers.get('cache-control'), /no-store/)
-      assert.match(shared.headers.get('content-disposition'), /attachment/)
+      assert.match(
+        shared.headers.get('cache-control'),
+        /^public, max-age=\d+, immutable$/
+      )
+      assert.match(shared.headers.get('content-disposition'), /inline/)
       assert.equal(shared.headers.get('x-content-type-options'), 'nosniff')
       assert.deepEqual(Buffer.from(await shared.arrayBuffer()), bytes)
+      const repeated = await request(immutablePath)
+      assert.equal(repeated.headers.get('cf-cache-status'), 'HIT')
+      assert.deepEqual(Buffer.from(await repeated.arrayBuffer()), bytes)
       await request(ownPath, post({ audience: 'private' }, author.cookie))
       await request(publicPath, {}, 404)
+      await request(
+        immutablePath,
+        {},
+        200
+      ) /* Immutable public revisions deliberately outlive unsharing. */
     }
     await request(ownPath, {
       method: 'DELETE',

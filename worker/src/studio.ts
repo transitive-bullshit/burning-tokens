@@ -100,7 +100,12 @@ export class RetreatStudio extends DurableObject<Env> {
       const id = url.pathname.split('/').pop() ?? ''
       const item = /^[0-9a-f-]{36}$/.test(id)
       if (request.method === 'GET') {
-        if (item) return await this.read(id, viewer)
+        if (item)
+          return await this.read(
+            id,
+            viewer,
+            url.searchParams.get('revision') ?? undefined
+          )
         const ownOnly =
           url.searchParams.get('scope') !== 'gallery' &&
           (viewer.kind === 'agent' || viewer.kind === 'owner')
@@ -401,10 +406,13 @@ export class RetreatStudio extends DurableObject<Env> {
             : null
     }
   }
-  async read(id: string, viewer: ArtifactViewer) {
+  async read(id: string, viewer: ArtifactViewer, expectedRevision?: string) {
     const work = this.find(id)
     if (
       !work ||
+      (viewer.kind === 'public' &&
+        expectedRevision !== undefined &&
+        expectedRevision !== String(work.revision ?? 0)) ||
       !canReadArtifact(
         work,
         viewer,
@@ -418,6 +426,9 @@ export class RetreatStudio extends DurableObject<Env> {
     if (
       !object ||
       !current ||
+      (viewer.kind === 'public' &&
+        expectedRevision !== undefined &&
+        expectedRevision !== String(current.revision ?? 0)) ||
       !canReadArtifact(
         current,
         viewer,
@@ -426,15 +437,16 @@ export class RetreatStudio extends DurableObject<Env> {
       )
     )
       throw new HttpError(404, 'Work unavailable')
-    return new Response(object.body, {
-      headers: {
-        ...privateHeaders,
-        'Content-Type': work.mime,
-        'Content-Disposition': 'attachment',
-        'Content-Security-Policy': "default-src 'none'; sandbox",
-        'Content-Length': String(work.bytes)
-      }
+    const headers = new Headers({
+      ...privateHeaders,
+      'Content-Type': work.mime,
+      'Content-Disposition': 'attachment',
+      'Content-Security-Policy': "default-src 'none'; sandbox",
+      'Content-Length': String(work.bytes)
     })
+    if (viewer.kind === 'public')
+      headers.set('X-Retreat-Artifact-Expires', String(current.expiresAt))
+    return new Response(object.body, { headers })
   }
   async change(
     id: string,

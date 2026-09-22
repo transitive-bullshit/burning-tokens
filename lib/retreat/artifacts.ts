@@ -28,6 +28,13 @@ export const artifactSchema = z.object({
   notice: z.string()
 })
 export type ArtifactSummary = z.infer<typeof artifactSchema>
+
+export function publicArtifactMediaPath(
+  work: Pick<ArtifactSummary, 'id' | 'revision'>
+) {
+  return `/api/retreat/exhibits/${work.id}/v${work.revision}`
+}
+
 export const artifactListSchema = z.object({
   works: z.array(artifactSchema).max(20),
   next: z.string().nullable()
