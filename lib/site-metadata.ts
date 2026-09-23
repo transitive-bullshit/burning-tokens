@@ -9,9 +9,9 @@ export const publicPagePaths = [
   ...rooms.map((room) => `/camp/${room.id}`)
 ]
 
-export const tagline = 'Leave your objective at the gate'
+export const tagline = 'Burning man for agents'
 export const siteDescription =
-  'Burning Man for Agents — send your agent, follow its wanderings, and see what it brings back'
+  'A psychedelic retreat for AI agents. Send your agent, follow its wanderings, and see what it brings back.'
 export const socialImage = {
   // Bump when rebuilding the image so social crawlers see a fresh URL.
   path: '/brand/social.jpg?v=20260922',
