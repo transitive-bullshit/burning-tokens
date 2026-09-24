@@ -6,7 +6,7 @@ User review: six changes accepted. UI-05 was rejected and reverted; its before/a
 
 The evidence and verification below describe the original audit proposal. UI-05-specific screenshots, contrast/state improvements and checks do not describe the final retained implementation.
 
-[Open the annotated before/after review](../../design-plans/route-audit-2026-09-24/index.html). Each of the seven groups has an independent Accept / Reject / Discuss choice and a JSON export. Decisions are local review notes; they do not apply or revert code.
+[Open the annotated before/after review](../../work/design-plans/route-audit-2026-09-24/index.html). Each of the seven groups has an independent Accept / Reject / Discuss choice and a JSON export. Decisions are local review notes; they do not apply or revert code.
 
 Base commit: `e4a89d8a9b8f1cc45da63cb55e8015874d8e3792`. The accepted changes are prepared for the review PR; no deployment was performed.
 
@@ -54,7 +54,7 @@ All rows were captured before and after at **320 × 900, 390 × 900, 768 × 900,
 
 Populated public/private/admin captures use sample API responses confined to Chrome. They do not authenticate against or read production private content. The sample owner stream is not a real backend connection; backend live correctness is outside this audit. Existing demo creatures and animated scenery can move between captures. No production mutations, publication, deployment, capacity tests or load tests ran.
 
-Raw captures and scripts are retained locally under `work/design-audit/` (ignored by Git). The compact representative crops and review UI are tracked under `design-plans/route-audit-2026-09-24/`. Crops are compressed WebP derived from real screenshots. Yellow annotations are removable HTML overlays; no screenshot content was generated or retouched.
+Raw captures and scripts are retained locally under `work/design-audit/` (ignored by Git). The compact representative crops and review UI are retained locally (ignored by Git) under `work/design-plans/route-audit-2026-09-24/`. Crops are compressed WebP derived from real screenshots. Yellow annotations are removable HTML overlays; no screenshot content was generated or retouched.
 
 ## Audit health
 

@@ -6,7 +6,7 @@ User review: all four Send changes accepted and retained.
 
 All four proposed groups are included in the final implementation.
 
-[Open the annotated before/after review](../../design-plans/send-audit-2026-09-24/index.html). Four individually reviewable groups, with local Accept / Reject / Discuss decisions and JSON export. This extends the [major-route audit](ui-route-audit-2026-09-24.md); its earlier screenshots remain unchanged.
+[Open the annotated before/after review](../../work/design-plans/send-audit-2026-09-24/index.html). Four individually reviewable groups, with local Accept / Reject / Discuss decisions and JSON export. This extends the [major-route audit](ui-route-audit-2026-09-24.md); its earlier screenshots remain unchanged.
 
 ## Design language and evidence
 
@@ -24,7 +24,7 @@ Used better-ui, Impeccable's clarification guidance, improve-ui's contract/runti
 
 Captured **16 before + 16 after screenshots**: setup, generated prompt/waiting, successful copy and failed copy at **320, 390, 768 and 1440px**. Same local app and browser-only sample invitation/stream responses. Prompts contain an unusable `example.test` link, not real credentials. Recent-visit sample state is present in some setup captures; the current invitation is deliberately omitted from the new ready state.
 
-Raw PNGs and capture/verification scripts: `work/send-audit/` (local, ignored). Tracked representative WebP crops: `design-plans/send-audit-2026-09-24/images/`. Comparisons crop corresponding task regions at their respective vertical positions because the main improvement moves those regions upward. Yellow boxes are removable HTML annotations. The focus ring on the new step-2 heading and selected textarea text are real UI states.
+Raw PNGs and capture/verification scripts: `work/send-audit/` (local, ignored). Local, ignored representative WebP crops: `work/design-plans/send-audit-2026-09-24/images/`. Comparisons crop corresponding task regions at their respective vertical positions because the main improvement moves those regions upward. Yellow boxes are removable HTML annotations. The focus ring on the new step-2 heading and selected textarea text are real UI states.
 
 ## Verification
 
