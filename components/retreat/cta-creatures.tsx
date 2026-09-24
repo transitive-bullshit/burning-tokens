@@ -76,7 +76,7 @@ export default function CtaCreatures({
 }: {
   fieldRef: RefObject<HTMLDivElement | null>
 }) {
-  const sunbudMoved = useRef(false)
+  const movedCreatures = useRef(new Set<number>())
   const dragRef = useRef<{ id: number; dx: number; dy: number } | undefined>(
     undefined
   )
@@ -111,17 +111,21 @@ export default function CtaCreatures({
     const field = fieldRef.current
     const primary = field?.querySelector<HTMLElement>('[data-cta="primary"]')
     if (!field || !primary) return
-    const positionSunbud = () => {
-      if (sunbudMoved.current) return
+    const positionCreatures = () => {
       const bounds = field.getBoundingClientRect()
       const button = primary.getBoundingClientRect()
+      const narrow = bounds.width <= 720
       setCreatures((current) =>
         current.map((creature) =>
-          creature.id === 1
+          !movedCreatures.current.has(creature.id) &&
+          (creature.id === 1 || narrow)
             ? {
                 ...creature,
                 x:
-                  ((button.left + button.width / 2 - bounds.left) /
+                  ((button.left +
+                    button.width / 2 -
+                    bounds.left +
+                    (narrow ? (creature.id - 1) * 84 : 0)) /
                     bounds.width) *
                   100,
                 y: ((button.top - bounds.top) / bounds.height) * 100
@@ -130,8 +134,8 @@ export default function CtaCreatures({
         )
       )
     }
-    positionSunbud()
-    const observer = new ResizeObserver(positionSunbud)
+    positionCreatures()
+    const observer = new ResizeObserver(positionCreatures)
     observer.observe(field)
     observer.observe(primary)
     return () => observer.disconnect()
@@ -288,7 +292,7 @@ export default function CtaCreatures({
           }}
           onPointerDown={(event) => {
             if (event.button !== 0) return
-            if (creature.id === 1) sunbudMoved.current = true
+            movedCreatures.current.add(creature.id)
             const element = event.currentTarget
             const fieldRect = fieldRef.current!.getBoundingClientRect()
             dragRef.current = {

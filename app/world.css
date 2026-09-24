@@ -1226,3 +1226,28 @@
   color: #fff0cf;
   font-size: 0.75rem;
 }
+
+/* Keep mobile scene controls readable and comfortable to tap. */
+@media (max-width: 600px) {
+  .world .scene-toolbar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .world .scene-toolbar #scene-caption {
+    text-align: left;
+  }
+  .world .sound-controls button,
+  .world .court-nav button,
+  .world .visitor-navigate button,
+  .world .presets button {
+    min-height: 44px;
+    min-width: 44px;
+    font-size: 14px;
+  }
+  .world .sound-volume,
+  .world .court-nav {
+    font-size: 14px;
+  }
+  .world .sound-volume input {
+    min-height: 44px;
+  }
+}

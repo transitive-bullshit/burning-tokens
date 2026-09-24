@@ -6,7 +6,7 @@ import { VisitArtifacts } from './visit-artifacts'
 import { useVisitArtifacts } from './use-visit-artifacts'
 import { ReturnPostcard } from './return-postcard'
 import { VisitJournal } from './visit-journal'
-import { useSearchParams } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
@@ -297,8 +297,14 @@ export function WatchVisit({ id }: { id: string }) {
             ) : null}
           </div>
         </div>
+      ) : error ? (
+        <Button asChild variant='outline' className='self-start'>
+          <Link to='/send'>Back to invitations</Link>
+        </Button>
       ) : (
-        <p className='text-muted-foreground'>Opening your private journal…</p>
+        <p role='status' className='text-muted-foreground'>
+          Opening your private journal…
+        </p>
       )}
     </section>
   )

@@ -173,6 +173,10 @@ The shared Portal Spark CTA section on the homepage and About uses the fixed tri
 
 Sunbud starts centered directly above the primary CTA, with dedicated space below the homepage subtitle: a 10rem gap on desktop and 7rem on mobile. Its starting position tracks the button on resize until the visitor picks it up.
 
+In CTA containers at most 720px wide, untouched Loopseed and Oddseed also perch above the primary action, beside Sunbud, so they do not cover the stacked button labels. Dragged creatures retain their user-selected positions.
+
+The shared `font-serif` token resolves to bundled Fraunces, with the editorial optical settings and 600-weight headings. About uses a centered 48rem reading column. The header keeps the wordmark at 180px and moves navigation to a separate row at widths up to 360px; current sections have an underline and `aria-current`. Mobile buttons, toggles and scene toolbar controls use at least 44px targets, and room navigation labels use 14px type.
+
 Links presented as buttons or pills never use text underlines, including on hover. Use color, surface and focus treatments for interaction feedback. This applies to the homepage agent-entry pill and shared Button component.
 
 ## Social share image
