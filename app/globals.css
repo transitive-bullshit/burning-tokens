@@ -19,6 +19,7 @@
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
   --font-sans: var(--font-space);
+  --font-serif: var(--font-fraunces), Georgia, serif;
 }
 :root {
   --font-space: 'Space Grotesk';
@@ -447,7 +448,8 @@ summary {
   letter-spacing: 0.14em;
   margin-bottom: 0.7rem;
 }
-.page-intro h1 {
+.page-intro h1,
+.about-page h1 {
   font-family: var(--font-fraunces), Georgia, serif;
   font-size: clamp(2rem, 4vw, 3.5rem);
   line-height: 1.05;
@@ -471,7 +473,10 @@ summary {
   border: 1px solid transparent;
   border-radius: 999px;
   padding: 0.55rem 0.9rem;
-  font-size: 0.8rem;
+  font-size: 0.875rem;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
   color: var(--muted-foreground);
 }
 .room-navigation a[aria-current='page'] {
@@ -498,8 +503,11 @@ summary {
   .site-header {
     height: 72px;
   }
-  .header-logo {
-    width: 160px;
+  .site-header {
+    gap: 0.75rem;
+  }
+  .site-header nav {
+    gap: 1rem;
   }
   .hero {
     min-height: calc(100svh - 72px);
@@ -628,5 +636,62 @@ summary {
   .hero:has(.camp-stats) {
     padding-bottom: 3rem;
     flex-direction: column;
+  }
+}
+
+/* Keep the bundled editorial face consistent across route compositions. */
+h1,
+h2,
+h3,
+.font-serif {
+  font-variation-settings:
+    'opsz' 72,
+    'SOFT' 80,
+    'WONK' 1;
+}
+h1,
+h2,
+h3 {
+  font-weight: 600;
+}
+.about-page {
+  max-width: 48rem;
+  margin-inline: auto;
+  padding: 4rem 1.5rem;
+}
+.site-header nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  white-space: nowrap;
+}
+.site-header nav a[aria-current] {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 0.4em;
+}
+@media (max-width: 360px) {
+  .site-header {
+    height: auto;
+    flex-direction: column;
+    gap: 0;
+    padding-block: 0.5rem;
+  }
+  .site-header nav {
+    gap: 2rem;
+  }
+}
+@media (max-width: 600px) {
+  [data-slot='button'],
+  [data-slot='toggle'],
+  [data-slot='toggle-group-item'] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  .site-footer a,
+  .camp-stats summary {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
   }
 }

@@ -1,0 +1,70 @@
+[
+  {
+    "id": "SEND-01",
+    "title": "Start with the invitation, not a wall of instructions",
+    "severity": "P2",
+    "scope": "/send \u00b7 setup",
+    "file": "app/send/page.tsx + components/retreat/invitation.tsx",
+    "why": "The long how-it-works section pushed setup far down the page. A short overview now leads directly into step 1, with agent-tool requirements in a supporting disclosure.",
+    "shot": "setup-390",
+    "crop": "390x800+0+90",
+    "before": "The first screen is dominated by explanations; setup is below it.",
+    "after": "Options and Create an invitation are visible much sooner.",
+    "boxes": [
+      [3, 32, 94, 64],
+      [3, 30, 94, 60]
+    ],
+    "size": "390 px mobile"
+  },
+  {
+    "id": "SEND-02",
+    "title": "Make copying a clear handoff",
+    "severity": "P2",
+    "scope": "/send \u00b7 generated prompt and copied state",
+    "file": "components/retreat/invitation.tsx",
+    "why": "The prompt appeared below old instructions, Copy competed with Watch, and Copied disappeared after three seconds. The new heading receives focus, Copy prompt leads the section, the field has a visible label, and persistent confirmation explicitly asks the human to paste and send. The current invitation no longer duplicates itself in recent visits.",
+    "shot": "copied-390",
+    "crop": ["390x560+0+825", "390x560+0+335"],
+    "before": "Prompt first, competing actions, and a transient Copied label.",
+    "after": "One leading copy action; persistent paste-and-send guidance.",
+    "boxes": [
+      [3, 49, 94, 28],
+      [3, 1, 94, 48]
+    ],
+    "size": "390 px mobile"
+  },
+  {
+    "id": "SEND-03",
+    "title": "Explain what waiting means",
+    "severity": "P2",
+    "scope": "/send \u00b7 waiting for arrival",
+    "file": "components/retreat/invitation.tsx",
+    "why": "The old connection message did not clearly distinguish a copied prompt from an agent opening it. A dedicated arrival section says what is being observed, asks the human to return to this tab, and explains automatic navigation. Troubleshooting and the optional visit-page link are secondary.",
+    "shot": "ready-390",
+    "crop": ["390x300+0+1100", "390x300+0+885"],
+    "before": "Watch competes with copying, followed by generic gate status.",
+    "after": "Waiting is a separate step with a clear condition and next action.",
+    "boxes": [
+      [3, 1, 94, 72],
+      [3, 3, 94, 84]
+    ],
+    "size": "390 px mobile"
+  },
+  {
+    "id": "SEND-04",
+    "title": "Make blocked clipboard access recoverable",
+    "severity": "P2",
+    "scope": "/send \u00b7 clipboard denied or unavailable",
+    "file": "components/retreat/invitation.tsx",
+    "why": "Copy errors appeared as a generic gate alert and left manual selection to the human. The new message is beside the prompt, the whole prompt receives focus and selection, and a successful copy retry clears the error. Copy failure does not discard or recreate the invitation.",
+    "shot": "copy-failed-390",
+    "crop": ["390x660+0+825", "390x660+0+475"],
+    "before": "Generic gate error and an unselected prompt.",
+    "after": "Specific manual-copy instructions and the entire prompt selected.",
+    "boxes": [
+      [3, 1, 94, 25],
+      [3, 17, 94, 68]
+    ],
+    "size": "390 px mobile"
+  }
+]

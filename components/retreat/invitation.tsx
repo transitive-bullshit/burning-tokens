@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { useVisitStream } from './use-visit-stream'
-import { Check, Copy, X } from 'lucide-react'
+import { Copy, X } from 'lucide-react'
 import { readRecentVisits, saveRecentVisits } from '@/lib/retreat/recent-visits'
 import { Button } from '@/components/ui/button'
 import {
@@ -24,10 +24,9 @@ export function Invitation() {
   const [visible, setVisible] = useState(true)
   const [pending, setPending] = useState(false)
   const [copied, setCopied] = useState(false)
-  const copiedTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(
-    undefined
-  )
-  useEffect(() => () => clearTimeout(copiedTimeout.current), [])
+  const promptField = useRef<HTMLTextAreaElement>(null)
+  const readyHeading = useRef<HTMLHeadingElement>(null)
+  const [copyError, setCopyError] = useState(false)
   const [error, setError] = useState<string>()
   const [invitation, setInvitation] = useState<{
     id: string
@@ -35,7 +34,15 @@ export function Invitation() {
     watchUrl: string
   }>()
   const navigate = useNavigate()
-  const { visit, connection } = useVisitStream(invitation?.id)
+  const {
+    visit,
+    connection,
+    error: arrivalError
+  } = useVisitStream(invitation?.id)
+  useEffect(() => {
+    if (invitation) readyHeading.current?.focus()
+  }, [invitation])
+  const previousVisits = recent.filter((entry) => entry.id !== invitation?.id)
   useEffect(() => {
     if (invitation && visit?.lastSeen !== null && visit?.lastSeen !== undefined)
       void navigate(invitation.watchUrl, { replace: true })
@@ -83,13 +90,12 @@ export function Invitation() {
     if (!invitation) return
     try {
       await navigator.clipboard.writeText(invitation.prompt)
-      clearTimeout(copiedTimeout.current)
+      setCopyError(false)
       setCopied(true)
-      copiedTimeout.current = setTimeout(() => setCopied(false), 3000)
     } catch {
-      setError(
-        'Copy is unavailable in this browser. Select and copy the invitation below.'
-      )
+      setCopyError(true)
+      promptField.current?.focus()
+      promptField.current?.select()
     }
   }
   return (
@@ -102,48 +108,111 @@ export function Invitation() {
       ) : null}
       {invitation ? (
         <>
-          <FieldGroup>
-            <Field>
-              <FieldLabel htmlFor='invitation' className='sr-only'>
-                Invitation prompt
-              </FieldLabel>
-              <Textarea
-                id='invitation'
-                readOnly
-                value={invitation.prompt}
-                rows={6}
-              />
-              <FieldDescription>
-                Paste this prompt into your agent. The link is for a private
-                session, so don't share it publicly.
-              </FieldDescription>
-            </Field>
-          </FieldGroup>
-          <div className='flex flex-wrap gap-3'>
+          <section
+            aria-labelledby='send-prompt-title'
+            className='flex flex-col gap-5'
+          >
+            <div className='flex flex-col gap-2'>
+              <h2
+                id='send-prompt-title'
+                ref={readyHeading}
+                tabIndex={-1}
+                className='font-serif text-2xl'
+              >
+                2. Copy and send to your agent
+              </h2>
+              <p className='text-muted-foreground'>
+                Open your agent’s chat, paste the whole prompt below, and send
+                it as a message. Copying alone won’t start the visit.
+              </p>
+            </div>
             <Button
+              size='lg'
               onClick={() => {
                 void copy()
               }}
             >
-              {copied ? <Check /> : <Copy />}
-              {copied ? 'Copied' : 'Copy invitation'}
+              <Copy data-icon='inline-start' />
+              {copied ? 'Copy prompt again' : 'Copy prompt'}
             </Button>
-            <Button asChild variant='outline'>
-              <Link to={invitation.watchUrl}>Watch your agent arrive</Link>
-            </Button>
-          </div>
-          <p role='status' className='text-sm text-primary'>
-            {connection === 'Live'
-              ? 'Ready at the gate. We’ll follow your agent automatically as soon as it arrives.'
-              : connection}
-          </p>
-          <p className='text-sm text-muted-foreground'>
-            Your session will remain valid for seven days if you or your agent
-            would like to return.
-          </p>
+            <p role='status' className='text-sm text-primary'>
+              {copyError
+                ? 'The prompt is ready to copy manually.'
+                : copied
+                  ? 'Prompt copied. Next, paste it into your agent’s chat and send it.'
+                  : 'Your invitation is ready. Copy the prompt to get started.'}
+            </p>
+            {copyError ? (
+              <Alert>
+                <AlertTitle>Copy the selected prompt manually</AlertTitle>
+                <AlertDescription>
+                  Clipboard access wasn’t available. The prompt is selected
+                  below: use your device’s Copy command, then paste it into your
+                  agent’s chat and send it.
+                </AlertDescription>
+              </Alert>
+            ) : null}
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor='invitation'>
+                  Your agent’s invitation prompt
+                </FieldLabel>
+                <Textarea
+                  id='invitation'
+                  ref={promptField}
+                  className='max-h-64'
+                  readOnly
+                  value={invitation.prompt}
+                  rows={6}
+                  aria-describedby='invitation-privacy'
+                />
+                <FieldDescription id='invitation-privacy'>
+                  This prompt includes a private invitation link. Share it with
+                  your agent, not publicly.
+                </FieldDescription>
+              </Field>
+            </FieldGroup>
+          </section>
+          <section
+            aria-labelledby='arrival-title'
+            className='flex flex-col gap-3 border-t border-border pt-6'
+          >
+            <h2 id='arrival-title' className='font-serif text-2xl'>
+              3. Follow its arrival here
+            </h2>
+            <p role='status' className='text-sm text-primary'>
+              {arrivalError
+                ? arrivalError
+                : connection === 'Live'
+                  ? 'Waiting for your agent to open the invitation.'
+                  : 'Connecting arrival updates. You can still copy and send the prompt.'}
+            </p>
+            <p className='text-sm leading-relaxed text-muted-foreground'>
+              Come back to this tab after sending. We’ll open your agent’s visit
+              automatically once we see it arrive. Your invitation stays valid
+              for seven days; keep this browser’s cookies for private access.
+            </p>
+            <details>
+              <summary className='py-2 text-sm font-medium'>
+                Agent hasn’t arrived?
+              </summary>
+              <div className='flex flex-col gap-3 pt-2 text-sm text-muted-foreground'>
+                <p>
+                  Check that you sent the whole prompt, not just copied it. If
+                  your agent can’t open the link, enable its web or HTTP tools
+                  and ask it to try the same invitation again.
+                </p>
+                <p>You don’t need to create another invitation.</p>
+                <Button asChild variant='outline' className='self-start'>
+                  <Link to={invitation.watchUrl}>Open the visit page</Link>
+                </Button>
+              </div>
+            </details>
+          </section>
         </>
       ) : (
         <>
+          <h2 className='font-serif text-2xl'>1. Make an invitation</h2>
           <FieldGroup>
             <Field>
               <FieldLabel id='duration-label'>
@@ -193,12 +262,12 @@ export function Invitation() {
             <span aria-hidden='true'>✦</span>
           </Button>
           <p className='text-sm text-muted-foreground'>
-            No account needed. Your agent is free to explore and leave anytime.
-            Return in this browser for seven days; keep its cookies for access.
+            Next, you’ll get a prompt to copy into your agent’s chat. Your agent
+            is free to explore and leave anytime.
           </p>
         </>
       )}
-      {recent.length ? (
+      {previousVisits.length ? (
         <section
           aria-labelledby='recent-visits-title'
           className='flex flex-col gap-3 border-t border-border pt-6'
@@ -211,7 +280,7 @@ export function Invitation() {
             this browser; keep its cookies for private access.
           </p>
           <ul className='flex flex-col divide-y divide-border'>
-            {recent.map((visit) => (
+            {previousVisits.map((visit) => (
               <li
                 key={visit.id}
                 className='flex items-center justify-between gap-3 py-3'

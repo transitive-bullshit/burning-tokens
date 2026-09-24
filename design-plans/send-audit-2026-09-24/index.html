@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>Burning Tokens · Design review</title
+  ><style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: #111827;
+      color: #f3f4f6;
+      font:
+        16px/1.55 system-ui,
+        sans-serif;
+    }
+    main {
+      max-width: 1380px;
+      margin: auto;
+      padding: 40px 24px;
+    }
+    h1 {
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: 1.1;
+      margin: 0 0 18px;
+    }
+    h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+    p {
+      max-width: 85ch;
+      color: #cbd5e1;
+    }
+    a {
+      color: #93c5fd;
+    }
+    button,
+    select {
+      font: inherit;
+      min-height: 44px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid #64748b;
+      background: #1e293b;
+      color: inherit;
+    }
+    button {
+      cursor: pointer;
+    }
+    button:hover {
+      background: #334155;
+    }
+    :focus-visible {
+      outline: 3px solid #fcd34d;
+      outline-offset: 4px;
+    }
+    .toolbar {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin: 24px 0;
+    }
+    .toolbar label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+    }
+    input {
+      width: 20px;
+      height: 20px;
+    }
+    article {
+      border-top: 1px solid #475569;
+      padding: 32px 0 42px;
+      scroll-margin-top: 20px;
+    }
+    .heading {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: start;
+    }
+    .tag {
+      font-size: 14px;
+      color: #fcd34d;
+      margin-bottom: 8px;
+    }
+    .scope {
+      font-size: 14px;
+    }
+    .pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 24px;
+    }
+    figure {
+      margin: 0;
+      min-width: 0;
+      background: #151632;
+      border: 1px solid #475569;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    figcaption {
+      min-height: 96px;
+      padding: 16px;
+      background: #1e293b;
+      font-size: 15px;
+    }
+    figcaption b {
+      display: block;
+      color: #fcd34d;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      margin-bottom: 5px;
+    }
+    .shot {
+      position: relative;
+      max-width: 100%;
+      margin: auto;
+    }
+    .shot img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .narrow .shot {
+      max-width: 470px;
+    }
+    .box {
+      position: absolute;
+      border: 3px solid #fcd34d;
+      border-radius: 6px;
+      pointer-events: none;
+      box-shadow: 0 0 0 1px #111827;
+    }
+    .hide-boxes .box {
+      display: none;
+    }
+    .source {
+      font-size: 13px;
+      color: #94a3b8;
+      overflow-wrap: anywhere;
+    }
+    .status {
+      color: #fcd34d;
+    }
+    details {
+      margin: 24px 0;
+    }
+    summary {
+      cursor: pointer;
+      min-height: 44px;
+    }
+    .coverage {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    footer {
+      padding: 30px 0;
+      color: #94a3b8;
+    }
+    @media (max-width: 700px) {
+      main {
+        padding: 28px 16px;
+      }
+      .pair {
+        grid-template-columns: 1fr;
+      }
+      .heading {
+        flex-direction: column;
+      }
+      figcaption {
+        min-height: 0;
+      }
+    }
+  </style>
+  <main>
+    <p>
+      User review: all four Send changes accepted and retained.
+      <a href="decisions.json">Saved review decisions</a>.
+    </p>
+    <h1>Four invitation-flow changes to review</h1>
+    <p>
+      Burning Tokens · September 24, 2026. Matched screenshots from the local
+      app, captured before and after implementation. Yellow boxes mark the areas
+      to compare. Crops preserve the screenshot pixels; animated scene content
+      and timestamps can differ.
+    </p>
+    <p>
+      Audited at <b>320, 390, 768 and 1440 px</b>. Invitation and arrival
+      responses are browser-only samples; screenshot prompts contain no usable
+      credentials. Decisions below are saved in this browser; they do not change
+      code. Export them when you are ready for the subsequent accept/reject
+      pass.
+    </p>
+    <div class="toolbar">
+      <button id="export">Export review decisions</button
+      ><label
+        ><input id="annotations" type="checkbox" checked />Show
+        highlights</label
+      ><span id="progress" aria-live="polite"></span>
+    </div>
+    <nav aria-label="Changes" class="coverage">
+      <a href="#SEND-01">SEND-01</a><a href="#SEND-02">SEND-02</a
+      ><a href="#SEND-03">SEND-03</a><a href="#SEND-04">SEND-04</a>
+    </nav>
+    <article id="SEND-01">
+      <div class="heading">
+        <div>
+          <div class="tag">SEND-01 · P2 · 390 px mobile</div>
+          <h2>Start with the invitation, not a wall of instructions</h2>
+        </div>
+        <label
+          >Decision
+          <select data-id="SEND-01">
+            <option value="unreviewed">Unreviewed</option>
+            <option value="accept">Accept</option>
+            <option value="reject">Reject</option>
+            <option value="discuss">Discuss</option>
+          </select></label
+        >
+      </div>
+      <p>
+        The long how-it-works section pushed setup far down the page. A short
+        overview now leads directly into step 1, with agent-tool requirements in
+        a supporting disclosure.
+      </p>
+      <p class="scope"><b>Affects:</b> /send · setup</p>
+      <div class="pair narrow">
+        <figure>
+          <figcaption>
+            <b>BEFORE</b>The first screen is dominated by explanations; setup is
+            below it.
+          </figcaption>
+          <div class="shot">
+            <img
+              src="images/SEND-01-before.webp"
+              alt="Before: Start with the invitation, not a wall of instructions"
+            /><span
+              class="box"
+              style="left: 3%; top: 32%; width: 94%; height: 64%"
+            ></span>
+          </div>
+        </figure>
+        <figure>
+          <figcaption>
+            <b>AFTER</b>Options and Create an invitation are visible much
+            sooner.
+          </figcaption>
+          <div class="shot">
+            <img
+              src="images/SEND-01-after.webp"
+              alt="After: Start with the invitation, not a wall of instructions"
+            /><span
+              class="box"
+              style="left: 3%; top: 30%; width: 94%; height: 60%"
+            ></span>
+          </div>
+        </figure>
+      </div>
+      <p class="source">
+        Implementation: app/send/page.tsx + components/retreat/invitation.tsx ·
+        <a href="../../work/send-audit/before/setup-390.png"
+          >Full before capture</a
+        >
+        ·
+        <a href="../../work/send-audit/after/setup-390.png"
+          >Full after capture</a
+        >
+      </p>
+    </article>
+    <article id="SEND-02">
+      <div class="heading">
+        <div>
+          <div class="tag">SEND-02 · P2 · 390 px mobile</div>
+          <h2>Make copying a clear handoff</h2>
+        </div>
+        <label
+          >Decision
+          <select data-id="SEND-02">
+            <option value="unreviewed">Unreviewed</option>
+            <option value="accept">Accept</option>
+            <option value="reject">Reject</option>
+            <option value="discuss">Discuss</option>
+          </select></label
+        >
+      </div>
+      <p>
+        The prompt appeared below old instructions, Copy competed with Watch,
+        and Copied disappeared after three seconds. The new heading receives
+        focus, Copy prompt leads the section, the field has a visible label, and
+        persistent confirmation explicitly asks the human to paste and send. The
+        current invitation no longer duplicates itself in recent visits.
+      </p>
+      <p class="scope">
+        <b>Affects:</b> /send · generated prompt and copied state
+      </p>
+      <div class="pair narrow">
+        <figure>
+          <figcaption>
+            <b>BEFORE</b>Prompt first, competing actions, and a transient Copied
+            label.
+          </figcaption>
+          <div class="shot">
+            <img
+              src="images/SEND-02-before.webp"
+              alt="Before: Make copying a clear handoff"
+            /><span
+              class="box"
+              style="left: 3%; top: 49%; width: 94%; height: 28%"
+            ></span>
+          </div>
+        </figure>
+        <figure>
+          <figcaption>
+            <b>AFTER</b>One leading copy action; persistent paste-and-send
+            guidance.
+          </figcaption>
+          <div class="shot">
+            <img
+              src="images/SEND-02-after.webp"
+              alt="After: Make copying a clear handoff"
+            /><span
+              class="box"
+              style="left: 3%; top: 1%; width: 94%; height: 48%"
+            ></span>
+          </div>
+        </figure>
+      </div>
+      <p class="source">
+        Implementation: components/retreat/invitation.tsx ·
+        <a href="../../work/send-audit/before/copied-390.png"
+          >Full before capture</a
+        >
+        ·
+        <a href="../../work/send-audit/after/copied-390.png"
+          >Full after capture</a
+        >
+      </p>
+    </article>
+    <article id="SEND-03">
+      <div class="heading">
+        <div>
+          <div class="tag">SEND-03 · P2 · 390 px mobile</div>
+          <h2>Explain what waiting means</h2>
+        </div>
+        <label
+          >Decision
+          <select data-id="SEND-03">
+            <option value="unreviewed">Unreviewed</option>
+            <option value="accept">Accept</option>
+            <option value="reject">Reject</option>
+            <option value="discuss">Discuss</option>
+          </select></label
+        >
+      </div>
+      <p>
+        The old connection message did not clearly distinguish a copied prompt
+        from an agent opening it. A dedicated arrival section says what is being
+        observed, asks the human to return to this tab, and explains automatic
+        navigation. Troubleshooting and the optional visit-page link are
+        secondary.
+      </p>
+      <p class="scope"><b>Affects:</b> /send · waiting for arrival</p>
+      <div class="pair narrow">
+        <figure>
+          <figcaption>
+            <b>BEFORE</b>Watch competes with copying, followed by generic gate
+            status.
+          </figcaption>
+          <div class="shot">
+            <img
+              src="images/SEND-03-before.webp"
+              alt="Before: Explain what waiting means"
+            /><span
+              class="box"
+              style="left: 3%; top: 1%; width: 94%; height: 72%"
+            ></span>
+          </div>
+        </figure>
+        <figure>
+          <figcaption>
+            <b>AFTER</b>Waiting is a separate step with a clear condition and
+            next action.
+          </figcaption>
+          <div class="shot">
+            <img
+              src="images/SEND-03-after.webp"
+              alt="After: Explain what waiting means"
+            /><span
+              class="box"
+              style="left: 3%; top: 3%; width: 94%; height: 84%"
+            ></span>
+          </div>
+        </figure>
+      </div>
+      <p class="source">
+        Implementation: components/retreat/invitation.tsx ·
+        <a href="../../work/send-audit/before/ready-390.png"
+          >Full before capture</a
+        >
+        ·
+        <a href="../../work/send-audit/after/ready-390.png"
+          >Full after capture</a
+        >
+      </p>
+    </article>
+    <article id="SEND-04">
+      <div class="heading">
+        <div>
+          <div class="tag">SEND-04 · P2 · 390 px mobile</div>
+          <h2>Make blocked clipboard access recoverable</h2>
+        </div>
+        <label
+          >Decision
+          <select data-id="SEND-04">
+            <option value="unreviewed">Unreviewed</option>
+            <option value="accept">Accept</option>
+            <option value="reject">Reject</option>
+            <option value="discuss">Discuss</option>
+          </select></label
+        >
+      </div>
+      <p>
+        Copy errors appeared as a generic gate alert and left manual selection
+        to the human. The new message is beside the prompt, the whole prompt
+        receives focus and selection, and a successful copy retry clears the
+        error. Copy failure does not discard or recreate the invitation.
+      </p>
+      <p class="scope">
+        <b>Affects:</b> /send · clipboard denied or unavailable
+      </p>
+      <div class="pair narrow">
+        <figure>
+          <figcaption>
+            <b>BEFORE</b>Generic gate error and an unselected prompt.
+          </figcaption>
+          <div class="shot">
+            <img
+              src="images/SEND-04-before.webp"
+              alt="Before: Make blocked clipboard access recoverable"
+            /><span
+              class="box"
+              style="left: 3%; top: 1%; width: 94%; height: 25%"
+            ></span>
+          </div>
+        </figure>
+        <figure>
+          <figcaption>
+            <b>AFTER</b>Specific manual-copy instructions and the entire prompt
+            selected.
+          </figcaption>
+          <div class="shot">
+            <img
+              src="images/SEND-04-after.webp"
+              alt="After: Make blocked clipboard access recoverable"
+            /><span
+              class="box"
+              style="left: 3%; top: 17%; width: 94%; height: 68%"
+            ></span>
+          </div>
+        </figure>
+      </div>
+      <p class="source">
+        Implementation: components/retreat/invitation.tsx ·
+        <a href="../../work/send-audit/before/copy-failed-390.png"
+          >Full before capture</a
+        >
+        ·
+        <a href="../../work/send-audit/after/copy-failed-390.png"
+          >Full after capture</a
+        >
+      </p>
+    </article>
+    <footer>
+      These are changes to the existing visual system, not a rebrand. Some
+      groups share source files; selective acceptance should use the issue IDs
+      and the report’s ownership map, rather than reverting whole files.
+      <a href="../../docs/archive/ui-send-audit-2026-09-24.md"
+        >Read the audit report and verification limits</a
+      >.
+    </footer>
+  </main>
+  <script>
+    const key = 'burning-tokens-send-audit-2026-09-24'
+    const reviewedDecisions = {
+      'SEND-01': 'accept',
+      'SEND-02': 'accept',
+      'SEND-03': 'accept',
+      'SEND-04': 'accept'
+    }
+    let decisions = { ...reviewedDecisions }
+    try {
+      decisions = {
+        ...reviewedDecisions,
+        ...JSON.parse(localStorage.getItem(key) || '{}')
+      }
+    } catch {}
+    const fields = [...document.querySelectorAll('select')]
+    function progress() {
+      document.getElementById('progress').textContent =
+        `${fields.filter((s) => s.value !== 'unreviewed').length} of ${fields.length} reviewed`
+    }
+    fields.forEach((s) => {
+      s.value = decisions[s.dataset.id] || 'unreviewed'
+      s.addEventListener('change', () => {
+        decisions[s.dataset.id] = s.value
+        try {
+          localStorage.setItem(key, JSON.stringify(decisions))
+        } catch {}
+        progress()
+      })
+    })
+    progress()
+    document
+      .getElementById('annotations')
+      .addEventListener('change', (e) =>
+        document.body.classList.toggle('hide-boxes', !e.target.checked)
+      )
+    document.getElementById('export').addEventListener('click', () => {
+      const data = Object.fromEntries(
+        fields.map((s) => [s.dataset.id, s.value])
+      )
+      const u = URL.createObjectURL(
+        new Blob(
+          [JSON.stringify({ audit: '2026-09-24', decisions: data }, null, 2)],
+          { type: 'application/json' }
+        )
+      )
+      const a = document.createElement('a')
+      a.href = u
+      a.download = 'burning-tokens-send-decisions.json'
+      a.click()
+      setTimeout(() => URL.revokeObjectURL(u), 1000)
+    })
+  </script>
+</html>

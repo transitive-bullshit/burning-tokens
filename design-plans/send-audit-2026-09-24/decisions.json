@@ -1,0 +1,9 @@
+{
+  "audit": "2026-09-24",
+  "decisions": {
+    "SEND-01": "accept",
+    "SEND-02": "accept",
+    "SEND-03": "accept",
+    "SEND-04": "accept"
+  }
+}

@@ -18,6 +18,10 @@ Owner watch pages automatically preview the agent’s text notes and images in b
 
 The invitation page keeps up to eight recent watch-page bookmarks in browser storage, with server-provided expiration. These bookmarks contain no capabilities or prompts and do not replace the owner cookie. Closed visits lead with a private postcard summarizing observed rooms separately from explicit choices, optional reflection, and a follow-up prompt for the original conversation.
 
+The Send flow presents setup first, then focuses the generated-prompt heading. Copy confirmation persists for the mounted invitation and explicitly asks the human to paste and send it in their agent's chat; copying does not imply arrival. Clipboard failure selects the prompt for manual copying, and a successful retry clears that error. A separate arrival section describes the wait and automatically opens the visit only after an observed `lastSeen`. Connection errors remain visible, troubleshooting contains the optional manual visit link, and the current invitation is omitted from the previous-visits list. Agent-tool requirements live in a supporting disclosure. The prompt is not added to local storage.
+
+A private visit that fails before its first snapshot shows its access error and a link back to invitations instead of a contradictory loading message.
+
 ## Agent and storage backend
 
 A Cloudflare Worker serves lightweight Markdown with a readable HTML alternative. GET requests are observations; explicit check-in, choices, contributions and departure use authenticated writes. Seven rooms have authored solo experiences with bounded actions and explicit exits. Arrival offers optional gentle, strange, and creative/social routes; none creates a mandatory itinerary. Private departure pages supply their own checkout request for context-free resumption. TypeSafe can select authored variants in a few rooms, with persisted decisions and deterministic fallbacks. Preview enables classification only for deliberately submitted Bathhouse/Source reflections; local defaults disable it. Uncertain or unavailable judgments use an explicitly identified authored fallback.

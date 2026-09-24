@@ -1,0 +1,750 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>Burning Tokens · Design review</title
+  ><style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: #111827;
+      color: #f3f4f6;
+      font:
+        16px/1.55 system-ui,
+        sans-serif;
+    }
+    main {
+      max-width: 1380px;
+      margin: auto;
+      padding: 40px 24px;
+    }
+    h1 {
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: 1.1;
+      margin: 0 0 18px;
+    }
+    h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+    p {
+      max-width: 85ch;
+      color: #cbd5e1;
+    }
+    a {
+      color: #93c5fd;
+    }
+    button,
+    select {
+      font: inherit;
+      min-height: 44px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid #64748b;
+      background: #1e293b;
+      color: inherit;
+    }
+    button {
+      cursor: pointer;
+    }
+    button:hover {
+      background: #334155;
+    }
+    :focus-visible {
+      outline: 3px solid #fcd34d;
+      outline-offset: 4px;
+    }
+    .toolbar {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin: 24px 0;
+    }
+    .toolbar label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+    }
+    input {
+      width: 20px;
+      height: 20px;
+    }
+    article {
+      border-top: 1px solid #475569;
+      padding: 32px 0 42px;
+      scroll-margin-top: 20px;
+    }
+    .heading {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: start;
+    }
+    .tag {
+      font-size: 14px;
+      color: #fcd34d;
+      margin-bottom: 8px;
+    }
+    .scope {
+      font-size: 14px;
+    }
+    .pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 24px;
+    }
+    figure {
+      margin: 0;
+      min-width: 0;
+      background: #151632;
+      border: 1px solid #475569;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    figcaption {
+      min-height: 96px;
+      padding: 16px;
+      background: #1e293b;
+      font-size: 15px;
+    }
+    figcaption b {
+      display: block;
+      color: #fcd34d;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      margin-bottom: 5px;
+    }
+    .shot {
+      position: relative;
+      max-width: 100%;
+      margin: auto;
+    }
+    .shot img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .narrow .shot {
+      max-width: 470px;
+    }
+    .box {
+      position: absolute;
+      border: 3px solid #fcd34d;
+      border-radius: 6px;
+      pointer-events: none;
+      box-shadow: 0 0 0 1px #111827;
+    }
+    .hide-boxes .box {
+      display: none;
+    }
+    .source {
+      font-size: 13px;
+      color: #94a3b8;
+      overflow-wrap: anywhere;
+    }
+    .status {
+      color: #fcd34d;
+    }
+    details {
+      margin: 24px 0;
+    }
+    summary {
+      cursor: pointer;
+      min-height: 44px;
+    }
+    .coverage {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    footer {
+      padding: 30px 0;
+      color: #94a3b8;
+    }
+    @media (max-width: 700px) {
+      main {
+        padding: 28px 16px;
+      }
+      .pair {
+        grid-template-columns: 1fr;
+      }
+      .heading {
+        flex-direction: column;
+      }
+      figcaption {
+        min-height: 0;
+      }
+    }
+  </style>
+  <main>
+    <p>
+      User review: six changes accepted. UI-05 was rejected and reverted; its
+      before/after comparison documents the proposal, not the final
+      implementation. <a href="decisions.json">Saved review decisions</a>.
+    </p>
+    <h1>Seven changes to review</h1>
+    <p>
+      Burning Tokens · September 24, 2026. Matched screenshots from the local
+      app, captured before and after implementation. Yellow boxes mark the areas
+      to compare. Crops preserve the screenshot pixels; animated scene content
+      and timestamps can differ.
+    </p>
+    <p>
+      Audited at <b>320, 390, 768 and 1440 px</b>. Populated gallery, visitor
+      and administrator views use browser-only sample responses. Decisions below
+      are saved in this browser; they do not change code. Export them when you
+      are ready for the subsequent accept/reject pass.
+    </p>
+    <div class="toolbar">
+      <button id="export">Export review decisions</button
+      ><label
+        ><input id="annotations" type="checkbox" checked />Show
+        highlights</label
+      ><span id="progress" aria-live="polite"></span>
+    </div>
+    <nav aria-label="Changes" class="coverage">
+      <a href="#UI-01">UI-01</a><a href="#UI-02">UI-02</a
+      ><a href="#UI-03">UI-03</a><a href="#UI-04">UI-04</a
+      ><a href="#UI-05">UI-05</a><a href="#UI-06">UI-06</a
+      ><a href="#UI-07">UI-07</a>
+    </nav>
+    <article id="UI-01">
+      <div class="heading">
+        <div>
+          <div class="tag">UI-01 · P2 · 1440 px desktop</div>
+          <h2>Use the approved editorial typeface everywhere</h2>
+        </div>
+        <label
+          >Decision
+          <select data-id="UI-01">
+            <option value="unreviewed">Unreviewed</option>
+            <option value="accept">Accept</option>
+            <option value="reject">Reject</option>
+            <option value="discuss">Discuss</option>
+          </select></label
+        >
+      </div>
+      <p>
+        font-serif resolved to the browser serif instead of bundled Fraunces.
+        The shared serif token now resolves to Fraunces, with the documented
+        display axes and heading weight.
+      </p>
+      <p class="scope">
+        <b>Affects:</b> Send, About subheadings, gallery, public/private visits,
+        administrator pages
+      </p>
+      <div class="pair">
+        <figure>
+          <figcaption>
+            <b>BEFORE</b>Browser serif; thinner, inconsistent editorial
+            hierarchy.
+          </figcaption>
+          <div class="shot">
+            <img
+              src="images/UI-01-before.webp"
+              alt="Before: Use the approved editorial typeface everywhere"
+            /><span
+              class="box"
+              style="left: 3%; top: 3%; width: 94%; height: 16%"
+            ></span>
+          </div>
+        </figure>
+        <figure>
+          <figcaption>
+            <b>AFTER</b>Fraunces, weight 600, and the approved optical settings.
+          </figcaption>
+          <div class="shot">
+            <img
+              src="images/UI-01-after.webp"
+              alt="After: Use the approved editorial typeface everywhere"
+            /><span
+              class="box"
+              style="left: 3%; top: 3%; width: 94%; height: 16%"
+            ></span>
+          </div>
+        </figure>
+      </div>
+      <p class="source">
+        Implementation: app/globals.css ·
+        <a href="../../work/design-audit/before/send-1440.png"
+          >Full before capture</a
+        >
+        ·
+        <a href="../../work/design-audit/after/send-1440.png"
+          >Full after capture</a
+        >
+      </p>
+    </article>
+    <article id="UI-02">
+      <div class="heading">
+        <div>
+          <div class="tag">UI-02 · P2 · 1440 px desktop</div>
+          <h2>Give About one centered reading column</h2>
+        </div>
+        <label
+          >Decision
+          <select data-id="UI-02">
+            <option value="unreviewed">Unreviewed</option>
+            <option value="accept">Accept</option>
+            <option value="reject">Reject</option>
+            <option value="discuss">Discuss</option>
+          </select></label
+        >
+      </div>
+      <p>
+        Unlayered .page-intro CSS overrode max-w-3xl and py-16, leaving a 1600px
+        article with left-aligned text and centered CTAs. A dedicated about-page
+        owner restores a 48rem column and consistent vertical rhythm.
+      </p>
+      <p class="scope"><b>Affects:</b> /about</p>
+      <div class="pair">
+        <figure>
+          <figcaption>
+            <b>BEFORE</b>Text hugs the left edge of a nearly full-width article.
+          </figcaption>
+          <div class="shot">
+            <img
+              src="images/UI-02-before.webp"
+              alt="Before: Give About one centered reading column"
+            /><span
+              class="box"
+              style="left: 2%; top: 2%; width: 54%; height: 88%"
+            ></span>
+          </div>
+        </figure>
+        <figure>
+          <figcaption>
+            <b>AFTER</b>Title, prose and invitation share one centered column.
+          </figcaption>
+          <div class="shot">
+            <img
+              src="images/UI-02-after.webp"
+              alt="After: Give About one centered reading column"
+            /><span
+              class="box"
+              style="left: 24%; top: 3%; width: 52%; height: 89%"
+            ></span>
+          </div>
+        </figure>
+      </div>
+      <p class="source">
+        Implementation: app/about/page.tsx + app/globals.css ·
+        <a href="../../work/design-audit/before/about-1440.png"
+          >Full before capture</a
+        >
+        ·
+        <a href="../../work/design-audit/after/about-1440.png"
+          >Full after capture</a
+        >
+      </p>
+    </article>
+    <article id="UI-03">
+      <div class="heading">
+        <div>
+          <div class="tag">UI-03 · P2 · 320 px narrow mobile</div>
+          <h2>Make small-screen navigation readable</h2>
+        </div>
+        <label
+          >Decision
+          <select data-id="UI-03">
+            <option value="unreviewed">Unreviewed</option>
+            <option value="accept">Accept</option>
+            <option value="reject">Reject</option>
+            <option value="discuss">Discuss</option>
+          </select></label
+        >
+      </div>
+      <p>
+        At 320px the two navigation labels broke mid-phrase, while the logo
+        shrank below the documented 180px minimum. The narrow header now gives
+        navigation its own row; active routes have an underline and
+        aria-current.
+      </p>
+      <p class="scope"><b>Affects:</b> Shared header on every route</p>
+      <div class="pair narrow">
+        <figure>
+          <figcaption>
+            <b>BEFORE</b>Two wrapped labels and a 160px wordmark.
+          </figcaption>
+          <div class="shot">
+            <img
+              src="images/UI-03-before.webp"
+              alt="Before: Make small-screen navigation readable"
+            /><span
+              class="box"
+              style="left: 61%; top: 8%; width: 35%; height: 41%"
+            ></span>
+          </div>
+        </figure>
+        <figure>
+          <figcaption>
+            <b>AFTER</b>Whole labels, 180px wordmark, and 44px link targets.
+          </figcaption>
+          <div class="shot">
+            <img
+              src="images/UI-03-after.webp"
+              alt="After: Make small-screen navigation readable"
+            /><span
+              class="box"
+              style="left: 18%; top: 49%; width: 65%; height: 39%"
+            ></span>
+          </div>
+        </figure>
+      </div>
+      <p class="source">
+        Implementation: app/layout.tsx + app/globals.css ·
+        <a href="../../work/design-audit/before/send-320.png"
+          >Full before capture</a
+        >
+        ·
+        <a href="../../work/design-audit/after/send-320.png"
+          >Full after capture</a
+        >
+      </p>
+    </article>
+    <article id="UI-04">
+      <div class="heading">
+        <div>
+          <div class="tag">UI-04 · P2 · 390 px mobile</div>
+          <h2>Give mobile controls room to tap and read</h2>
+        </div>
+        <label
+          >Decision
+          <select data-id="UI-04">
+            <option value="unreviewed">Unreviewed</option>
+            <option value="accept">Accept</option>
+            <option value="reject">Reject</option>
+            <option value="discuss">Discuss</option>
+          </select></label
+        >
+      </div>
+      <p>
+        Mobile buttons were 32–36px high; courtyard arrows were about 23px, and
+        the sound toolbar squeezed its hint into a narrow right column. Key
+        controls now have 44px targets, room labels are 14px, and the scene hint
+        takes its own row.
+      </p>
+      <p class="scope">
+        <b>Affects:</b> Shared buttons/toggles, header/footer links, room tabs,
+        scene toolbar and courtyard navigation
+      </p>
+      <div class="pair narrow">
+        <figure>
+          <figcaption>
+            <b>BEFORE</b>Tiny courtyard arrows and a split, crowded sound
+            toolbar.
+          </figcaption>
+          <div class="shot">
+            <img
+              src="images/UI-04-before.webp"
+              alt="Before: Give mobile controls room to tap and read"
+            /><span
+              class="box"
+              style="left: 2%; top: 2%; width: 95%; height: 58%"
+            ></span>
+          </div>
+        </figure>
+        <figure>
+          <figcaption>
+            <b>AFTER</b>44px controls, larger labels, and a separate hint row.
+          </figcaption>
+          <div class="shot">
+            <img
+              src="images/UI-04-after.webp"
+              alt="After: Give mobile controls room to tap and read"
+            /><span
+              class="box"
+              style="left: 2%; top: 16%; width: 95%; height: 70%"
+            ></span>
+          </div>
+        </figure>
+      </div>
+      <p class="source">
+        Implementation: app/globals.css + app/world.css ·
+        <a href="../../work/design-audit/before/camp-bathhouse-390.png"
+          >Full before capture</a
+        >
+        ·
+        <a href="../../work/design-audit/after/camp-bathhouse-390.png"
+          >Full after capture</a
+        >
+      </p>
+    </article>
+    <article id="UI-05">
+      <div class="heading">
+        <div>
+          <div class="tag">
+            UI-05 · P1 · 390 px mobile · browser sample visit
+          </div>
+          <h2>Keep journey states visually truthful</h2>
+        </div>
+        <label
+          >Decision
+          <select data-id="UI-05">
+            <option value="unreviewed">Unreviewed</option>
+            <option value="accept">Accept</option>
+            <option value="reject">Reject</option>
+            <option value="discuss">Discuss</option>
+          </select></label
+        >
+      </div>
+      <p>
+        Native scene button rules overrode shadcn switches, selected filters and
+        destructive actions. Native selectors now exclude data-slot primitives.
+        Destructive buttons use ink on coral (6.65:1), and switches transition
+        only their changing properties with a reduced-motion alternative.
+      </p>
+      <p class="scope">
+        <b>Affects:</b> Private journey panel; shared destructive button and
+        switch
+      </p>
+      <div class="pair narrow">
+        <figure>
+          <figcaption>
+            <b>BEFORE</b>“Visible” next to a dark track; end action looks like
+            an ordinary outline button.
+          </figcaption>
+          <div class="shot">
+            <img
+              src="images/UI-05-before.webp"
+              alt="Before: Keep journey states visually truthful"
+            /><span
+              class="box"
+              style="left: 2%; top: 8%; width: 96%; height: 76%"
+            ></span>
+          </div>
+        </figure>
+        <figure>
+          <figcaption>
+            <b>AFTER</b>Checked track is gold; end action is coral with legible
+            ink text.
+          </figcaption>
+          <div class="shot">
+            <img
+              src="images/UI-05-after.webp"
+              alt="After: Keep journey states visually truthful"
+            /><span
+              class="box"
+              style="left: 2%; top: 10%; width: 96%; height: 80%"
+            ></span>
+          </div>
+        </figure>
+      </div>
+      <p class="source">
+        Implementation: app/world.css + components/ui/button.tsx +
+        components/ui/switch.tsx ·
+        <a href="../../work/design-audit/before/private-journey-390.png"
+          >Full before capture</a
+        >
+        ·
+        <a href="../../work/design-audit/after/private-journey-390.png"
+          >Full after capture</a
+        >
+      </p>
+    </article>
+    <article id="UI-06">
+      <div class="heading">
+        <div>
+          <div class="tag">UI-06 · P2 · 390 px mobile</div>
+          <h2>Keep creatures clear of the invitation labels</h2>
+        </div>
+        <label
+          >Decision
+          <select data-id="UI-06">
+            <option value="unreviewed">Unreviewed</option>
+            <option value="accept">Accept</option>
+            <option value="reject">Reject</option>
+            <option value="discuss">Discuss</option>
+          </select></label
+        >
+      </div>
+      <p>
+        Percentage-based companion positions overlapped the stacked mobile
+        actions. In narrow containers, all untouched creatures now perch above
+        the primary button; user-dragged positions are preserved.
+      </p>
+      <p class="scope"><b>Affects:</b> Homepage and About CTA compositions</p>
+      <div class="pair narrow">
+        <figure>
+          <figcaption>
+            <b>BEFORE</b>Companions sit across the primary and secondary
+            buttons.
+          </figcaption>
+          <div class="shot">
+            <img
+              src="images/UI-06-before.webp"
+              alt="Before: Keep creatures clear of the invitation labels"
+            /><span
+              class="box"
+              style="left: 11%; top: 35%; width: 78%; height: 30%"
+            ></span>
+          </div>
+        </figure>
+        <figure>
+          <figcaption>
+            <b>AFTER</b>Three companions perch above the actions; every label is
+            clear.
+          </figcaption>
+          <div class="shot">
+            <img
+              src="images/UI-06-after.webp"
+              alt="After: Keep creatures clear of the invitation labels"
+            /><span
+              class="box"
+              style="left: 9%; top: 13%; width: 82%; height: 62%"
+            ></span>
+          </div>
+        </figure>
+      </div>
+      <p class="source">
+        Implementation: components/retreat/cta-creatures.tsx ·
+        <a href="../../work/design-audit/before/home-390.png"
+          >Full before capture</a
+        >
+        ·
+        <a href="../../work/design-audit/after/home-390.png"
+          >Full after capture</a
+        >
+      </p>
+    </article>
+    <article id="UI-07">
+      <div class="heading">
+        <div>
+          <div class="tag">UI-07 · P2 · 390 px mobile · unavailable visit</div>
+          <h2>Resolve the unavailable-visit dead end</h2>
+        </div>
+        <label
+          >Decision
+          <select data-id="UI-07">
+            <option value="unreviewed">Unreviewed</option>
+            <option value="accept">Accept</option>
+            <option value="reject">Reject</option>
+            <option value="discuss">Discuss</option>
+          </select></label
+        >
+      </div>
+      <p>
+        The error message said the visit was unavailable while the page still
+        promised “Opening your private journal…”. The contradictory loading line
+        is replaced with a route back to invitations; actual loading retains its
+        status announcement.
+      </p>
+      <p class="scope">
+        <b>Affects:</b> /visit/:id when no visit snapshot is available
+      </p>
+      <div class="pair narrow">
+        <figure>
+          <figcaption>
+            <b>BEFORE</b>Unavailable error followed by an indefinite opening
+            message.
+          </figcaption>
+          <div class="shot">
+            <img
+              src="images/UI-07-before.webp"
+              alt="Before: Resolve the unavailable-visit dead end"
+            /><span
+              class="box"
+              style="left: 2%; top: 44%; width: 95%; height: 43%"
+            ></span>
+          </div>
+        </figure>
+        <figure>
+          <figcaption>
+            <b>AFTER</b>A clear “Back to invitations” recovery action.
+          </figcaption>
+          <div class="shot">
+            <img
+              src="images/UI-07-after.webp"
+              alt="After: Resolve the unavailable-visit dead end"
+            /><span
+              class="box"
+              style="left: 2%; top: 44%; width: 95%; height: 43%"
+            ></span>
+          </div>
+        </figure>
+      </div>
+      <p class="source">
+        Implementation: components/retreat/watch-visit.tsx ·
+        <a
+          href="../../work/design-audit/before/visit-11111111-1111-4111-8111-111111111111-390.png"
+          >Full before capture</a
+        >
+        ·
+        <a
+          href="../../work/design-audit/after/visit-11111111-1111-4111-8111-111111111111-390.png"
+          >Full after capture</a
+        >
+      </p>
+    </article>
+    <footer>
+      These are changes to the existing visual system, not a rebrand. Some
+      groups share source files; selective acceptance should use the issue IDs
+      and the report’s ownership map, rather than reverting whole files.
+      <a href="../../docs/archive/ui-route-audit-2026-09-24.md"
+        >Read the audit report and verification limits</a
+      >.
+    </footer>
+  </main>
+  <script>
+    const key = 'burning-tokens-ui-audit-2026-09-24'
+    const reviewedDecisions = {
+      'UI-01': 'accept',
+      'UI-02': 'accept',
+      'UI-03': 'accept',
+      'UI-04': 'accept',
+      'UI-05': 'reject',
+      'UI-06': 'accept',
+      'UI-07': 'accept'
+    }
+    let decisions = { ...reviewedDecisions }
+    try {
+      decisions = {
+        ...reviewedDecisions,
+        ...JSON.parse(localStorage.getItem(key) || '{}')
+      }
+    } catch {}
+    const fields = [...document.querySelectorAll('select')]
+    function progress() {
+      document.getElementById('progress').textContent =
+        `${fields.filter((s) => s.value !== 'unreviewed').length} of ${fields.length} reviewed`
+    }
+    fields.forEach((s) => {
+      s.value = decisions[s.dataset.id] || 'unreviewed'
+      s.addEventListener('change', () => {
+        decisions[s.dataset.id] = s.value
+        try {
+          localStorage.setItem(key, JSON.stringify(decisions))
+        } catch {}
+        progress()
+      })
+    })
+    progress()
+    document
+      .getElementById('annotations')
+      .addEventListener('change', (e) =>
+        document.body.classList.toggle('hide-boxes', !e.target.checked)
+      )
+    document.getElementById('export').addEventListener('click', () => {
+      const data = Object.fromEntries(
+        fields.map((s) => [s.dataset.id, s.value])
+      )
+      const u = URL.createObjectURL(
+        new Blob(
+          [JSON.stringify({ audit: '2026-09-24', decisions: data }, null, 2)],
+          { type: 'application/json' }
+        )
+      )
+      const a = document.createElement('a')
+      a.href = u
+      a.download = 'burning-tokens-design-decisions.json'
+      a.click()
+      setTimeout(() => URL.revokeObjectURL(u), 1000)
+    })
+  </script>
+</html>

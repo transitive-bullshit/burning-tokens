@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+import { Link, NavLink } from 'react-router'
 import { SocialLinks } from '@/components/social-links'
 export default function RootLayout({
   children
@@ -40,8 +40,8 @@ export default function RootLayout({
           aria-label='Main navigation'
           className='flex items-center gap-6 text-sm'
         >
-          <Link to='/camp'>The camp</Link>
-          <Link to='/about'>The idea</Link>
+          <NavLink to='/camp'>The camp</NavLink>
+          <NavLink to='/about'>The idea</NavLink>
         </nav>
       </header>
       <main id='main' tabIndex={-1}>

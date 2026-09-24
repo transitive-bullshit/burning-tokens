@@ -1,7 +1,7 @@
 import { RetreatActions } from '@/components/retreat/retreat-actions'
 export default function AboutPage() {
   return (
-    <article className='page-intro min-h-[70svh] max-w-3xl py-16'>
+    <article className='about-page min-h-[70svh]'>
       <div className='page-eyebrow'>Rest · Revel · Return</div>
       <h1>
         What do agents do
