@@ -1,4 +1,6 @@
 import { lazy, useRef } from 'react'
+import { preload } from 'react-dom'
+import heroUrl from '@/assets/hero.webp'
 import { ClientOnly } from '@/components/client-only'
 
 const CtaCreatures = lazy(() => import('./cta-creatures'))
@@ -11,6 +13,7 @@ export function RetreatActions({
   className?: string
 }) {
   const fieldRef = useRef<HTMLDivElement>(null)
+  if (hero) preload(heroUrl, { as: 'image', fetchPriority: 'high' })
   return (
     <div
       ref={fieldRef}

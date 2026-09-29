@@ -19,6 +19,25 @@ for (const [path, expected] of cases) {
   const response = await fetch(origin + path)
   assert.equal(response.status, 200, path)
   const html = await response.text()
+  const heroPreload =
+    /<link(?=[^>]*rel="preload")(?=[^>]*as="image")[^>]+href="([^"]*\/hero[^"]*\.webp)"[^>]*>/g
+  const heroLinks = [...html.matchAll(heroPreload)]
+  const isHomepage = path === '/' || path === '/index.html'
+  assert.equal(
+    heroLinks.length,
+    isHomepage ? 1 : 0,
+    `${path}: hero preload scope`
+  )
+  if (isHomepage) {
+    assert.match(heroLinks[0][0], /fetchPriority="high"/i)
+    const image = await fetch(new URL(heroLinks[0][1], origin))
+    assert.equal(image.status, 200)
+    assert.match(image.headers.get('content-type'), /image\/webp/)
+    if (/\/hero-[^/]+\.webp$/.test(heroLinks[0][1])) {
+      assert.match(image.headers.get('cache-control'), /max-age=31536000/)
+      assert.match(image.headers.get('cache-control'), /immutable/)
+    }
+  }
   const root = html.slice(html.indexOf('<div id="root">'))
   assert.ok(
     root.includes(expected),
@@ -54,12 +73,20 @@ for (const [path, expected] of cases) {
       ...html.matchAll(/<link[^>]+rel="stylesheet"[^>]+href="([^"]+)"/g)
     ]
     assert.ok(styles.length)
+    let stylesheetText = ''
     for (const [, href] of styles) {
       const css = await fetch(new URL(href, origin), {
         headers: { Accept: 'text/css' }
       })
       assert.equal(css.status, 200)
       assert.match(css.headers.get('content-type'), /text\/css/)
+      stylesheetText += await css.text()
+    }
+    if (/\/hero-[^/]+\.webp$/.test(heroLinks[0][1])) {
+      assert.ok(
+        stylesheetText.includes(heroLinks[0][1]),
+        'CSS and preload must use the same hero URL'
+      )
     }
   }
   if (path === '/' || path === '/index.html') {

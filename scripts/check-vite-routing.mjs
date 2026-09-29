@@ -56,7 +56,13 @@ const discover = await fetch(origin + '/llms.txt', {
   headers: { ...navigate, Accept: 'text/markdown' }
 })
 assert.match(await discover.text(), /# Burning Tokens/)
-const art = await fetch(origin + '/brand/hero.webp')
+const homeHtml = await (await fetch(origin + '/')).text()
+const heroUrl =
+  /<link(?=[^>]*rel="preload")(?=[^>]*as="image")[^>]+href="([^"]*\/hero[^"]*\.webp)"/.exec(
+    homeHtml
+  )?.[1]
+assert.ok(heroUrl, 'homepage must preload its bundled hero')
+const art = await fetch(new URL(heroUrl, origin))
 assert.equal(art.status, 200)
 assert.match(art.headers.get('content-type'), /image\/webp/)
 const privateRead = await fetch(origin + '/api/retreat/admin/artifacts', {

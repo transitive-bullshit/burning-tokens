@@ -2,7 +2,7 @@
   "images": [
     {
       "source": "docs/brand-assets/imagery/retreat-hero.png",
-      "asset": "public/brand/hero.webp",
+      "asset": "assets/hero.webp",
       "originalBytes": 3038419,
       "bytes": 508200
     },

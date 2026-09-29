@@ -12,7 +12,7 @@
   isolation: isolate;
   background:
     linear-gradient(#15163240, #15163299),
-    url('/brand/hero.webp') center / cover;
+    url('../../assets/hero.webp') center / cover;
 }
 .retreat-cta-copy {
   position: absolute;

@@ -11,7 +11,7 @@ const root = fileURLToPath(new URL('../', import.meta.url))
 const dataUrl = async (path, mime) =>
   `data:${mime};base64,${(await readFile(join(root, path))).toString('base64')}`
 const [hero, logo, font] = await Promise.all([
-  dataUrl('public/brand/hero.webp', 'image/webp'),
+  dataUrl('assets/hero.webp', 'image/webp'),
   dataUrl('public/brand/wordmark-sunset.svg', 'image/svg+xml'),
   dataUrl('public/brand/fonts/spacegrotesk/SpaceGrotesk[wght].ttf', 'font/ttf')
 ])
