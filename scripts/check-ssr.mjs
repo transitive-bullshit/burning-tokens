@@ -96,11 +96,46 @@ for (const [path, expected] of cases) {
       assert.ok(root.includes(`href="${href}"`))
   }
   if (path === '/camp' || rooms.some((room) => path === `/camp/${room.id}`)) {
+    const scene = path === '/camp' ? 'camp' : path.split('/').pop()
+    const sceneImage = new RegExp(
+      `src="([^"]*/${scene}(?:-[^/".]+)?\\.webp)"`
+    ).exec(root)?.[1]
+    assert.ok(sceneImage, `${path}: scene artwork missing`)
+    const preloads = [
+      ...html.matchAll(
+        /<link(?=[^>]*rel="preload")(?=[^>]*as="image")[^>]+href="([^"]+)"[^>]*>/g
+      )
+    ]
+    const worldImage = new RegExp(
+      `/(${['camp', 'creatures', ...rooms.map((room) => room.id)].join('|')})(?:-[^/]+)?\\.webp$`
+    )
+    assert.equal(
+      preloads.filter((link) => worldImage.test(link[1])).length,
+      2,
+      `${path}: preload only the active background and atlas`
+    )
     assert.ok(
-      root.includes(
-        `/world/${path === '/camp' ? 'camp' : path.split('/').pop()}.webp`
+      preloads.some(
+        (link) =>
+          link[1] === sceneImage && /fetchPriority="high"/i.test(link[0])
       )
     )
+    const atlas = preloads.find((link) =>
+      /\/creatures(?:-[^/]+)?\.webp$/.test(link[1])
+    )?.[1]
+    assert.ok(atlas, `${path}: shared atlas preload missing`)
+    // One room and the shared atlas are enough to verify the static asset policy.
+    if (path === '/camp') {
+      for (const src of [sceneImage, atlas]) {
+        const image = await fetch(new URL(src, origin))
+        assert.equal(image.status, 200)
+        assert.match(image.headers.get('content-type'), /image\/webp/)
+        if (src.startsWith('/assets/')) {
+          assert.match(image.headers.get('cache-control'), /max-age=31536000/)
+          assert.match(image.headers.get('cache-control'), /immutable/)
+        }
+      }
+    }
   }
 }
 

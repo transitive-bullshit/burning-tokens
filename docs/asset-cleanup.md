@@ -1,6 +1,12 @@
 # Asset promotion and history cleanup
 
-The human experience moved into the Next.js app. Only active assets are served from `public/`: the accepted hero, three vector wordmark masters, two licensed fonts, eight scene backgrounds, one lossless creature atlas and 149 selected sound clips. Scene/hero imagery shrank from 27,573,359 bytes to 4,607,860 bytes through WebP conversion. [The manifest](asset-manifest.json) records source paths, conversion sizes and audio provenance.
+The human experience is a Vite/React app. Active assets live in `assets/` (fingerprinted hero and world imagery) and `public/` (brand assets, fonts and audio). The initial scene/hero WebP conversion shrank 27,573,359 bytes to 4,607,860 bytes. A September 2026 encoding pass reduced the nine world assets from 4,099,660 to 2,513,510 bytes while keeping every image at 1536 × 1024. [The manifest](asset-manifest.json) records current paths, byte sizes, encoding settings and audio provenance.
+
+## World image encoding and caching
+
+Compared WebP quality 82/88 for backgrounds, WebP quality 85/90 for the atlas, and JPEG quality 85. Selected WebP quality 82 for backgrounds and 85 for the atlas, both with encoding method 6. JPEG candidates were larger than the selected WebP files; JPEG also cannot retain the atlas transparency. The atlas fell from 1,245,482 to 260,846 bytes with an exact alpha-channel match. Backgrounds shrank by 18–26%; side-by-side detail crops were checked before replacement. No dimensions, framing, artwork or sprite coordinates changed. These are lossy color encodings, so reuse a source original rather than repeatedly recompressing the shipped images.
+
+Vite imports from `assets/world/` generate content-hashed URLs covered by `/assets/*`'s `Cache-Control: public, max-age=31536000, immutable` rule. New encodings naturally invalidate old browser URLs. Current-room preloads, decoded image reuse and idle warmup are documented in [architecture](architecture.md).
 
 ## Local recovery
 

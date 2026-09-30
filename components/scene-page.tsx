@@ -2,6 +2,8 @@ import { PublicExhibits } from './retreat/public-exhibits'
 import { Link } from 'react-router'
 import { rooms, getRoom, scenePath, type SceneId } from '@/lib/rooms'
 import { World } from './world'
+import { sceneBackgrounds } from '@/lib/world/assets'
+import { prefetchWorldImage } from '@/lib/world/image-cache'
 export function ScenePage({ scene }: { scene: SceneId }) {
   const room = getRoom(scene)
   return (
@@ -12,6 +14,8 @@ export function ScenePage({ scene }: { scene: SceneId }) {
       <nav className='room-navigation' aria-label='Retreat spaces'>
         <Link
           to='/camp'
+          onPointerEnter={() => prefetchWorldImage(sceneBackgrounds.camp)}
+          onFocus={() => prefetchWorldImage(sceneBackgrounds.camp)}
           state={{ minimizeVisitors: true }}
           aria-current={scene === 'camp' ? 'page' : undefined}
         >
@@ -21,6 +25,8 @@ export function ScenePage({ scene }: { scene: SceneId }) {
           <Link
             key={item.id}
             to={scenePath(item.id)}
+            onPointerEnter={() => prefetchWorldImage(sceneBackgrounds[item.id])}
+            onFocus={() => prefetchWorldImage(sceneBackgrounds[item.id])}
             state={{ minimizeVisitors: true }}
 
             aria-current={scene === item.id ? 'page' : undefined}

@@ -4,7 +4,8 @@ import {
   useLayoutEffect,
   useRef,
   useState,
-  type ReactNode
+  type ReactNode,
+  type CSSProperties
 } from 'react'
 import { createPortal } from 'react-dom'
 import { useLocation, useNavigate } from 'react-router'
@@ -21,6 +22,8 @@ import {
   type FollowedVisitor
 } from '@/lib/world/live-population.js'
 import type { WorldHandle } from '@/lib/world/scene'
+import { creatureAtlas, sceneBackgrounds } from '@/lib/world/assets'
+import { loadWorldImage } from '@/lib/world/image-cache'
 
 type CrowdSnapshot = { visitors: unknown[]; total: number }
 
@@ -99,6 +102,9 @@ export default function WorldClient({
     const controller = new AbortController()
     const element = root.current
     if (!element) return
+    // Start decoding while the renderer module loads; SSR already preloads both.
+    void loadWorldImage(sceneBackgrounds[scene]).catch(() => {})
+    void loadWorldImage(creatureAtlas).catch(() => {})
     setError(false)
     setStatus(liveMode.current ? 'Connecting to the camp…' : 'Demo visitors')
     async function poll() {
@@ -232,6 +238,11 @@ export default function WorldClient({
       <div
         ref={attachRoot}
         className='world'
+        style={
+          {
+            '--world-background': `url("${sceneBackgrounds[scene]}")`
+          } as CSSProperties
+        }
         dangerouslySetInnerHTML={{ __html: worldMarkup }}
       />
     </div>

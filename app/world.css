@@ -173,7 +173,7 @@
     aspect-ratio: 3/2;
     overflow: hidden;
     border-radius: 10px;
-    background: #181b37;
+    background: #181b37 var(--world-background) center / cover no-repeat;
     isolation: isolate;
     box-shadow: 0 16px 50px #0004;
   }
@@ -183,6 +183,9 @@
     height: 100%;
     cursor: grab;
     touch-action: none;
+  }
+  &:not([data-painted='true']) .stage canvas {
+    opacity: 0;
   }
   .stage-label {
     position: absolute;

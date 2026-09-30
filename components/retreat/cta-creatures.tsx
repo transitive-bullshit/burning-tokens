@@ -7,6 +7,7 @@ import {
   type RefObject
 } from 'react'
 import SOUND_CATALOG from '@/lib/world/sound-catalog.json'
+import { creatureAtlas } from '@/lib/world/assets'
 
 type Creature = {
   id: number
@@ -58,7 +59,7 @@ function CreatureArt({ family }: { family: number }) {
         </clipPath>
       </defs>
       <image
-        href='/world/creatures.webp'
+        href={creatureAtlas}
         x={-column * 384}
         y={-row * 512}
         width='1536'

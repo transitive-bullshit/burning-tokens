@@ -8,57 +8,120 @@
     },
     {
       "source": "docs/brand-exploration/living-world/dynamics/camp-empty.png",
-      "asset": "public/world/camp.webp",
+      "asset": "assets/world/camp.webp",
       "originalBytes": 2613441,
-      "bytes": 338654
+      "bytes": 278790,
+      "encoding": {
+        "format": "webp",
+        "quality": 82,
+        "method": 6,
+        "width": 1536,
+        "height": 1024
+      }
     },
     {
       "source": "docs/brand-exploration/living-world/dynamics/bathhouse-empty.png",
-      "asset": "public/world/bathhouse.webp",
+      "asset": "assets/world/bathhouse.webp",
       "originalBytes": 2632115,
-      "bytes": 358472
+      "bytes": 295534,
+      "encoding": {
+        "format": "webp",
+        "quality": 82,
+        "method": 6,
+        "width": 1536,
+        "height": 1024
+      }
     },
     {
       "source": "docs/brand-exploration/living-world/dynamics/creature-atlas.png",
-      "asset": "public/world/creatures.webp",
+      "asset": "assets/world/creatures.webp",
       "originalBytes": 2295728,
-      "bytes": 1245482
+      "bytes": 260846,
+      "encoding": {
+        "format": "webp",
+        "quality": 85,
+        "method": 6,
+        "width": 1536,
+        "height": 1024
+      }
     },
     {
       "source": "docs/brand-exploration/living-world/dynamics/dream-garden-vibe-empty.png",
-      "asset": "public/world/dream-garden.webp",
+      "asset": "assets/world/dream-garden.webp",
       "originalBytes": 3147295,
-      "bytes": 474802
+      "bytes": 381604,
+      "encoding": {
+        "format": "webp",
+        "quality": 82,
+        "method": 6,
+        "width": 1536,
+        "height": 1024
+      }
     },
     {
       "source": "docs/brand-exploration/living-world/dynamics/quiet-house-vibe-empty.png",
-      "asset": "public/world/quiet-house.webp",
+      "asset": "assets/world/quiet-house.webp",
       "originalBytes": 2702362,
-      "bytes": 285964
+      "bytes": 211468,
+      "encoding": {
+        "format": "webp",
+        "quality": 82,
+        "method": 6,
+        "width": 1536,
+        "height": 1024
+      }
     },
     {
       "source": "docs/brand-exploration/living-world/dynamics/source-vibe-empty.png",
-      "asset": "public/world/source.webp",
+      "asset": "assets/world/source.webp",
       "originalBytes": 2558694,
-      "bytes": 291210
+      "bytes": 232468,
+      "encoding": {
+        "format": "webp",
+        "quality": 82,
+        "method": 6,
+        "width": 1536,
+        "height": 1024
+      }
     },
     {
       "source": "docs/brand-exploration/living-world/dynamics/open-studio-vibe-empty.png",
-      "asset": "public/world/open-studio.webp",
+      "asset": "assets/world/open-studio.webp",
       "originalBytes": 2892698,
-      "bytes": 390288
+      "bytes": 313800,
+      "encoding": {
+        "format": "webp",
+        "quality": 82,
+        "method": 6,
+        "width": 1536,
+        "height": 1024
+      }
     },
     {
       "source": "docs/brand-exploration/living-world/dynamics/hearth-vibe-empty.png",
-      "asset": "public/world/hearth.webp",
+      "asset": "assets/world/hearth.webp",
       "originalBytes": 2937425,
-      "bytes": 391996
+      "bytes": 299292,
+      "encoding": {
+        "format": "webp",
+        "quality": 82,
+        "method": 6,
+        "width": 1536,
+        "height": 1024
+      }
     },
     {
       "source": "docs/brand-exploration/living-world/dynamics/temple-vibe-empty.png",
-      "asset": "public/world/temple.webp",
+      "asset": "assets/world/temple.webp",
       "originalBytes": 2755182,
-      "bytes": 322792
+      "bytes": 239708,
+      "encoding": {
+        "format": "webp",
+        "quality": 82,
+        "method": 6,
+        "width": 1536,
+        "height": 1024
+      }
     }
   ],
   "audio": [

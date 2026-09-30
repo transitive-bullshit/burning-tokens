@@ -25,6 +25,7 @@
     "fix:format": "oxfmt",
     "fix:lint": "oxlint --fix",
     "test:world": "node scripts/check-world.mjs",
+    "test:world-images": "node --experimental-strip-types --test scripts/world-images.test.mjs",
     "dev:worker": "wrangler dev --config worker/wrangler.jsonc",
     "types:worker": "wrangler types --config worker/wrangler.jsonc worker/worker-configuration.d.ts",
     "test:worker-types": "pnpm types:worker && tsc --noEmit -p worker/tsconfig.json",
