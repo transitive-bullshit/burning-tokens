@@ -15,6 +15,7 @@ const bundled = await build({
   write: false,
   format: 'esm',
   platform: 'browser',
+  loader: { '.webp': 'dataurl' },
   target: 'es2022',
   external: ['cloudflare:workers']
 })

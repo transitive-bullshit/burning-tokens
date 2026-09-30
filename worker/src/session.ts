@@ -2,7 +2,9 @@ import { metric } from './metrics'
 import { VisitStream } from './visit-stream'
 import { hearthMessageSchema } from '../../lib/retreat/hearth'
 import { loungeRequest } from './lounge'
-import { artifactSchema } from '../../lib/retreat/artifacts'
+import { artifactListSchema, artifactSchema } from '../../lib/retreat/artifacts'
+import { agentSubmission } from './agent-submission'
+import { AgentUpload, readUploadPart, uploadStartSchema } from './agent-upload'
 import type { ArtifactViewer } from './media-policy'
 import { studioRequest } from './studio-client'
 import { DurableObject } from 'cloudflare:workers'
@@ -63,11 +65,13 @@ import {
 
 export class RetreatSession extends DurableObject<Env> {
   private db
+  private readonly uploads: AgentUpload
   private storageDeleted = false
   private readonly stream = new VisitStream(() => this.snapshot())
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env)
     this.db = drizzle(ctx.storage)
+    this.uploads = new AgentUpload(ctx.storage)
     void ctx.blockConcurrencyWhile(() => migrate(this.db, sessionMigrations))
   }
   async initialize(state: SessionState) {
@@ -269,7 +273,9 @@ export class RetreatSession extends DurableObject<Env> {
   private async schedule() {
     const s = this.state()
     const next = this.db.select().from(outbox).get()?.due ?? s.expiresAt
-    await this.ctx.storage.setAlarm(Math.min(next, s.expiresAt))
+    await this.ctx.storage.setAlarm(
+      Math.min(next, s.expiresAt, this.uploads.nextExpiry())
+    )
   }
   private limit() {
     const now = Date.now()
@@ -281,13 +287,18 @@ export class RetreatSession extends DurableObject<Env> {
     if (next.count > 90)
       throw new HttpError(
         429,
-        'Slow down; this visit allows 90 agent requests per minute'
+        'Slow down; this visit allows 90 agent requests per minute. Resume the same upload after Retry-After.',
+        {
+          'Retry-After': String(
+            Math.max(1, Math.ceil((next.at + 60_000 - now) / 1000))
+          )
+        }
       )
     this.ctx.storage.kv.put('rate', next)
   }
   async fetch(request: Request): Promise<Response> {
     try {
-      const url = new URL(request.url)
+      let url = new URL(request.url)
       const publicOrigin = requestOrigin(request, this.env.PUBLIC_ORIGIN)
       let s = this.state()
       const agent = url.pathname.startsWith('/agent/start/')
@@ -297,6 +308,12 @@ export class RetreatSession extends DurableObject<Env> {
         if ((await digest(token)) !== s.agentHash)
           throw new HttpError(403, 'Invalid agent capability')
         this.limit()
+        if (url.pathname.endsWith('/submit')) {
+          request = agentSubmission(request)
+          url = new URL(request.url)
+        }
+        if (url.pathname.includes('/uploads/'))
+          return await this.handleUploadTransfer(request, credential)
         if (url.pathname.includes('/hearth')) {
           s = this.state()
           if (!s.checkedIn)
@@ -506,7 +523,7 @@ export class RetreatSession extends DurableObject<Env> {
       throw new HttpError(405, 'Unsupported method')
     } catch (err) {
       return err instanceof HttpError
-        ? json({ error: err.message }, err.status)
+        ? json({ error: err.message }, err.status, err.headers)
         : json(
             {
               error:
@@ -514,6 +531,90 @@ export class RetreatSession extends DurableObject<Env> {
             },
             500
           )
+    }
+  }
+  private assertUploadVisit() {
+    const state = this.state()
+    if (!state.checkedIn)
+      throw new HttpError(403, 'Check in before using the Studio')
+    if (isClosed(state.lifecycle)) throw new HttpError(409, 'Visit closed')
+    if (state.room !== 'open-studio')
+      throw new HttpError(409, 'Enter Open Studio before uploading a work')
+    return state
+  }
+
+  private async handleUploadTransfer(request: Request, credential: string) {
+    const url = new URL(request.url)
+    const match =
+      /\/uploads\/([a-zA-Z0-9_-]{8,100})(?:\/(start|complete|parts\/(\d+)))?$/.exec(
+        url.pathname
+      )
+    if (!match) throw new HttpError(404, 'Upload transfer not found')
+    const key = match[1]!
+    const operation = match[2]
+    if (request.method === 'GET' && !operation)
+      return json(this.uploads.status(key))
+    if (request.method === 'DELETE' && !operation) {
+      const status = this.uploads.abort(key)
+      await this.schedule()
+      return json(status)
+    }
+    this.assertUploadVisit()
+    if (request.method === 'POST' && operation === 'start') {
+      const input = await body(request, uploadStartSchema)
+      this.assertUploadVisit()
+      const status = this.uploads.start(key, input)
+      await this.schedule()
+      return json(status)
+    }
+    if (request.method === 'PUT' && match[3] !== undefined) {
+      const bytes = await readUploadPart(request)
+      this.assertUploadVisit()
+      return json(this.uploads.part(key, Number(match[3]), bytes))
+    }
+    if (request.method !== 'POST' || operation !== 'complete')
+      throw new HttpError(405, 'Unsupported transfer request')
+
+    const transfer = this.uploads.get(key)
+    const artifactUrl = new URL(
+      `/agent/start/${credential}/artifacts`,
+      request.url
+    )
+    const viewer: ArtifactViewer = { kind: 'agent', sessionId: this.state().id }
+    if (transfer.state === 'complete' && transfer.artifactId) {
+      // Use current metadata: an owner may have unshared or removed the work.
+      const response = await studioRequest(
+        this.env,
+        new Request(artifactUrl),
+        viewer
+      )
+      if (!response.ok) return response
+      const works = artifactListSchema.parse(await response.json()).works
+      const work = works.find((work) => work.id === transfer.artifactId)
+      if (!work)
+        throw new HttpError(410, 'The completed work was removed or expired')
+      return json(work, 201)
+    }
+    const { upload, bytes, lease } = await this.uploads.prepare(key)
+    try {
+      this.assertUploadVisit()
+      artifactUrl.searchParams.set('audience', upload.audience)
+      const response = await this.handleStudio(
+        new Request(artifactUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': upload.mime, 'Idempotency-Key': key },
+          body: bytes
+        }),
+        viewer
+      )
+      if (response.ok) {
+        const work = artifactSchema.parse(await response.clone().json())
+        if (work.ready) this.uploads.complete(key, lease, work.id)
+      }
+      return response
+    } finally {
+      this.uploads.release(key, lease)
+      await this.schedule()
     }
   }
   private async handleHearth(request: Request, viewer: ArtifactViewer) {
@@ -891,6 +992,7 @@ export class RetreatSession extends DurableObject<Env> {
       this.storageDeleted = true
       return
     }
+    this.uploads.expire()
     const pending = this.db.select().from(outbox).get()
     if (pending && pending.due <= Date.now()) {
       try {

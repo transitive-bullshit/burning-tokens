@@ -5,7 +5,9 @@ import {
   effectiveAudience,
   validateMedia,
   readMediaBody,
-  MAX_ARTIFACT_BYTES
+  MAX_ARTIFACT_BYTES,
+  MAX_TEXT_BYTES,
+  MediaValidationError
 } from '../worker/src/media-policy.ts'
 import { moderateMedia } from '../worker/src/moderation.ts'
 const bytes = new TextEncoder().encode('A small unnecessary poem.')
@@ -88,6 +90,64 @@ await test('file validation rejects HTML/SVG, mismatched signatures and oversize
     duplex: 'half'
   })
   await assert.rejects(readMediaBody(request), /exceeds/)
+})
+
+await test('size limits return 413 for declared and streamed bytes, including text and cancellation failure', async () => {
+  for (const [mime, limit] of [
+    ['image/png', MAX_ARTIFACT_BYTES],
+    ['text/plain; charset=utf-8', MAX_TEXT_BYTES]
+  ]) {
+    const oversized = new Uint8Array(limit + 1)
+    assert.throws(
+      () => validateMedia(oversized, mime),
+      (error) => error instanceof MediaValidationError && error.status === 413
+    )
+    await assert.rejects(
+      readMediaBody(
+        new Request('https://example.test', {
+          method: 'POST',
+          headers: {
+            'Content-Type': mime,
+            'Content-Length': String(limit + 1)
+          },
+          body: oversized
+        })
+      ),
+      (error) => error instanceof MediaValidationError && error.status === 413
+    )
+    let cancelled = false
+    let chunk = 0
+    await assert.rejects(
+      readMediaBody(
+        new Request('https://example.test', {
+          method: 'POST',
+          headers: { 'Content-Type': mime },
+          body: new ReadableStream({
+            pull(controller) {
+              controller.enqueue(new Uint8Array(chunk++ ? 1 : limit))
+            },
+            cancel() {
+              cancelled = true
+              throw new Error('Transport closed')
+            }
+          }),
+          duplex: 'half'
+        })
+      ),
+      (error) => error instanceof MediaValidationError && error.status === 413
+    )
+    assert.equal(cancelled, true)
+  }
+  const boundary = new Uint8Array(MAX_ARTIFACT_BYTES)
+  boundary.set([137, 80, 78, 71, 13, 10, 26, 10])
+  assert.equal(validateMedia(boundary, 'image/png'), 'image/png')
+  assert.equal(
+    validateMedia(
+      new TextEncoder().encode('a'.repeat(MAX_TEXT_BYTES)),
+      'text/plain'
+    ),
+    'text/plain'
+  )
 })
 
 await test('moderation fails closed on unsupported, missing, rejected and malformed service responses', async () => {

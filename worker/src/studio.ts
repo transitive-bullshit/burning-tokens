@@ -16,6 +16,7 @@ import {
   effectiveAudience,
   validateMedia,
   readMediaBody,
+  MediaValidationError,
   audiences,
   type ArtifactAccess,
   type ArtifactAudience,
@@ -144,10 +145,12 @@ export class RetreatStudio extends DurableObject<Env> {
         let media
         try {
           media = await readMediaBody(request)
-        } catch {
+        } catch (err) {
+          if (err instanceof MediaValidationError)
+            throw new HttpError(err.status, err.message)
           throw new HttpError(
             415,
-            'Use a supported file with a matching signature, at most 2 MiB (8,000 bytes for text)'
+            'Use UTF-8 text, PNG, JPEG, WebP, WAV, Ogg or MP3 bytes with the matching Content-Type. Prefer optimized JPEG or WebP for images; convert unoptimized PNGs first.'
           )
         }
         const hash = Array.from(

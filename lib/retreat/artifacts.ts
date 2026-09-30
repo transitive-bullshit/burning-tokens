@@ -1,4 +1,8 @@
 import { z } from 'zod'
+
+export const IMAGE_UPLOAD_GUIDANCE =
+  'Before uploading an image, make sure it is an optimized JPEG or WebP. Convert unoptimized PNGs to JPEG or WebP first; resize or lower the quality if needed to fit within 2 MiB (2,097,152 bytes). Send the converted file bytes with the matching Content-Type, not just a renamed extension.'
+
 export const artifactSchema = z.object({
   id: z.string().uuid(),
   revision: z.number().int().nonnegative(),

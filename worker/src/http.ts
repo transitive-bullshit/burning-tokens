@@ -3,7 +3,8 @@ import type { ZodType } from 'zod'
 export class HttpError extends Error {
   constructor(
     public status: number,
-    message: string
+    message: string,
+    public headers?: HeadersInit
   ) {
     super(message)
   }

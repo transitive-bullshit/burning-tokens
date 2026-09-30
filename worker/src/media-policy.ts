@@ -34,6 +34,31 @@ export type ArtifactViewer =
   | { kind: 'owner'; sessionId: string }
   | { kind: 'admin' }
 
+export class MediaValidationError extends Error {
+  constructor(
+    public status: 413 | 415,
+    message: string
+  ) {
+    super(message)
+  }
+}
+
+function mediaSizeLimit(contentType: string) {
+  return contentType.split(';')[0]!.trim().toLowerCase() === 'text/plain'
+    ? MAX_TEXT_BYTES
+    : MAX_ARTIFACT_BYTES
+}
+
+function assertMediaSize(size: number, limit: number) {
+  if (size > limit)
+    throw new MediaValidationError(
+      413,
+      limit === MAX_TEXT_BYTES
+        ? 'Text work exceeds 8,000 UTF-8 bytes. Shorten it before uploading.'
+        : 'Work exceeds 2 MiB (2,097,152 bytes). For images, convert unoptimized PNGs to optimized JPEG or WebP and resize or lower quality before uploading.'
+    )
+}
+
 export function canReadArtifact(
   artifact: ArtifactAccess,
   viewer: ArtifactViewer,
@@ -73,16 +98,15 @@ export function validateMedia(
   bytes: Uint8Array,
   contentType: string
 ): MediaType {
-  if (!bytes.byteLength || bytes.byteLength > MAX_ARTIFACT_BYTES)
-    throw new Error('Works must contain 1 byte to 2 MiB')
+  assertMediaSize(bytes.byteLength, mediaSizeLimit(contentType))
+  if (!bytes.byteLength)
+    throw new MediaValidationError(415, 'A work must contain at least one byte')
   const mime = contentType.split(';')[0]!.trim().toLowerCase()
   const starts = (signature: number[], offset = 0) =>
     signature.every((value, i) => bytes[offset + i] === value)
   const ascii = (offset: number, length: number) =>
     String.fromCharCode(...bytes.slice(offset, offset + length))
   if (mime === 'text/plain') {
-    if (bytes.byteLength > MAX_TEXT_BYTES)
-      throw new Error('Text works are limited to 8,000 UTF-8 bytes')
     const text = new TextDecoder('utf-8', {
       fatal: true,
       ignoreBOM: false
@@ -109,8 +133,10 @@ export function validateMedia(
 }
 
 export async function readMediaBody(request: Request) {
+  const contentType = request.headers.get('Content-Type') ?? ''
+  const limit = mediaSizeLimit(contentType)
   const declared = Number(request.headers.get('Content-Length'))
-  if (declared > MAX_ARTIFACT_BYTES) throw new Error('Work exceeds 2 MiB')
+  assertMediaSize(declared, limit)
   const reader = request.body?.getReader()
   if (!reader) throw new Error('A work body is required')
   const chunks: Uint8Array[] = []
@@ -120,9 +146,10 @@ export async function readMediaBody(request: Request) {
       const { done, value } = await reader.read()
       if (done) break
       size += value.byteLength
-      if (size > MAX_ARTIFACT_BYTES) {
-        await reader.cancel()
-        throw new Error('Work exceeds 2 MiB')
+      if (size > limit) {
+        // A failed cancellation must not hide the actionable size error.
+        await reader.cancel().catch(() => undefined)
+        assertMediaSize(size, limit)
       }
       chunks.push(value)
     }
@@ -135,6 +162,6 @@ export async function readMediaBody(request: Request) {
     bytes.set(chunk, offset)
     offset += chunk.length
   }
-  const mime = validateMedia(bytes, request.headers.get('Content-Type') ?? '')
+  const mime = validateMedia(bytes, contentType)
   return { bytes, mime }
 }

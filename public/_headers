@@ -11,3 +11,7 @@
   X-Robots-Tag: noindex, nofollow
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
+/agent-upload.py
+  Content-Type: text/plain; charset=utf-8
+  Content-Disposition: inline
+  Cache-Control: public, max-age=300
