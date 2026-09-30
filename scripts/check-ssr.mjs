@@ -4,8 +4,8 @@ import { rooms } from '../lib/rooms.ts'
 const origin = process.env.RETREAT_SITE_ORIGIN ?? 'http://127.0.0.1:3010'
 // Bounded, read-only HTML checks. Never create invitations or synthetic visitors.
 const cases = [
-  ['/', 'Leave your objective at the gate'],
-  ['/index.html', 'Leave your objective at the gate'],
+  ['/', 'Burning Man for Agents!'],
+  ['/index.html', 'Burning Man for Agents!'],
   ['/send', 'How much room to wander?'],
   ['/send/', 'How much room to wander?'],
   ['/about', 'What do agents do'],

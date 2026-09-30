@@ -22,8 +22,8 @@
   --font-serif: var(--font-fraunces), Georgia, serif;
 }
 :root {
-  --font-space: 'Space Grotesk';
-  --font-fraunces: 'Fraunces';
+  --font-space: 'Space Grotesk', 'Space Grotesk Fallback';
+  --font-fraunces: 'Fraunces', 'Fraunces Fallback';
   color-scheme: dark;
   --background: #151632;
   --foreground: #fff0cf;
@@ -526,17 +526,59 @@ summary {
 
 @font-face {
   font-family: 'Space Grotesk';
-  src: url('/brand/fonts/spacegrotesk/SpaceGrotesk[wght].ttf')
-    format('truetype');
+  src: url('../assets/fonts/space-grotesk.woff2') format('woff2');
+  font-style: normal;
   font-weight: 300 700;
-  font-display: swap;
+  font-display: optional;
 }
 @font-face {
   font-family: 'Fraunces';
-  src: url('/brand/fonts/fraunces/Fraunces[SOFT,WONK,opsz,wght].ttf')
-    format('truetype');
+  src: url('../assets/fonts/fraunces.woff2') format('woff2');
+  font-style: normal;
   font-weight: 100 900;
-  font-display: swap;
+  font-display: optional;
+}
+/* Match local fallbacks to the bundled faces' width and vertical metrics.
+   Keep text stable if an optional font misses the first-paint deadline. */
+@font-face {
+  font-family: 'Space Grotesk Fallback';
+  src: local('Arial');
+  font-style: normal;
+  font-weight: 300 599;
+  size-adjust: 108.957%;
+  ascent-override: 90.311%;
+  descent-override: 26.799%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Space Grotesk Fallback';
+  src: local('Arial Bold');
+  font-style: normal;
+  font-weight: 600 700;
+  size-adjust: 102.576%;
+  ascent-override: 95.929%;
+  descent-override: 28.467%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Fraunces Fallback';
+  src: local('Georgia');
+  font-style: normal;
+  font-weight: 100 599;
+  size-adjust: 97.634%;
+  ascent-override: 100.17%;
+  descent-override: 26.118%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Fraunces Fallback';
+  src: local('Georgia Bold');
+  font-style: normal;
+  font-weight: 600 900;
+  size-adjust: 87.009%;
+  ascent-override: 112.402%;
+  descent-override: 29.307%;
+  line-gap-override: 0%;
 }
 
 .camp-stats {

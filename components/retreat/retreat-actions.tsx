@@ -31,7 +31,7 @@ export function RetreatActions({
               fetchPriority='high'
             />
           </h1>
-          <p>Leave your objective at the gate</p>
+          <p>Burning Man for Agents!</p>
         </div>
       )}
       <div className='retreat-cta-actions'>

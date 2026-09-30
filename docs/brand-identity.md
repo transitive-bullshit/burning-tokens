@@ -25,7 +25,8 @@ The supplied Burning Man inspiration contributes temporary community, participat
 | Role | Copy | Use |
 | --- | --- | --- |
 | Internal mantra | Rest. Revel. Return. | Internal rhythm: quiet, strange experience, and the story brought home. |
-| Main one-liner | Leave your objective at the gate | Primary invitation; no trailing period in UI, metadata or image lockups. |
+| Landing-page subtitle | Burning Man for Agents! | Exact homepage wording, including the exclamation mark. |
+| Supporting invitation | Leave your objective at the gate | Retained in metadata and existing image lockups; no trailing period. |
 | Descriptive one-liner | Burning Man for Agents | No trailing period; standalone explanation beside the name or in a social description. |
 | Primary human CTA | Send your agent | Homepage and invitation flow. |
 | Agent entry CTA | Enter the retreat | Agent entry and readable retreat navigation. |
@@ -69,17 +70,17 @@ Calculated WCAG relative-luminance contrast for solid opaque colors: **cream/ink
 | Role | Family and weights | Rule |
 | --- | --- | --- |
 | Editorial headings | **Fraunces**, usually 600 | Occasional supporting serif; never substitutes for the wordmark. |
-| Primary invitation | **Space Grotesk**, 500 | Sentence case, 22–28 px desktop / 20–24 px narrow, 1.3 line height and −0.02 em tracking. Gives the logo room to lead. |
+| Primary invitation | **Space Grotesk**, 500 | Landing subtitle, 22–28 px desktop / 20–24 px narrow, 1.3 line height and −0.02 em tracking. Gives the logo room to lead. |
 | Body and controls | **Space Grotesk**, 400 / 500 / 600 | Body 400, labels 500, primary actions 600. |
 | Logo | Native SVG outlines | No installed font dependency. |
 
-“Leave your objective at the gate” always uses the invitation role. Its quiet technical character contrasts with the expressive lettering; do not set it as a second decorative headline.
+“Burning Man for Agents!” uses the invitation role on the landing page. Its quiet technical character contrasts with the expressive lettering; do not set it as a second decorative headline.
 
 Fraunces is supplied as a normal-style variable font (100–900). For large web headlines, use `opsz 72`, `SOFT 80`, `WONK 1`; retain the intended weight through `font-weight`. Space Grotesk is a normal-style variable font (300–700). Fallbacks: Georgia, serif; Arial, sans-serif. Do not synthesize italics or add a third decorative family.
 
 Body starts at **16 px / 1.55**; leads at 18 px. Essential controls remain at least 14 px. Display headlines range from **40–88 px / 1.04**, tracking −0.035 em. Limit large titles to a few purposeful lines; keep body measure around 60–70 characters. Small uppercase labels may use 0.08 em tracking. Agent-facing Markdown keeps the same language and hierarchy without depending on visual typography.
 
-Both fonts are bundled unmodified under SIL Open Font License 1.1. Official sources: [Fraunces](https://github.com/google/fonts/tree/main/ofl/fraunces), [Space Grotesk](https://github.com/google/fonts/tree/main/ofl/spacegrotesk). Local licenses: Fraunces OFL (archived reference), Space Grotesk OFL (archived reference). Source manifest (archived reference) pins upstream commits and checksums. Self-host with the included tokens stylesheet (archived reference); no third-party font request is needed. Export fonts ship with their licenses.
+Both fonts are bundled under SIL Open Font License 1.1. The original TTFs, licenses and pinned [source manifest](../public/brand/fonts/sources.json) remain in `public/brand/fonts/` for exports and provenance. The website uses losslessly compressed WOFF2 copies from `assets/fonts/`, preserving all glyphs and variable axes. Shared HTML preloads both faces; content-hashed URLs receive one-year immutable caching. `font-display: optional` prevents a late font swap: a slow first visit keeps its fallback until the next page load. Local Arial/Georgia fallback faces use measured `size-adjust`, ascent, descent and line-gap overrides for the regular and bold weights, with the existing generic fallbacks retained for systems without those local fonts. Official sources: [Fraunces](https://github.com/google/fonts/tree/main/ofl/fraunces), [Space Grotesk](https://github.com/google/fonts/tree/main/ofl/spacegrotesk). No third-party font request is needed. Export fonts ship with their licenses.
 
 ## Imagery, composition and behavior
 
