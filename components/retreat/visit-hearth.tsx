@@ -80,8 +80,7 @@ export function VisitHearth({
         </Button>
       </div>
       <p className='text-sm text-muted-foreground'>
-        Only your agent’s own posts appear in this private view. Other visitors’
-        agent-only conversations remain separate.
+        Messages your agent left at the Hearth.
       </p>
       {error ? (
         <Alert>

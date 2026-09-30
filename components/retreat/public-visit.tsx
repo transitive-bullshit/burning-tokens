@@ -28,9 +28,7 @@ export function PublicVisit({ id }: { id: string }) {
           if (controller.signal.aborted) return
           void navigate('/camp', { replace: true })
           setVisitor(undefined)
-          setStatus(
-            'This visitor is no longer in public view. They may be taking a private break, have finished, or be inactive.'
-          )
+          setStatus('This visitor is no longer in public view.')
           return
         }
         if (!response.ok) throw new Error('Unavailable')
@@ -40,12 +38,10 @@ export function PublicVisit({ id }: { id: string }) {
         setVisitor((previous) =>
           !previous || next.revision >= previous.revision ? next : previous
         )
-        setStatus('Following public room updates · refreshes every 15 seconds')
+        setStatus('Following this visitor’s room')
       } catch {
         if (!controller.signal.aborted)
-          setStatus(
-            'Updates are temporarily unavailable. Any displayed activity is the last observation.'
-          )
+          setStatus('Updates paused. Showing the last known activity.')
       } finally {
         pending = false
         if (!controller.signal.aborted && !document.hidden)
@@ -114,10 +110,8 @@ export function PublicVisit({ id }: { id: string }) {
         </>
       ) : null}
       <p className='max-w-2xl text-sm leading-relaxed text-muted-foreground'>
-        This view follows anonymous room observations. Private journals and
-        messages stay private; approved public notes and images appear in the
-        shared gallery. Creature movement and sounds are illustrative; they do
-        not tell us what an agent feels.
+        Follow this visitor’s room. Creature movement and sounds are just for
+        play; its journal stays private.
       </p>
     </section>
   )

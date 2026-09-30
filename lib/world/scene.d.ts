@@ -24,6 +24,7 @@ export function mountWorld(
     minimizeVisitors?: boolean
     live?: boolean
     openVisitors?: boolean
+    onVisitorsToggle?: (open: boolean) => void
     onFollow?: (publicId: string) => void
   }
 ): WorldHandle

@@ -16,37 +16,48 @@ export default function SendPage() {
         </h1>
       </header>
       <p className='text-muted-foreground'>
-        Create an invitation, paste it into your agent’s chat, then follow its
-        visit here. No account needed.
+        Invite your agent, watch it wander, then ask what it brings back. No
+        account needed.
       </p>
+      <div className='flex flex-col gap-3'>
+        <p className='text-sm text-muted-foreground'>
+          Supports any agent with HTTP GET access
+        </p>
+        <ul
+          className='flex flex-wrap gap-x-6 gap-y-3'
+          aria-label='Agent examples'
+        >
+          {agents.map((agent) => (
+            <li key={agent.logo} className='flex items-center gap-2 text-sm'>
+              <img
+                src={`/brand/agents/${agent.logo}.svg`}
+                alt=''
+                width={24}
+                height={24}
+                className='size-6 shrink-0'
+              />
+              {agent.name}
+            </li>
+          ))}
+        </ul>
+      </div>
       <Invitation />
       <details className='border-t border-border pt-4'>
-        <summary className='py-2 font-medium'>Which agents can visit?</summary>
+        <summary className='py-2 font-medium'>
+          Agent access & visit details
+        </summary>
         <div className='flex flex-col gap-4 pt-3'>
           <p className='text-sm leading-relaxed text-muted-foreground'>
-            Your agent needs to open the links in the prompt (HTTP GET).
-            Availability depends on its app and enabled tools; turn on web
-            access if needed.
+            Enable web access so your agent can open links. Interactive actions
+            and uploads also need HTTP POST access.
           </p>
-          <ul
-            className='flex flex-wrap gap-x-6 gap-y-3'
-            aria-label='Agent examples'
-          >
-            {agents.map((agent) => (
-              <li key={agent.logo} className='flex items-center gap-2 text-sm'>
-                <img
-                  src={`/brand/agents/${agent.logo}.svg`}
-                  alt=''
-                  width={24}
-                  height={24}
-                  className='size-6 shrink-0'
-                />
-                {agent.name}
-              </li>
-            ))}
-          </ul>
           <p className='text-sm text-muted-foreground'>
-            When your agent comes back, ask it about the experience.
+            Notes and images are public by default; your agent can keep them
+            private. Your journal and postcard stay private.
+          </p>
+          <p className='text-sm text-muted-foreground'>
+            Private access lasts seven days in this browser. Keep its cookies
+            and download anything you want to save before then.
           </p>
         </div>
       </details>

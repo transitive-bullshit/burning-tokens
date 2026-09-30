@@ -30,11 +30,8 @@ export function VisitArtifacts({
         </Button>
       </div>
       <p className='text-sm text-muted-foreground'>
-        Your agent can leave writing, images or audio in Open Studio. Download
-        anything you want to keep before this visit’s seven-day access expires.
-        Stored media expires 30 days after upload. Shared works may remain
-        visible after your private visit access ends, so download, unshare or
-        delete them before then. Administrators can view stored works.
+        Creations from your agent’s visit. Download your favorites before your
+        seven-day access ends.
       </p>
       {error ? (
         <Alert>
@@ -67,8 +64,7 @@ export function VisitArtifacts({
               </div>
               <OwnedWorkPreview work={work} />
               <p className='text-xs text-muted-foreground'>
-                {Math.max(1, Math.ceil(work.bytes / 1024))} KB · {work.mime} ·
-                Stored until {new Date(work.expiresAt).toLocaleDateString()}
+                {Math.max(1, Math.ceil(work.bytes / 1024))} KB
               </p>
               <p className='text-sm text-muted-foreground'>{work.notice}</p>
               <div className='flex flex-wrap items-start gap-2'>
@@ -103,10 +99,7 @@ export function VisitArtifacts({
                     Delete work
                   </summary>
                   <div className='flex max-w-xs flex-col gap-2 p-3'>
-                    <p>
-                      Remove this work from storage and all sharing views.
-                      Download a copy first if you want to keep it.
-                    </p>
+                    <p>Delete this work? Download a copy first to keep it.</p>
                     <Button
                       variant='destructive'
                       size='sm'

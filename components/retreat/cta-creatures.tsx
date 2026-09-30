@@ -82,15 +82,13 @@ export default function CtaCreatures({
   )
   const timers = useRef<Set<ReturnType<typeof setTimeout>>>(new Set())
   const sound = true
-  const [voiceByType] = useState<Record<number, string>>(() =>
-    Object.fromEntries(
-      [0, 1, 7].map((family) => [
-        family,
-        ALLOWED_VOICES[Math.floor(Math.random() * ALLOWED_VOICES.length)]!
-      ])
+  const [voiceSelections] = useState(() => {
+    const available = [...ALLOWED_VOICES]
+    return selectedFamilies.map(
+      () =>
+        available.splice(Math.floor(Math.random() * available.length), 1)[0]!
     )
-  )
-  const voiceSelections = selectedFamilies.map((family) => voiceByType[family]!)
+  })
   const lastVoice = useRef<Record<string, string>>({})
   const activeVoices = useRef(new Map<number, HTMLAudioElement>())
 

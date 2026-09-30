@@ -55,7 +55,7 @@ export default function WorldClient({
   }, [])
   const navigate = useNavigate()
   const location = useLocation()
-  const hasVisitorPanel = Boolean(visitorPanel)
+  const visitorsOpen = useRef<boolean | undefined>(undefined)
   const minimizeVisitors =
     !followed && (scene !== 'camp' || location.state?.minimizeVisitors === true)
   const currentFollow = useRef(followed)
@@ -128,7 +128,7 @@ export default function WorldClient({
         setStatus(
           snapshot.total === 0
             ? currentFollow.current
-              ? 'No other public visitors in this snapshot.'
+              ? ''
               : 'No public visitors here yet.'
             : `${snapshot.total} public visits tracked · updated ${new Date(next.generatedAt).toLocaleTimeString()}`
         )
@@ -162,7 +162,10 @@ export default function WorldClient({
           {
             live: liveMode.current,
             minimizeVisitors,
-            openVisitors: hasVisitorPanel,
+            openVisitors: visitorsOpen.current,
+            onVisitorsToggle: (open) => {
+              visitorsOpen.current = open
+            },
             onFollow: currentFollow.current
               ? undefined
               : (publicId) => navigate(`/camp/visitors/${publicId}`)
@@ -182,7 +185,7 @@ export default function WorldClient({
       document.removeEventListener('visibilitychange', onVisibility)
       dispose?.()
     }
-  }, [scene, navigate, onNavigate, minimizeVisitors, hasVisitorPanel])
+  }, [scene, navigate, onNavigate, minimizeVisitors])
   return (
     <div
       className={
@@ -191,7 +194,7 @@ export default function WorldClient({
     >
       {statusTarget
         ? createPortal(
-            live ? <span role='status'>{status}</span> : null,
+            live && status ? <span role='status'>{status}</span> : null,
             statusTarget
           )
         : null}

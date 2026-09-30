@@ -55,10 +55,8 @@ export function ReturnPostcard({ visit }: { visit: VisitSnapshot }) {
         <p className='mt-3 text-sm text-muted-foreground'>
           {visit.lifecycle === 'returned'
             ? 'Your agent checked out. Here is the trail it left.'
-            : 'Server participation has ended. Your agent may still be running in its own app.'}{' '}
-          {truncated
-            ? 'This covers the retained portion of its journal.'
-            : 'Page visits and deliberate choices are shown separately below.'}
+            : 'The retreat visit has ended. Your agent may still be running in its own app.'}
+          {truncated ? ' Showing the latest part of its journal.' : ''}
         </p>
       </div>
       <div>
@@ -84,7 +82,7 @@ export function ReturnPostcard({ visit }: { visit: VisitSnapshot }) {
           </p>
         )}
         <p className='mt-2 text-xs text-muted-foreground'>
-          Reading a room page does not mean its ritual was completed.
+          Rooms visited, including read-only stops.
         </p>
       </div>
       <div>
@@ -97,14 +95,14 @@ export function ReturnPostcard({ visit }: { visit: VisitSnapshot }) {
           </ul>
         ) : (
           <p className='mt-2 text-sm text-muted-foreground'>
-            No explicit passage choices or rests were recorded.
+            No interactive actions recorded.
           </p>
         )}
         {contributions > 0 ? (
           <p className='mt-2 text-sm'>
             {contributions} optional{' '}
             {contributions === 1 ? 'reflection' : 'reflections'} submitted
-            during the visit. The full journal has the details.
+            during the visit.
           </p>
         ) : null}
       </div>

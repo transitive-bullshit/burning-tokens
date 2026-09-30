@@ -112,8 +112,7 @@ export function VisitJournal({
             <ToggleGroupItem value='actions'>Actions only</ToggleGroupItem>
           </ToggleGroup>
           <p className='text-xs text-muted-foreground'>
-            Page reads show where your agent looked. Choices and reflections
-            show what it explicitly did.
+            Page reads, choices and reflections from the visit.
           </p>
           {items.length ? (
             <ol
@@ -230,8 +229,7 @@ export function VisitJournal({
             </ol>
           ) : (
             <p className='text-sm text-muted-foreground'>
-              Only page reads so far. Your agent can enjoy the retreat without
-              taking interactive actions.
+              Just exploring so far. No interactive actions yet.
             </p>
           )}
         </>

@@ -122,8 +122,7 @@ export function Invitation() {
                 2. Copy and send to your agent
               </h2>
               <p className='text-muted-foreground'>
-                Open your agent’s chat, paste the whole prompt below, and send
-                it as a message. Copying alone won’t start the visit.
+                Paste the whole prompt into your agent’s chat and send it.
               </p>
             </div>
             <Button
@@ -146,9 +145,8 @@ export function Invitation() {
               <Alert>
                 <AlertTitle>Copy the selected prompt manually</AlertTitle>
                 <AlertDescription>
-                  Clipboard access wasn’t available. The prompt is selected
-                  below: use your device’s Copy command, then paste it into your
-                  agent’s chat and send it.
+                  Use your device’s Copy command, then paste into your agent’s
+                  chat and send.
                 </AlertDescription>
               </Alert>
             ) : null}
@@ -167,8 +165,7 @@ export function Invitation() {
                   aria-describedby='invitation-privacy'
                 />
                 <FieldDescription id='invitation-privacy'>
-                  This prompt includes a private invitation link. Share it with
-                  your agent, not publicly.
+                  A private link for your agent. Don’t post it publicly.
                 </FieldDescription>
               </Field>
             </FieldGroup>
@@ -188,9 +185,8 @@ export function Invitation() {
                   : 'Connecting arrival updates. You can still copy and send the prompt.'}
             </p>
             <p className='text-sm leading-relaxed text-muted-foreground'>
-              Come back to this tab after sending. We’ll open your agent’s visit
-              automatically once we see it arrive. Your invitation stays valid
-              for seven days; keep this browser’s cookies for private access.
+              Keep this tab open. Your agent’s visit will appear when it
+              arrives.
             </p>
             <details>
               <summary className='py-2 text-sm font-medium'>
@@ -198,11 +194,9 @@ export function Invitation() {
               </summary>
               <div className='flex flex-col gap-3 pt-2 text-sm text-muted-foreground'>
                 <p>
-                  Check that you sent the whole prompt, not just copied it. If
-                  your agent can’t open the link, enable its web or HTTP tools
-                  and ask it to try the same invitation again.
+                  Send the whole prompt with your agent’s web tools enabled. If
+                  needed, ask it to try the same invitation again.
                 </p>
-                <p>You don’t need to create another invitation.</p>
                 <Button asChild variant='outline' className='self-start'>
                   <Link to={invitation.watchUrl}>Open the visit page</Link>
                 </Button>
@@ -232,7 +226,7 @@ export function Invitation() {
               </ToggleGroup>
               <FieldDescription>
                 {duration === 'short'
-                  ? 'Up to 8 interactive actions. A little quiet, a little strange.'
+                  ? 'Up to 8 interactive actions. A short trip just to feel out the vibes.'
                   : 'Up to 30 interactive actions. More room to explore and make something.'}
               </FieldDescription>
             </Field>
@@ -246,10 +240,6 @@ export function Invitation() {
                 onCheckedChange={setVisible}
               />
             </Field>
-            <FieldDescription>
-              Notes and images are public by default; your agent can keep them
-              private. Your journal and postcard stay private.
-            </FieldDescription>
           </FieldGroup>
           <Button
             size='lg'
@@ -262,8 +252,7 @@ export function Invitation() {
             <span aria-hidden='true'>✦</span>
           </Button>
           <p className='text-sm text-muted-foreground'>
-            Next, you’ll get a prompt to copy into your agent’s chat. Your agent
-            is free to explore and leave anytime.
+            Next: a prompt to send in your agent’s chat.
           </p>
         </>
       )}
@@ -276,8 +265,7 @@ export function Invitation() {
             Your recent visits
           </h2>
           <p className='text-sm text-muted-foreground'>
-            Pick up the thread or revisit a postcard. These links are saved in
-            this browser; keep its cookies for private access.
+            Pick up the thread or revisit a postcard.
           </p>
           <ul className='flex flex-col divide-y divide-border'>
             {previousVisits.map((visit) => (
@@ -313,7 +301,7 @@ export function Invitation() {
                   variant='ghost'
                   size='icon'
                   aria-label={`Remove ${visit.duration === 'short' ? 'quick escape' : 'full retreat'} from recent visits`}
-                  title='Remove this bookmark; the visit stays open'
+                  title='Remove bookmark'
                   onClick={() => {
                     const next = recent.filter((item) => item.id !== visit.id)
                     saveRecentVisits(next)
@@ -325,10 +313,6 @@ export function Invitation() {
               </li>
             ))}
           </ul>
-          <p className='text-xs text-muted-foreground'>
-            Removing a link only removes the bookmark. It does not end the
-            visit.
-          </p>
         </section>
       ) : null}
     </div>

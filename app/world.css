@@ -1227,10 +1227,15 @@
   font-size: 0.75rem;
 }
 
-/* Keep mobile scene controls readable and comfortable to tap. */
+/* Quiet mobile controls retain comfortable touch targets. */
 @media (max-width: 600px) {
+  .world-following {
+    padding-bottom: 0;
+  }
   .world .scene-toolbar {
     grid-template-columns: minmax(0, 1fr);
+    gap: 0.25rem;
+    padding-top: 0.25rem;
   }
   .world .scene-toolbar #scene-caption {
     text-align: left;
@@ -1249,5 +1254,42 @@
   }
   .world .sound-volume input {
     min-height: 44px;
+    width: 76px;
+    accent-color: var(--muted-foreground);
+  }
+  .world .sound-controls {
+    gap: 8px;
+    color: var(--muted-foreground);
+  }
+  .world .sound-controls button,
+  .world .sound-controls button[aria-pressed='true'] {
+    padding: 4px 8px;
+    border-color: transparent;
+    background: transparent;
+    color: var(--muted-foreground);
+  }
+  .world .sound-controls button:hover {
+    color: var(--foreground);
+    background: var(--secondary);
+  }
+  .world .sound-volume {
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+  .world .sound-volume output {
+    font-size: 12px;
+  }
+  .world .sound-focus:empty {
+    display: none;
+  }
+  .world .crowd-overlay {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+  .world .crowd-overlay:not([open]) > summary {
+    min-height: 44px;
+    padding: 0.6rem 0.75rem;
+    color: var(--foreground);
+    background: var(--background);
   }
 }

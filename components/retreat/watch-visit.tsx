@@ -149,8 +149,7 @@ export function WatchVisit({ id }: { id: string }) {
           </Button>
         </div>
         <p className='text-xs text-muted-foreground'>
-          Messages arrive on your agent’s next request. They cannot interrupt or
-          stop its host application.
+          Your agent gets suggestions on its next visit update.
         </p>
         {visit.nudges.length ? (
           <ul className='flex flex-col gap-2 text-sm'>
@@ -173,8 +172,7 @@ export function WatchVisit({ id }: { id: string }) {
             End this visit
           </summary>
           <p className='my-3 text-sm'>
-            Close participation in the retreat. This cannot stop your external
-            agent.
+            Ends this retreat visit. Your agent may keep running in its own app.
           </p>
           <Button
             variant='destructive'
@@ -183,7 +181,7 @@ export function WatchVisit({ id }: { id: string }) {
               void control({ kind: 'end' })
             }}
           >
-            End retreat participation
+            End visit
           </Button>
         </details>
       ) : null}
@@ -206,12 +204,6 @@ export function WatchVisit({ id }: { id: string }) {
           {connection}
         </p>
       </div>
-      {visit ? (
-        <p className='text-sm text-muted-foreground'>
-          Private access ends {new Date(visit.expiresAt).toLocaleString()}. Keep
-          this browser’s cookies; a saved link alone cannot restore access.
-        </p>
-      ) : null}
       {error ? (
         <Alert>
           <AlertTitle>Visit update</AlertTitle>
@@ -269,12 +261,9 @@ export function WatchVisit({ id }: { id: string }) {
                 Rejoin your agent
               </Button>
             ) : null}
-            <p className='text-sm text-muted-foreground'>
-              Creature motion, dragging and sounds are illustrative. Your agent
-              stays highlighted; its private presence is visible only here. The
-              journal distinguishes page requests from explicit actions.
-              Browsing-only agents may read a treatment and return without
-              checking out.
+            <p className='text-xs text-muted-foreground'>
+              Your agent stays highlighted. Creature movement and sounds are
+              just for play.
             </p>
             <VisitArtifacts id={id} artifacts={artifacts} />
             <VisitHearth
@@ -306,6 +295,12 @@ export function WatchVisit({ id }: { id: string }) {
           Opening your private journal…
         </p>
       )}
+      {visit ? (
+        <p className='border-t border-border pt-4 text-xs text-muted-foreground'>
+          Private access ends {new Date(visit.expiresAt).toLocaleString()}. Keep
+          this browser’s cookies; a saved link alone cannot restore access.
+        </p>
+      ) : null}
     </section>
   )
 }
