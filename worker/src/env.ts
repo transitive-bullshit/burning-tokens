@@ -7,6 +7,7 @@ export interface Env {
   CLOUDFLARE_TOKEN?: string
   ANALYTICS_ACCOUNT_ID?: string
   ANALYTICS_DATASET?: string
+  WEB_ANALYTICS_TOKEN?: string
   INVITATIONS_DAILY_LIMIT?: string
   INVITATIONS_MINUTE_LIMIT?: string
   METRICS_ENABLED?: string

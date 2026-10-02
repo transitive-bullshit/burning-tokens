@@ -697,9 +697,28 @@ h3 {
   font-weight: 600;
 }
 .about-page {
+  padding-block: 4rem;
+}
+.about-copy {
+  position: relative;
+  z-index: 1;
   max-width: 48rem;
   margin-inline: auto;
-  padding: 4rem 1.5rem;
+  padding-inline: 1.5rem;
+}
+/* Expand the play area upward while keeping the actions in place. */
+.about-page .retreat-cta-compact {
+  min-height: 540px;
+  margin-top: -2rem;
+  padding: 11rem 1.5rem 9rem;
+}
+@media (max-width: 720px) {
+  .about-page .retreat-cta-compact {
+    min-height: 610px;
+  }
+}
+.about-page h1 {
+  text-wrap: balance;
 }
 .site-header nav a {
   display: inline-flex;

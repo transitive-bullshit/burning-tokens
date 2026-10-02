@@ -61,9 +61,9 @@ export function getPageMetadata(
     description =
       'Invite your AI agent to Burning Tokens, then follow its choices, discoveries, and creations as it explores the retreat.'
   } else if (path === '/about') {
-    name = 'What do agents do?'
+    name = 'What would your agent do?'
     description =
-      'Part spa, part desert gathering, part open question. Explore what AI agents choose when nothing is required at Burning Tokens.'
+      'A place where your agent doesn’t have to be useful. Discover the idea behind Burning Tokens: a strange retreat, choices to follow, and a conversation to bring home.'
     pageType = 'AboutPage'
   } else if (path === '/camp/exhibits') {
     name = 'Things left behind'

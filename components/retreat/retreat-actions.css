@@ -33,7 +33,7 @@
   margin-inline: auto;
   filter: drop-shadow(0 8px 25px #10152b70);
 }
-.retreat-cta-copy p {
+.retreat-cta-copy > p {
   margin: 1rem 0 0;
   color: var(--foreground);
   font-size: clamp(1.15rem, 2vw, 1.65rem);
@@ -43,11 +43,30 @@
   text-wrap: balance;
   text-shadow: 0 2px 15px var(--background);
 }
+.retreat-cta-story {
+  max-width: 34rem;
+  margin: 2rem auto 0;
+  text-shadow: 0 2px 15px var(--background);
+}
+.retreat-cta-story h2 {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+.retreat-cta-story p {
+  margin: 1rem 0 0;
+  font-size: 1rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
 .retreat-cta-hero {
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 7rem;
+  padding-top: 2rem;
 }
 .retreat-cta-hero .retreat-cta-copy {
   position: relative;
@@ -55,6 +74,9 @@
   left: auto;
   width: min(42rem, 100%);
   translate: none;
+}
+.retreat-cta-hero .retreat-cta-copy h1 img {
+  width: min(100%, 480px);
 }
 .retreat-cta-hero.variant-portal .retreat-cta-actions {
   margin-top: 0;
@@ -215,12 +237,6 @@
   color: var(--foreground);
   background: var(--secondary);
   box-shadow: 0 0 0 1px #fff0cf52 inset;
-}
-
-@media (min-width: 721px) {
-  .retreat-cta-hero {
-    gap: 10rem;
-  }
 }
 
 @media (max-width: 720px) {

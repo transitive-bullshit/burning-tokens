@@ -8,7 +8,15 @@ The Vite frontend and Worker backend deploy together to `burning-tokens-retreat-
 
 See [environment configuration](environment.md) for the full variable inventory, local secret template, hosted secret inspection and token rotation instructions.
 
-## Metrics
+## Website analytics
+
+Basic traffic reporting lives in [Cloudflare Web Analytics → Burning Tokens](https://dash.cloudflare.com/02b82b855bb1ee1f14bf68e5870aff82/web-analytics/overview?siteTag~in=d5731ef11e494fd88e10088e99756d0f&excludeBots=Yes). In the dashboard sidebar, choose **Analytics → Web analytics → burning-tokens.transitivebullsh.it**. This is the free website dashboard for visits, pageviews, referrers, countries, devices and browser performance. It is separate from Workers request counts and the operational Analytics Engine metrics below. No PostHog integration is installed.
+
+The Worker appends Cloudflare's standard module beacon to human HTML only when `WEB_ANALYTICS_TOKEN` is configured and the request matches `PUBLIC_ORIGIN`. Production sets this public site identifier in `worker/wrangler.jsonc`; local development and the alternate ingress hostname do not load it. Human HTML uses `Cache-Control: no-store, no-transform` to prevent the SaaS zone's automatic beacon from duplicating this site-specific beacon. Cloudflare's default SPA tracking includes React Router navigation. Human page paths (including visit IDs) are measured; Cloudflare strips query strings and fragments before sending page URLs. The beacon does not run in the separately rendered agent Markdown/HTML or API responses, so agent capability URLs and submitted content do not enter this browser analytics stream. This dashboard measures browser traffic, not all visiting agents or identified/returning people. It uses no analytics cookies or session replay. Dashboard data can take a few minutes to appear and browser blockers may prevent collection.
+
+Verified on 2026-09-30: production release `975e924d-547b-4476-a478-eb88e986b273`, built from `61a24dc` plus the website analytics changes, with migration tags unchanged (`v1`, `v2-studio`, `v3-lounge`). Build, TypeScript, lint and the existing bounded SSR check passed. The live browser loads exactly one site-specific beacon and this dashboard is receiving pageviews. Previous release before analytics: `241406d1-f15d-4490-90f0-95688fb3f646`.
+
+## Operational metrics
 
 Production enables the `METRICS` Analytics Engine binding. Authenticated aggregate queries, anonymous denial and administrator logout passed after the user provisioned `CLOUDFLARE_TOKEN`. Points contain fixed event/outcome/scope labels and numeric measurements only: no paths, credentials, session IDs, text, uploaded media or raw errors. Analytics failures do not fail visits. Raw Worker observability remains disabled because capability URLs are sensitive. Never put this credential in `VITE_*` variables, tracked files, commands containing literal values or browser code.
 

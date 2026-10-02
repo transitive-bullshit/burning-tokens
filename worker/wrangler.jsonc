@@ -100,7 +100,8 @@
         "PUBLISHING_ENABLED": "true",
         "METRICS_ENABLED": "true",
         "ANALYTICS_ACCOUNT_ID": "02b82b855bb1ee1f14bf68e5870aff82",
-        "ANALYTICS_DATASET": "burning_tokens_metrics_production"
+        "ANALYTICS_DATASET": "burning_tokens_metrics_production",
+        "WEB_ANALYTICS_TOKEN": "9de15fda5e514b2fbf4ca049914c8a82"
       },
       "durable_objects": {
         "bindings": [

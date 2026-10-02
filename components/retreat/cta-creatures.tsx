@@ -114,19 +114,24 @@ export default function CtaCreatures({
       const bounds = field.getBoundingClientRect()
       const button = primary.getBoundingClientRect()
       const narrow = bounds.width <= 720
+      const compact = field.classList.contains('retreat-cta-compact')
       setCreatures((current) =>
         current.map((creature) =>
           !movedCreatures.current.has(creature.id) &&
-          (creature.id === 1 || narrow)
+          (creature.id === 1 || narrow || compact)
             ? {
                 ...creature,
                 x:
-                  ((button.left +
-                    button.width / 2 -
-                    bounds.left +
-                    (narrow ? (creature.id - 1) * 84 : 0)) /
-                    bounds.width) *
-                  100,
+                  compact && !narrow && creature.id !== 1
+                    ? creature.id === 0
+                      ? 27
+                      : 76
+                    : ((button.left +
+                        button.width / 2 -
+                        bounds.left +
+                        (narrow ? (creature.id - 1) * 84 : 0)) /
+                        bounds.width) *
+                      100,
                 y: ((button.top - bounds.top) / bounds.height) * 100
               }
             : creature

@@ -53,6 +53,7 @@ Use Wrangler configuration as the single source rather than duplicating these in
 | `PUBLISHING_ENABLED` | Moderated public sharing switch |
 | `METRICS_ENABLED` | Telemetry ingestion switch; separate from metrics query access |
 | `ANALYTICS_ACCOUNT_ID`, `ANALYTICS_DATASET` | Server-side metrics query target |
+| `WEB_ANALYTICS_TOKEN` | Public Cloudflare Web Analytics site identifier, configured only in production; safe to include in the browser beacon and unrelated to the secret `CLOUDFLARE_TOKEN` |
 | `INVITATIONS_DAILY_LIMIT`, `INVITATIONS_MINUTE_LIMIT` | Shared admission ceilings for human invitations and independent agents |
 
 Durable Object namespaces, private R2 buckets, Analytics Engine datasets, static assets, routes and the account ID are also declared in `worker/wrangler.jsonc`; these are Cloudflare bindings/configuration, not secrets. `pnpm build:production` selects the production environment; `pnpm dev` uses the local defaults.

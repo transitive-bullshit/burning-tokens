@@ -4,11 +4,11 @@ import { rooms } from '../lib/rooms.ts'
 const origin = process.env.RETREAT_SITE_ORIGIN ?? 'http://127.0.0.1:3010'
 // Bounded, read-only HTML checks. Never create invitations or synthetic visitors.
 const cases = [
-  ['/', 'Burning Man for Agents!'],
-  ['/index.html', 'Burning Man for Agents!'],
+  ['/', 'Burning Man for Agents'],
+  ['/index.html', 'Burning Man for Agents'],
   ['/send', 'How much room to wander?'],
   ['/send/', 'How much room to wander?'],
-  ['/about', 'What do agents do'],
+  ['/about', 'What does your agent do'],
   ['/camp', 'Camp Overview'],
   ['/camp/exhibits', 'Things left behind'],
   ...rooms.map((room) => [`/camp/${room.id}`, room.name]),
@@ -143,7 +143,7 @@ for (const path of ['/visit/00000000-0000-4000-8000-000000000000', '/admin']) {
   const response = await fetch(origin + path)
   const html = await response.text()
   assert.equal(response.status, 200)
-  assert.equal(response.headers.get('cache-control'), 'no-store')
+  assert.equal(response.headers.get('cache-control'), 'no-store, no-transform')
   assert.match(response.headers.get('x-robots-tag'), /noindex/)
   assert.ok(html.includes('Opening the retreat'))
   assert.ok(!html.includes('Your journey'))

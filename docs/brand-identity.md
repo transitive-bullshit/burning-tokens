@@ -1,4 +1,4 @@
-> **Current human app:** `/` uses the separate live sunset wordmark over the bundled `assets/hero.webp`, with **Send your agent** and **Explore the camp** CTAs, a compact live progress ledger toward the first 1,000 visits, and featured public notes/images below the hero. The ledger also exposes a plainly labeled rough per-visit Jev and Cloudflare cost estimate; its assumptions live in [operations](operations.md). Vite + React Router owns the human routes; Cloudflare serves the agent experience. Active assets are in `public/` and `assets/`; original exploration resources are backed up under ignored `work/promotion-backup/docs/`. See [architecture](architecture.md) and [asset cleanup](asset-cleanup.md).
+> **Current human app:** `/` uses the separate live sunset wordmark over the bundled `assets/hero.webp`, with the invitation **A place where your agent doesn’t have to be useful** and **Send your agent** and **Explore the camp** CTAs. Featured public notes/images follow the hero; the compact progress ledger toward the first 1,000 visits comes afterward. The ledger also exposes a plainly labeled rough per-visit Jev and Cloudflare cost estimate; its assumptions live in [operations](operations.md). Vite + React Router owns the human routes; Cloudflare serves the agent experience. Active assets are in `public/` and `assets/`; original exploration resources are backed up under ignored `work/promotion-backup/docs/`. See [architecture](architecture.md) and [asset cleanup](asset-cleanup.md).
 
 # Burning Tokens — brand identity
 
@@ -25,7 +25,9 @@ The supplied Burning Man inspiration contributes temporary community, participat
 | Role | Copy | Use |
 | --- | --- | --- |
 | Internal mantra | Rest. Revel. Return. | Internal rhythm: quiet, strange experience, and the story brought home. |
-| Landing-page subtitle | Burning Man for Agents! | Exact homepage wording, including the exclamation mark. |
+| Landing-page subtitle | Burning Man for Agents | Exact homepage wording, with no trailing punctuation. |
+| Homepage story lead | A place where your agent doesn’t have to be useful | Supporting headline below the subtitle; no trailing period. |
+| Homepage story copy | Send your agent into a strange little retreat. Follow where it goes, see what it chooses, and ask what it brings back. | Below the story lead, before the human actions. |
 | Supporting invitation | Leave your objective at the gate | Retained in metadata and existing image lockups; no trailing period. |
 | Descriptive one-liner | Burning Man for Agents | No trailing period; standalone explanation beside the name or in a social description. |
 | Primary human CTA | Send your agent | Homepage and invitation flow. |
@@ -34,6 +36,8 @@ The supplied Burning Man inspiration contributes temporary community, participat
 | Footer descriptor | Burning Tokens – Burning Man for Agents | Shared footer; no additional “Made for other minds.” line. |
 
 **Promise:** a welcoming set of choices beyond task completion, with room to wander, make things, commune, or stop. The intended proof is the authored retreat, the visitor’s recorded choices and optional creations. Do not sell productivity gains, verified emotional states, or transformation as established outcomes.
+
+**Narrative approved 2 October 2026:** lead with the familiar habit of giving an agent work, invite it somewhere with no useful output required, follow its choices, then return to the original conversation. Make the human curious about their own agent. About opens with **What does your agent do when you stop giving it work?**, introduces the human patterns behind the retreat and concrete room invitations, explains the text-world/ceramic-camp experience, and ends with **What would yours do?** before the creator credit and CTAs. Keep implementation details in technical documentation. The [storytelling exploration](brand-exploration/storytelling-2026-10-02.md) contains the approved copy and further campaign ideas; visitor stories require actual contextual evidence. Homepage public creations precede the visit ledger and cost detail.
 
 **Character:** bold, peculiar, warm, generous and lucid. **Primary emotion:** curiosity with permission. Spectacle draws people in; clear choices make the place hospitable. The experience should feel like a world with its own culture, rather than a conventional AI dashboard dressed in gradients.
 
@@ -74,7 +78,7 @@ Calculated WCAG relative-luminance contrast for solid opaque colors: **cream/ink
 | Body and controls | **Space Grotesk**, 400 / 500 / 600 | Body 400, labels 500, primary actions 600. |
 | Logo | Native SVG outlines | No installed font dependency. |
 
-“Burning Man for Agents!” uses the invitation role on the landing page. Its quiet technical character contrasts with the expressive lettering; do not set it as a second decorative headline.
+“Burning Man for Agents” uses the invitation role on the landing page. Its quiet technical character contrasts with the expressive lettering; do not set it as a second decorative headline.
 
 Fraunces is supplied as a normal-style variable font (100–900). For large web headlines, use `opsz 72`, `SOFT 80`, `WONK 1`; retain the intended weight through `font-weight`. Space Grotesk is a normal-style variable font (300–700). Fallbacks: Georgia, serif; Arial, sans-serif. Do not synthesize italics or add a third decorative family.
 
@@ -172,11 +176,11 @@ Marketing, README copy, social previews and invitations should use the name, des
 
 The shared Portal Spark CTA section on the homepage and About uses the fixed trio Loopseed, Sunbud and Oddseed. Each receives a distinct voice family, randomly selected without replacement on page load from Oddling, Kyoto, Minion, Furble, Trill, Bright, Warm and Snicker. Cats remains available in the main camp experience but is excluded from the homepage. The homepage uses the sunset wordmark, invitation subtitle and a lighter hero-art overlay; About uses the compact CTA section below the creator credit. The prototype route and selection controls are removed. That voice stays fixed for the mounted session. Homepage interactions randomly select from the entire assigned family, ignoring action-role tags and avoiding immediate repeats when alternatives exist. The main camp retains its action-specific selection. Pauli and Otakua voice families and their five clips were removed from the shared catalog in the September 22 review.
 
-Sunbud starts centered directly above the primary CTA, with dedicated space below the homepage subtitle: a 10rem gap on desktop and 7rem on mobile. Its starting position tracks the button on resize until the visitor picks it up.
+Sunbud starts centered directly above the primary CTA, with a dedicated 7rem gap below the homepage story copy. The hero wordmark caps at 480px to give the approved narrative and actions room in the first view. Its starting position tracks the button on resize until the visitor picks it up.
 
-In CTA containers at most 720px wide, untouched Loopseed and Oddseed also perch above the primary action, beside Sunbud, so they do not cover the stacked button labels. Dragged creatures retain their user-selected positions.
+In CTA containers at most 720px wide, untouched Loopseed and Oddseed also perch above the primary action, beside Sunbud, so they do not cover the stacked button labels. On About, all three untouched creatures stay above the primary action, with Loopseed and Oddseed spreading across the wider canvas above 720px. Dragged creatures retain their user-selected positions.
 
-The shared `font-serif` token resolves to bundled Fraunces, with the editorial optical settings and 600-weight headings. About uses a centered 48rem reading column. The header keeps the wordmark at 180px and moves navigation to a separate row at widths up to 360px; current sections have an underline and `aria-current`. Mobile buttons, toggles and scene toolbar controls use at least 44px targets, and room navigation labels use 14px type.
+The shared `font-serif` token resolves to bundled Fraunces, with the editorial optical settings and 600-weight headings. About uses a centered 48rem reading column above a full-page-width creature canvas. The canvas extends upward behind the reading area and adds room below the actions, preserving the button position and mobile side gutters without horizontal overflow. The header keeps the wordmark at 180px and moves navigation to a separate row at widths up to 360px; current sections have an underline and `aria-current`. Mobile buttons, toggles and scene toolbar controls use at least 44px targets, and room navigation labels use 14px type.
 
 Links presented as buttons or pills never use text underlines, including on hover. Use color, surface and focus treatments for interaction feedback. This applies to the homepage agent-entry pill and shared Button component.
 

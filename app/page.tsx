@@ -7,10 +7,10 @@ export default function HomePage() {
       <section aria-label='Welcome to Burning Tokens'>
         <RetreatActions hero />
       </section>
+      <PublicExhibits after='' featured />
       <div className='homepage-ledger'>
         <CampStats />
       </div>
-      <PublicExhibits after='' featured />
     </>
   )
 }

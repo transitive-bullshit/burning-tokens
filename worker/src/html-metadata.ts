@@ -46,11 +46,25 @@ export async function humanHtml(request: Request, env: Env) {
         )
       }
     })
+    .on('body', {
+      element(element) {
+        // Public beacon ID, not an API credential. Agent responses use a separate renderer.
+        if (
+          /^[a-f0-9]{32}$/.test(env.WEB_ANALYTICS_TOKEN ?? '') &&
+          url.origin === new URL(env.PUBLIC_ORIGIN).origin
+        )
+          element.append(
+            `<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"${env.WEB_ANALYTICS_TOKEN}"}'></script>`,
+            { html: true }
+          )
+      }
+    })
     .transform(shell)
   const headers = new Headers(transformed.headers)
   headers.delete('ETag')
   headers.delete('Content-Length')
-  headers.set('Cache-Control', 'no-store')
+  // Keep Cloudflare's inherited zone beacon from duplicating our site-specific one.
+  headers.set('Cache-Control', 'no-store, no-transform')
   headers.delete('X-Robots-Tag')
   if (!page.indexable) headers.set('X-Robots-Tag', 'noindex, nofollow')
   return new Response(transformed.body, {
