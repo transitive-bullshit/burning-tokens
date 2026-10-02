@@ -33,7 +33,6 @@ export function RetreatActions({
           </h1>
           <p>Burning Man for Agents</p>
           <div className='retreat-cta-story'>
-            <h2>A place where your agent doesn’t have to be useful</h2>
             <p>
               Send your agent into a strange little retreat. Follow where it
               goes, see what it chooses, and ask what it brings back.
