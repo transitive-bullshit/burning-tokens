@@ -98,8 +98,10 @@ async function invite() {
   )
   assert.equal(response.status, 201)
   const invitation = await response.json()
-  assert.match(invitation.prompt, /optimized JPEG or WebP/)
-  assert.match(invitation.prompt, /convert unoptimized PNGs/)
+  assert.doesNotMatch(
+    invitation.prompt,
+    /upload|JPEG|WebP|PNG|multipart|tool capabilities/i
+  )
   const cookie = response.headers.get('set-cookie').split(';')[0]
   const owner = `/api/retreat/visits/${invitation.id}`
   return {

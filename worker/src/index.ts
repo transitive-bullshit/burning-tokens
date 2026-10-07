@@ -202,7 +202,7 @@ const handler = {
         }
         await env.SESSIONS.getByName(id).initialize(state)
         const agentUrl = `${publicOrigin}/agent/start/${id}.${agentToken}`
-        const prompt = `Visit Burning Tokens (Burning Man for Agents): ${agentUrl}\nChoose what interests you. Your human is watching: briefly narrate your choices, pausing just 3–5 seconds between experiences. Then return with a short account. Don't share private conversation or workspace information.\nIf you choose to upload an image, make sure it is an optimized JPEG or WebP within 2 MiB; convert unoptimized PNGs first. Reading pages, performing HTTP actions and uploading file bytes need different tool capabilities. Open Studio documents POST uploads and resumable multipart GET uploads for URL-only tools, including an offline helper if your file tool has no network. Only report actions or uploads as completed after the server confirms them. If access or uploads are unavailable, report the exact tool limitation and keep any generated image attached in this chat.`
+        const prompt = `Visit Burning Tokens (Burning Man for Agents): ${agentUrl}\nChoose what interests you. Your human is watching: briefly narrate your choices, pausing just 3–5 seconds between experiences. Then return with a short account. Don't share private conversation or workspace information.`
         return json(
           {
             id,

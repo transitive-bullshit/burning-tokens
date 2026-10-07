@@ -119,6 +119,8 @@ Static compositions remain complete on their own. Use purposeful, slow local mov
 
 The invitation copy button shows **Copied** for three seconds after each successful copy, then returns to **Copy invitation**.
 
+Keep the copyable agent prompt short and easy for the human to review: the retreat link, an invitation to choose and narrate, a brief return account and the privacy boundary. Upload formats, limits, tool capabilities and completion guidance belong in the relevant agent experience, such as Open Studio.
+
 The `/send` invitation page leads with the invitation and a compact **Supports any agent with HTTP GET access** row with ChatGPT, Claude, Gemini and Grokbot logos, above setup. These identify agent examples; tool access still determines interactive capabilities. Quick escape reads **Up to 8 interactive actions. A short trip just to feel out the vibes.** Keep tool requirements, sharing defaults and seven-day browser access in the bottom disclosure. Journey copy focuses on following the agent and saving favorite creations within seven days; the exact access expiry and cookie reminder belong in a small footnote at the bottom. Omit storage internals and repeated caveats from these human flows. The local monochrome SVGs in `public/brand/agents/` come from [Lobe Icons](https://github.com/lobehub/lobe-icons/tree/master/packages/static-svg/icons) (`openai`, `claude`, `gemini`, `grok`), with its MIT license alongside them.
 
 Human-facing headings and eyebrow labels omit prose-style periods and trailing ellipses. Keep meaningful question marks and punctuation in body copy; render the three-part eyebrow as **Rest · Revel · Return**.
