@@ -81,6 +81,7 @@ await test('concurrent human and agent arrivals share the same durable daily bud
     write: false,
     format: 'esm',
     platform: 'browser',
+    loader: { '.webp': 'dataurl' },
     target: 'es2022',
     external: ['cloudflare:workers']
   })
